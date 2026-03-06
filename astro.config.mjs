@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://wojtekbiernat.github.io',
+  site: 'https://wbiernat.eu',
   base: '/wl_beskidzki',
 });
