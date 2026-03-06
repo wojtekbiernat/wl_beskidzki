@@ -1,0 +1,93 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Autor"
+  description="[PLACEHOLDER: opis SEO — imię, nazwisko, czym się zajmuje, skąd pochodzi]"
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>O autorze</h1>
+      <p>[Imię i Nazwisko Autora]</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container author-layout">
+
+      <aside class="author-photo">
+        <div class="photo-placeholder">Zdjęcie<br/>autora</div>
+      </aside>
+
+      <article class="author-bio">
+        <h2>[Imię i Nazwisko]</h2>
+
+        <p>
+          [PLACEHOLDER: Akapit 1 — skąd pochodzi autor, gdzie mieszka, związek z Beskidami
+          lub tematyką książki. Kilka zdań ogólnego wprowadzenia.]
+        </p>
+        <p>
+          [PLACEHOLDER: Akapit 2 — wykształcenie, doświadczenie zawodowe lub życiowe
+          związane z treścią książki. Co go ukształtowało jako pisarza?]
+        </p>
+        <p>
+          [PLACEHOLDER: Akapit 3 — inne publikacje, zainteresowania, działalność publiczna
+          (jeśli dotyczy). Co robi poza pisaniem?]
+        </p>
+        <p>
+          [PLACEHOLDER: Akapit 4 — co zainspirowało go do napisania tej konkretnej książki?
+          Osobista historia lub motywacja.]
+        </p>
+
+        <div class="author-links">
+          <!-- Add real links if applicable -->
+          <!-- <a href="https://..." class="btn btn-outline" target="_blank" rel="noopener">Strona autora</a> -->
+        </div>
+      </article>
+
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  .author-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (max-width: 640px) {
+    .author-layout { grid-template-columns: 1fr; }
+    .author-photo { text-align: center; }
+    .photo-placeholder { margin: 0 auto; }
+  }
+
+  .photo-placeholder {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: #e8e0d5;
+    border: 2px dashed var(--clr-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    color: var(--clr-muted);
+    text-align: center;
+  }
+
+  .author-bio h2 {
+    font-size: 1.7rem;
+    margin-bottom: 1rem;
+    color: var(--clr-accent);
+  }
+  .author-bio p {
+    color: var(--clr-muted);
+    margin-bottom: .9rem;
+  }
+  .author-links { margin-top: 1.5rem; }
+</style>

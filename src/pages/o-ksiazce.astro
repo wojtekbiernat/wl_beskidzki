@@ -1,0 +1,133 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="O książce"
+  description="[PLACEHOLDER: opis SEO strony o książce — ok. 150 znaków]"
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>[TYTUŁ KSIĄŻKI]</h1>
+      <p>[PLACEHOLDER: podtytuł lub krótkie hasło]</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container book-layout">
+
+      <!-- Cover image -->
+      <aside class="book-cover">
+        <div class="cover-placeholder">Okładka</div>
+        <dl class="book-meta">
+          <dt>Autor</dt>       <dd>[Imię Nazwisko]</dd>
+          <dt>Wydanie</dt>     <dd>[rok]</dd>
+          <dt>Liczba stron</dt><dd>[xxx] stron</dd>
+          <dt>Format</dt>      <dd>[np. B5, miękka oprawa]</dd>
+          <dt>ISBN</dt>        <dd>[xxx-xx-xxxxx-xx-x]</dd>
+        </dl>
+        <a href="/zamow" class="btn" style="width:100%;text-align:center;margin-top:1rem;">
+          Zamów książkę
+        </a>
+      </aside>
+
+      <!-- Description -->
+      <article class="book-description">
+        <h2>O czym jest ta książka?</h2>
+        <p>
+          [PLACEHOLDER: Akapit 1 — wstęp do tematyki książki. Kim jest bohater/narratorem?
+          Gdzie i kiedy rozgrywa się akcja? Jaki jest nastrój?]
+        </p>
+        <p>
+          [PLACEHOLDER: Akapit 2 — rozwinięcie. Co czytelnik znajdzie w środku?
+          Jakie tematy porusza? Dlaczego warto przeczytać?]
+        </p>
+        <p>
+          [PLACEHOLDER: Akapit 3 — zakończenie opisu, do kogo jest adresowana.]
+        </p>
+
+        <h2>Spis treści</h2>
+        <ol class="toc">
+          <li>[PLACEHOLDER: Rozdział 1 — tytuł]</li>
+          <li>[PLACEHOLDER: Rozdział 2 — tytuł]</li>
+          <li>[PLACEHOLDER: Rozdział 3 — tytuł]</li>
+          <li>[PLACEHOLDER: Rozdział 4 — tytuł]</li>
+          <li>[PLACEHOLDER: Rozdział 5 — tytuł]</li>
+        </ol>
+
+        <h2>Fragment</h2>
+        <blockquote class="excerpt">
+          <p>
+            [PLACEHOLDER: Krótki, atrakcyjny fragment z książki — 3–5 zdań.
+            Ma zachęcić do lektury.]
+          </p>
+        </blockquote>
+      </article>
+
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  .book-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  @media (max-width: 680px) {
+    .book-layout { grid-template-columns: 1fr; }
+  }
+
+  .cover-placeholder {
+    width: 100%;
+    aspect-ratio: 5/7;
+    background: #e8e0d5;
+    border: 2px dashed var(--clr-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    color: var(--clr-muted);
+    margin-bottom: 1.2rem;
+  }
+
+  dl.book-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: .3rem .8rem;
+    font-size: .9rem;
+  }
+  dt { font-weight: 600; color: var(--clr-muted); }
+  dd { color: var(--clr-text); }
+
+  .book-description h2 {
+    font-size: 1.4rem;
+    margin: 1.8rem 0 .6rem;
+    color: var(--clr-accent);
+  }
+  .book-description h2:first-child { margin-top: 0; }
+  .book-description p { margin-bottom: .9rem; color: var(--clr-muted); }
+
+  ol.toc {
+    padding-left: 1.4rem;
+    color: var(--clr-muted);
+    font-size: .95rem;
+  }
+  ol.toc li { margin-bottom: .3rem; }
+
+  blockquote.excerpt {
+    background: #f5f0e8;
+    border-left: 4px solid var(--clr-accent);
+    padding: 1.2rem 1.5rem;
+    border-radius: 0 4px 4px 0;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    color: var(--clr-text);
+    margin-top: .5rem;
+  }
+</style>

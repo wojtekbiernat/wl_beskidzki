@@ -1,0 +1,216 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Wydawnictwo Literackie Beskidzkie' } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const nav = [
+  { href: '/',          label: 'Strona główna' },
+  { href: '/o-ksiazce', label: 'O książce'     },
+  { href: '/autor',     label: 'Autor'         },
+  { href: '/zamow',     label: 'Zamów'         },
+  { href: '/kontakt',   label: 'Kontakt'       },
+];
+---
+
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} | WL Beskidzki</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <a href="/" class="logo">WL Beskidzki</a>
+        <input type="checkbox" id="menu-toggle" hidden />
+        <label for="menu-toggle" class="hamburger" aria-label="Menu">&#9776;</label>
+        <nav>
+          <ul>
+            {nav.map(({ href, label }) => (
+              <li>
+                <a
+                  href={href}
+                  class={currentPath === href || (href !== '/' && currentPath.startsWith(href)) ? 'active' : ''}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <div class="container">
+        <p>&copy; {new Date().getFullYear()} WL Beskidzki. Wszelkie prawa zastrzeżone.</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --clr-bg:        #faf8f3;
+    --clr-text:      #1a1a1a;
+    --clr-muted:     #555;
+    --clr-accent:    #4a3728;
+    --clr-accent-lt: #7a5c46;
+    --clr-border:    #ddd;
+    --font-serif:    'Playfair Display', Georgia, serif;
+    --font-sans:     'Source Sans 3', system-ui, sans-serif;
+    --max-w:         860px;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--clr-bg);
+    color: var(--clr-text);
+    line-height: 1.7;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main { flex: 1; }
+
+  .container {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--clr-accent);
+    color: #fff;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+  }
+
+  header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+
+  .logo {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    letter-spacing: .03em;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.8rem;
+  }
+
+  nav a {
+    color: rgba(255,255,255,.85);
+    text-decoration: none;
+    font-size: .95rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    transition: color .2s;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+  }
+
+  nav a:hover, nav a.active {
+    color: #fff;
+    border-bottom-color: #fff;
+  }
+
+  .hamburger {
+    display: none;
+    font-size: 1.5rem;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  @media (max-width: 640px) {
+    .hamburger { display: block; }
+
+    nav {
+      display: none;
+      position: absolute;
+      top: 60px; left: 0; right: 0;
+      background: var(--clr-accent);
+      padding: 1rem 1.5rem;
+    }
+
+    #menu-toggle:checked ~ nav { display: block; }
+
+    nav ul { flex-direction: column; gap: .8rem; }
+  }
+
+  /* ── Footer ── */
+  footer {
+    background: var(--clr-accent);
+    color: rgba(255,255,255,.7);
+    padding: 1.2rem 0;
+    text-align: center;
+    font-size: .875rem;
+    margin-top: 4rem;
+  }
+
+  /* ── Shared helpers ── */
+  h1, h2, h3 { font-family: var(--font-serif); line-height: 1.25; }
+
+  .page-header {
+    background: var(--clr-accent-lt);
+    color: #fff;
+    padding: 3rem 0 2.5rem;
+    text-align: center;
+  }
+  .page-header h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin-bottom: .5rem; }
+  .page-header p  { opacity: .85; font-size: 1.05rem; }
+
+  .content-section { padding: 3rem 0; }
+
+  .btn {
+    display: inline-block;
+    background: var(--clr-accent);
+    color: #fff;
+    padding: .75rem 1.8rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: background .2s, transform .1s;
+    border: none;
+    cursor: pointer;
+  }
+  .btn:hover { background: var(--clr-accent-lt); transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--clr-accent);
+    color: var(--clr-accent);
+  }
+  .btn-outline:hover { background: var(--clr-accent); color: #fff; }
+</style>
