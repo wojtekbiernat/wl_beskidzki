@@ -1,12 +1,19 @@
 <?php
 declare(strict_types=1);
 
+// ── Simple logger — writes to PHP error log (check /var/log/php*, Apache error_log, etc.) ──
+function clog(string $msg): void {
+    error_log('[wl-contact] ' . $msg);
+}
+
 // ── Load .env ────────────────────────────────────────────────────────────────
-// Reads key=value pairs from .env in the same directory.
-// On production you can alternatively set these in Apache/Nginx config instead.
 (function () {
     $envFile = __DIR__ . '/.env';
-    if (!file_exists($envFile)) return;
+    if (!file_exists($envFile)) {
+        clog('.env file NOT found at ' . $envFile);
+        return;
+    }
+    clog('.env loaded from ' . $envFile);
     foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         if (str_starts_with(trim($line), '#')) continue;
         [$key, $value] = array_map('trim', explode('=', $line, 2));
@@ -17,6 +24,8 @@ declare(strict_types=1);
 $hcaptchaSecret = getenv('HCAPTCHA_SECRET');
 $contactEmail   = getenv('CONTACT_EMAIL');
 $allowedOrigin  = getenv('ALLOWED_ORIGIN');
+
+clog("Config — email: {$contactEmail}, origin: {$allowedOrigin}, captcha secret set: " . ($hcaptchaSecret ? 'yes' : 'NO'));
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
 header("Access-Control-Allow-Origin: {$allowedOrigin}");
@@ -82,11 +91,16 @@ curl_setopt_array($ch, [
 $captchaResult = json_decode(curl_exec($ch), true);
 curl_close($ch);
 
+clog('hCaptcha result: ' . json_encode($captchaResult));
+
 if (!($captchaResult['success'] ?? false)) {
+    clog('hCaptcha FAILED — errors: ' . implode(', ', $captchaResult['error-codes'] ?? []));
     http_response_code(400);
     echo json_encode(['error' => 'Captcha verification failed']);
     exit;
 }
+
+clog('hCaptcha passed');
 
 // ── Send email ────────────────────────────────────────────────────────────────
 $safeSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
@@ -113,7 +127,16 @@ $headers = implode("\r\n", [
     "Content-Transfer-Encoding: 8bit",
 ]);
 
-if (mail($contactEmail, $emailSubject, $emailBody, $headers)) {
+clog("Calling mail() to: {$contactEmail}");
+$sent = mail($contactEmail, $emailSubject, $emailBody, $headers);
+clog('mail() returned: ' . ($sent ? 'TRUE' : 'FALSE'));
+
+if (!$sent) {
+    $lastError = error_get_last();
+    clog('Last PHP error: ' . json_encode($lastError));
+}
+
+if ($sent) {
     http_response_code(200);
     echo json_encode(['success' => true]);
 } else {
