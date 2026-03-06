@@ -105,7 +105,7 @@ $safeSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
 $safeName    = htmlspecialchars($name,    ENT_QUOTES, 'UTF-8');
 $safeEmail   = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-$emailSubject = "Kontakt — {$safeSubject}";
+$emailSubject = "Kontakt Włóczykij Beskidzki — {$safeSubject}";
 
 $emailBody = implode("\n", [
     "Nowa wiadomość z formularza kontaktowego:",

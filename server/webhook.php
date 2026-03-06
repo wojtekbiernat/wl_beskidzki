@@ -13,7 +13,16 @@ declare(strict_types=1);
 })();
 
 $webhookSecret = getenv('STRIPE_WEBHOOK_SECRET');
-$contactEmail  = getenv('CONTACT_EMAIL');
+$fromEmail     = getenv('FROM_EMAIL') ?: "noreply@{$_SERVER['HTTP_HOST']}";
+$wpRoot        = getenv('WP_ROOT') ?: dirname(__DIR__);
+
+// CONTACT_EMAIL supports multiple addresses separated by commas
+$contactEmail = array_filter(array_map('trim', explode(',', getenv('CONTACT_EMAIL') ?: '')));
+
+// ── Bootstrap WordPress so we can use wp_mail() ───────────────────────────────
+if (!defined('DOING_AJAX')) define('DOING_AJAX', true);
+$wpLoad = rtrim($wpRoot, '/') . '/wp-load.php';
+if (file_exists($wpLoad)) require_once $wpLoad;
 
 // ── Read raw payload BEFORE any output or parsing ────────────────────────────
 // Must be raw — Stripe signature is computed against the exact bytes received.
@@ -86,7 +95,7 @@ $addressLine = implode(', ', array_filter([
 ])) ?: '—';
 
 // ── Send notification email ───────────────────────────────────────────────────
-$emailSubject = "=?UTF-8?B?" . base64_encode("Nowe zamówienie — {$customerName}") . "?=";
+$emailSubject = "Nowe zamówienie Włóczykij Beskidzki — {$customerName}";
 
 $emailBody = implode("\n", [
     "Nowe zamówienie zrealizowane przez Stripe:",
@@ -106,13 +115,16 @@ $emailBody = implode("\n", [
     "https://dashboard.stripe.com/payments/{$orderId}",
 ]);
 
-$headers = implode("\r\n", [
-    "From: webhook@{$_SERVER['HTTP_HOST']}",
+$headers = [
+    "From: WL Beskidzki <{$fromEmail}>",
     "Content-Type: text/plain; charset=UTF-8",
-    "Content-Transfer-Encoding: 8bit",
-]);
+];
 
-mail($contactEmail, $emailSubject, $emailBody, $headers);
+if (function_exists('wp_mail')) {
+    wp_mail($contactEmail, $emailSubject, $emailBody, $headers);
+} else {
+    mail(implode(',', $contactEmail), $emailSubject, $emailBody, implode("\r\n", $headers));
+}
 
 // Always return 200 — if we return anything else Stripe will retry.
 http_response_code(200);
