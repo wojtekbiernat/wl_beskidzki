@@ -1,22 +1,10 @@
 <?php
 declare(strict_types=1);
 
-// ── Logger — writes to error log AND a local file for easy access ──
-define('LOG_FILE', __DIR__ . '/contact.log');
-function clog(string $msg): void {
-    $line = date('Y-m-d H:i:s') . ' ' . $msg . PHP_EOL;
-    error_log('[wl-contact] ' . $msg);
-    file_put_contents(LOG_FILE, $line, FILE_APPEND | LOCK_EX);
-}
-
 // ── Load .env ────────────────────────────────────────────────────────────────
 (function () {
     $envFile = __DIR__ . '/.env';
-    if (!file_exists($envFile)) {
-        clog('.env file NOT found at ' . $envFile);
-        return;
-    }
-    clog('.env loaded from ' . $envFile);
+    if (!file_exists($envFile)) return;
     foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         if (str_starts_with(trim($line), '#')) continue;
         [$key, $value] = array_map('trim', explode('=', $line, 2));
@@ -25,24 +13,22 @@ function clog(string $msg): void {
 })();
 
 $hcaptchaSecret = getenv('HCAPTCHA_SECRET');
-$contactEmail   = getenv('CONTACT_EMAIL');
 $allowedOrigin  = getenv('ALLOWED_ORIGIN');
 $fromEmail      = getenv('FROM_EMAIL') ?: "noreply@{$_SERVER['HTTP_HOST']}";
-$wpRoot         = getenv('WP_ROOT') ?: dirname(__DIR__); // WordPress root — one level up by default
+$wpRoot         = getenv('WP_ROOT') ?: dirname(__DIR__);
 
-clog("Config — to: {$contactEmail}, from: {$fromEmail}, origin: {$allowedOrigin}, captcha secret set: " . ($hcaptchaSecret ? 'yes' : 'NO'));
+// CONTACT_EMAIL supports multiple addresses separated by commas
+// e.g. CONTACT_EMAIL=you@gmail.com,colleague@gmail.com
+$contactEmail = array_map(
+    'trim',
+    explode(',', getenv('CONTACT_EMAIL') ?: '')
+);
+$contactEmail = array_filter($contactEmail); // remove empty entries
 
-// ── Bootstrap WordPress so we can use wp_mail() ───────────────────────────────
-// DOING_AJAX prevents WP from redirecting or outputting theme HTML.
+// ── Bootstrap WordPress ───────────────────────────────────────────────────────
 if (!defined('DOING_AJAX')) define('DOING_AJAX', true);
 $wpLoad = rtrim($wpRoot, '/') . '/wp-load.php';
-if (file_exists($wpLoad)) {
-    clog("Loading WordPress from: {$wpLoad}");
-    require_once $wpLoad;
-    clog('WordPress loaded, using wp_mail()');
-} else {
-    clog("wp-load.php NOT found at {$wpLoad} — falling back to mail()");
-}
+if (file_exists($wpLoad)) require_once $wpLoad;
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
 header("Access-Control-Allow-Origin: {$allowedOrigin}");
@@ -108,16 +94,11 @@ curl_setopt_array($ch, [
 $captchaResult = json_decode(curl_exec($ch), true);
 curl_close($ch);
 
-clog('hCaptcha result: ' . json_encode($captchaResult));
-
 if (!($captchaResult['success'] ?? false)) {
-    clog('hCaptcha FAILED — errors: ' . implode(', ', $captchaResult['error-codes'] ?? []));
     http_response_code(400);
     echo json_encode(['error' => 'Captcha verification failed']);
     exit;
 }
-
-clog('hCaptcha passed');
 
 // ── Send email ────────────────────────────────────────────────────────────────
 $safeSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
@@ -137,7 +118,6 @@ $emailBody = implode("\n", [
     htmlspecialchars($message, ENT_QUOTES, 'UTF-8'),
 ]);
 
-// wp_mail() takes headers as an array — cleaner than a string
 $headers = [
     "From: WL Beskidzki <{$fromEmail}>",
     "Reply-To: {$safeName} <{$safeEmail}>",
@@ -145,19 +125,9 @@ $headers = [
 ];
 
 if (function_exists('wp_mail')) {
-    clog("Calling wp_mail() to: {$contactEmail}");
     $sent = wp_mail($contactEmail, $emailSubject, $emailBody, $headers);
-    clog('wp_mail() returned: ' . ($sent ? 'TRUE' : 'FALSE'));
 } else {
-    // Fallback if WordPress didn't load
-    clog("Calling mail() to: {$contactEmail} (wp_mail not available)");
-    $sent = mail($contactEmail, $emailSubject, $emailBody, implode("\r\n", $headers));
-    clog('mail() returned: ' . ($sent ? 'TRUE' : 'FALSE'));
-}
-
-if (!$sent) {
-    $lastError = error_get_last();
-    clog('Last PHP error: ' . json_encode($lastError));
+    $sent = mail(implode(',', $contactEmail), $emailSubject, $emailBody, implode("\r\n", $headers));
 }
 
 if ($sent) {
