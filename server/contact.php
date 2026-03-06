@@ -28,8 +28,21 @@ $hcaptchaSecret = getenv('HCAPTCHA_SECRET');
 $contactEmail   = getenv('CONTACT_EMAIL');
 $allowedOrigin  = getenv('ALLOWED_ORIGIN');
 $fromEmail      = getenv('FROM_EMAIL') ?: "noreply@{$_SERVER['HTTP_HOST']}";
+$wpRoot         = getenv('WP_ROOT') ?: dirname(__DIR__); // WordPress root — one level up by default
 
 clog("Config — to: {$contactEmail}, from: {$fromEmail}, origin: {$allowedOrigin}, captcha secret set: " . ($hcaptchaSecret ? 'yes' : 'NO'));
+
+// ── Bootstrap WordPress so we can use wp_mail() ───────────────────────────────
+// DOING_AJAX prevents WP from redirecting or outputting theme HTML.
+if (!defined('DOING_AJAX')) define('DOING_AJAX', true);
+$wpLoad = rtrim($wpRoot, '/') . '/wp-load.php';
+if (file_exists($wpLoad)) {
+    clog("Loading WordPress from: {$wpLoad}");
+    require_once $wpLoad;
+    clog('WordPress loaded, using wp_mail()');
+} else {
+    clog("wp-load.php NOT found at {$wpLoad} — falling back to mail()");
+}
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
 header("Access-Control-Allow-Origin: {$allowedOrigin}");
@@ -111,7 +124,7 @@ $safeSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
 $safeName    = htmlspecialchars($name,    ENT_QUOTES, 'UTF-8');
 $safeEmail   = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-$emailSubject = "=?UTF-8?B?" . base64_encode("Kontakt — {$safeSubject}") . "?=";
+$emailSubject = "Kontakt — {$safeSubject}";
 
 $emailBody = implode("\n", [
     "Nowa wiadomość z formularza kontaktowego:",
@@ -124,16 +137,23 @@ $emailBody = implode("\n", [
     htmlspecialchars($message, ENT_QUOTES, 'UTF-8'),
 ]);
 
-$headers = implode("\r\n", [
+// wp_mail() takes headers as an array — cleaner than a string
+$headers = [
     "From: WL Beskidzki <{$fromEmail}>",
     "Reply-To: {$safeName} <{$safeEmail}>",
     "Content-Type: text/plain; charset=UTF-8",
-    "Content-Transfer-Encoding: 8bit",
-]);
+];
 
-clog("Calling mail() to: {$contactEmail}");
-$sent = mail($contactEmail, $emailSubject, $emailBody, $headers);
-clog('mail() returned: ' . ($sent ? 'TRUE' : 'FALSE'));
+if (function_exists('wp_mail')) {
+    clog("Calling wp_mail() to: {$contactEmail}");
+    $sent = wp_mail($contactEmail, $emailSubject, $emailBody, $headers);
+    clog('wp_mail() returned: ' . ($sent ? 'TRUE' : 'FALSE'));
+} else {
+    // Fallback if WordPress didn't load
+    clog("Calling mail() to: {$contactEmail} (wp_mail not available)");
+    $sent = mail($contactEmail, $emailSubject, $emailBody, implode("\r\n", $headers));
+    clog('mail() returned: ' . ($sent ? 'TRUE' : 'FALSE'));
+}
 
 if (!$sent) {
     $lastError = error_get_last();
