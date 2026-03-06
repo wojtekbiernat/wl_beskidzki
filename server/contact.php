@@ -1,9 +1,12 @@
 <?php
 declare(strict_types=1);
 
-// ── Simple logger — writes to PHP error log (check /var/log/php*, Apache error_log, etc.) ──
+// ── Logger — writes to error log AND a local file for easy access ──
+define('LOG_FILE', __DIR__ . '/contact.log');
 function clog(string $msg): void {
+    $line = date('Y-m-d H:i:s') . ' ' . $msg . PHP_EOL;
     error_log('[wl-contact] ' . $msg);
+    file_put_contents(LOG_FILE, $line, FILE_APPEND | LOCK_EX);
 }
 
 // ── Load .env ────────────────────────────────────────────────────────────────
