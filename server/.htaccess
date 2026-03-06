@@ -1,4 +1,0 @@
-# Block direct browser access to sensitive files
-<FilesMatch "\.(log|env|example)$">
-    Require all denied
-</FilesMatch>
