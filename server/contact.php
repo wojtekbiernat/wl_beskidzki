@@ -24,8 +24,9 @@ function clog(string $msg): void {
 $hcaptchaSecret = getenv('HCAPTCHA_SECRET');
 $contactEmail   = getenv('CONTACT_EMAIL');
 $allowedOrigin  = getenv('ALLOWED_ORIGIN');
+$fromEmail      = getenv('FROM_EMAIL') ?: "noreply@{$_SERVER['HTTP_HOST']}";
 
-clog("Config — email: {$contactEmail}, origin: {$allowedOrigin}, captcha secret set: " . ($hcaptchaSecret ? 'yes' : 'NO'));
+clog("Config — to: {$contactEmail}, from: {$fromEmail}, origin: {$allowedOrigin}, captcha secret set: " . ($hcaptchaSecret ? 'yes' : 'NO'));
 
 // ── CORS ─────────────────────────────────────────────────────────────────────
 header("Access-Control-Allow-Origin: {$allowedOrigin}");
@@ -121,7 +122,7 @@ $emailBody = implode("\n", [
 ]);
 
 $headers = implode("\r\n", [
-    "From: noreply@{$_SERVER['HTTP_HOST']}",
+    "From: WL Beskidzki <{$fromEmail}>",
     "Reply-To: {$safeName} <{$safeEmail}>",
     "Content-Type: text/plain; charset=UTF-8",
     "Content-Transfer-Encoding: 8bit",
