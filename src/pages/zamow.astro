@@ -25,7 +25,7 @@ const BOOK_PRICE = '49,90 zł'; // update to match Stripe price
 
         <!-- Book summary -->
         <div class="order-summary">
-          <div class="cover-placeholder">Okładka</div>
+          <img src="/wl_beskidzki/img/BookCover.jpg" alt="Okładka książki" class="cover-img" />
           <div class="order-info">
             <h2>[TYTUŁ KSIĄŻKI]</h2>
             <p class="author-name">autor: [Imię Nazwisko]</p>
@@ -94,17 +94,11 @@ const BOOK_PRICE = '49,90 zł'; // update to match Stripe price
     border-radius: 8px;
     padding: 1.5rem;
   }
-  .cover-placeholder {
+  .cover-img {
     width: 100px;
-    height: 140px;
-    background: #dce8f7;
-    border: 2px dashed var(--clr-border);
+    height: auto;
     border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .8rem;
-    color: var(--clr-muted);
+    box-shadow: 0 2px 10px rgba(53,141,194,.2);
     flex-shrink: 0;
   }
   .order-info h2 { font-size: 1.3rem; margin-bottom: .3rem; }
@@ -146,7 +140,7 @@ const BOOK_PRICE = '49,90 zł'; // update to match Stripe price
 
   /* Shipping table */
   .shipping-info {
-    background: #eaf2fc;
+    background: #e4f3fa;
     border-radius: 8px;
     padding: 1.5rem;
   }

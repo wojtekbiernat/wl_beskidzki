@@ -19,7 +19,7 @@ import Layout from '../layouts/Layout.astro';
 
       <!-- Cover image -->
       <aside class="book-cover">
-        <div class="cover-placeholder">Okładka</div>
+        <img src="/wl_beskidzki/img/BookCover.jpg" alt="Okładka książki" class="cover-img" />
         <dl class="book-meta">
           <dt>Autor</dt>       <dd>[Imię Nazwisko]</dd>
           <dt>Wydanie</dt>     <dd>[rok]</dd>
@@ -82,17 +82,11 @@ import Layout from '../layouts/Layout.astro';
     .book-layout { grid-template-columns: 1fr; }
   }
 
-  .cover-placeholder {
+  .cover-img {
     width: 100%;
-    aspect-ratio: 5/7;
-    background: #dce8f7;
-    border: 2px dashed var(--clr-border);
+    height: auto;
     border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .9rem;
-    color: var(--clr-muted);
+    box-shadow: 0 4px 20px rgba(53,141,194,.25);
     margin-bottom: 1.2rem;
   }
 
@@ -121,7 +115,7 @@ import Layout from '../layouts/Layout.astro';
   ol.toc li { margin-bottom: .3rem; }
 
   blockquote.excerpt {
-    background: #eaf2fc;
+    background: #e4f3fa;
     border-left: 4px solid var(--clr-accent);
     padding: 1.2rem 1.5rem;
     border-radius: 0 4px 4px 0;

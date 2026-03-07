@@ -18,8 +18,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
         <div class="hero-cover">
-          <!-- Replace src with real cover image -->
-          <div class="cover-placeholder">Okładka<br/>książki</div>
+          <img src="/wl_beskidzki/img/ThreeBadges.png" alt="Odznaki górskie" class="badges-img" />
         </div>
       </div>
     </div>
@@ -70,7 +69,7 @@ import Layout from '../layouts/Layout.astro';
 <style>
   /* Hero */
   .hero {
-    background: linear-gradient(135deg, #0d1f38 0%, #1b3a6b 100%);
+    background: linear-gradient(135deg, #1a6490 0%, #358dc2 100%);
     color: #fff;
     padding: 4rem 0;
   }
@@ -95,19 +94,12 @@ import Layout from '../layouts/Layout.astro';
   }
   .hero-sub { opacity: .85; font-size: 1.05rem; margin-bottom: 1.8rem; }
   .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
-  .hero-cover { flex: 0 0 220px; text-align: center; }
-  .cover-placeholder {
-    width: 200px;
-    height: 280px;
-    background: rgba(255,255,255,.1);
-    border: 2px dashed rgba(255,255,255,.3);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .9rem;
-    opacity: .6;
-    margin: 0 auto;
+  .hero-cover { flex: 0 0 260px; text-align: center; }
+  .badges-img {
+    width: 100%;
+    max-width: 260px;
+    height: auto;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,.35));
   }
 
   /* Blurb */
