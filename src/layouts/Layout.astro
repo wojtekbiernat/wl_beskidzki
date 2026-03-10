@@ -74,7 +74,7 @@ const nav: NavItem[] = [
           <ul>
             {nav.map(({ href, local, label, dropdown, cta }) => (
               <li class={[dropdown ? 'has-dropdown' : '', cta ? 'nav-cta' : ''].filter(Boolean).join(' ') || undefined}>
-                <a href={href} class={isActive(local) ? 'active' : ''}>
+                <a href={href} class={!cta && isActive(local) ? 'active' : ''}>
                   {label}{dropdown && <span class="arrow"> ▾</span>}
                 </a>
                 {dropdown && (
@@ -205,10 +205,9 @@ const nav: NavItem[] = [
     box-shadow: 0 0 0 2px rgba(255,255,255,.5);
   }
 
-  nav ul li.nav-cta > a:hover,
-  nav ul li.nav-cta > a.active {
+  nav ul li.nav-cta > a:hover {
     background: var(--clr-accent-lt);
-    color: #fff;
+    color: var(--clr-accent);
     border-bottom: none;
     box-shadow: 0 0 0 2px rgba(255,255,255,.8);
   }
