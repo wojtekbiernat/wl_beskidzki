@@ -4,23 +4,51 @@ interface Props {
   description?: string;
 }
 
-const { title, description = 'Wydawnictwo Literackie Beskidzkie' } = Astro.props;
+interface DropdownItem { local: string; href: string; label: string; }
+interface NavItem      { local: string; href: string; label: string; dropdown?: DropdownItem[]; }
+
+const { title, description = 'Włóczykij Beskidzki' } = Astro.props;
 const currentPath = Astro.url.pathname;
 
 // BASE_URL is '/' in dev and '/wl_beskidzki/' on GitHub Pages.
-// Normalise to always have a trailing slash, then build URLs by appending paths.
-const base      = import.meta.env.BASE_URL.replace(/\/?$/, '/'); // e.g. '/wl_beskidzki/'
+const base      = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const url       = (path: string) => `${base}${path.replace(/^\//, '')}`;
 const localPath = currentPath.startsWith(base)
   ? '/' + currentPath.slice(base.length)
   : currentPath;
 
-const nav = [
-  { local: '/',          href: base,              label: 'Strona główna' },
-  { local: '/o-ksiazce', href: url('/o-ksiazce'), label: 'O książce'     },
-  { local: '/autor',     href: url('/autor'),     label: 'Autor'         },
-  { local: '/zamow',     href: url('/zamow'),     label: 'Zamów'         },
-  { local: '/kontakt',   href: url('/kontakt'),   label: 'Kontakt'       },
+const isActive  = (local: string) =>
+  local === '/' ? localPath === '/' : localPath.startsWith(local);
+
+const nav: NavItem[] = [
+  {
+    local: '/o-projekcie', href: url('/o-projekcie/o-odznace'), label: 'O projekcie',
+    dropdown: [
+      { local: '/o-projekcie/o-odznace', href: url('/o-projekcie/o-odznace'), label: 'O Odznace' },
+      { local: '/o-projekcie/o-nas',     href: url('/o-projekcie/o-nas'),     label: 'O nas'     },
+    ],
+  },
+  { local: '/szczyty', href: url('/szczyty'), label: 'Szczyty' },
+  {
+    local: '/regulamin', href: url('/regulamin/regulamin'), label: 'Regulamin',
+    dropdown: [
+      { local: '/regulamin/regulamin', href: url('/regulamin/regulamin'), label: 'Regulamin' },
+      { local: '/regulamin/rodo',      href: url('/regulamin/rodo'),      label: 'RODO'      },
+    ],
+  },
+  { local: '/przystap',    href: url('/przystap'),    label: 'Przystąp'    },
+  { local: '/weryfikacja', href: url('/weryfikacja'), label: 'Weryfikacja' },
+  {
+    local: '/inne-projekty', href: url('/inne-projekty/korona-slaskiego'), label: 'Inne projekty',
+    dropdown: [
+      { local: '/inne-projekty/korona-slaskiego', href: url('/inne-projekty/korona-slaskiego'), label: 'Korona Woj. Śląskiego'      },
+      { local: '/inne-projekty/ggmf',             href: url('/inne-projekty/ggmf'),             label: 'GGMF'                        },
+      { local: '/inne-projekty/ggwf',             href: url('/inne-projekty/ggwf'),             label: 'GGWF'                        },
+      { local: '/inne-projekty/ggnt',             href: url('/inne-projekty/ggnt'),             label: 'GGNT'                        },
+      { local: '/inne-projekty/korona-wegier',    href: url('/inne-projekty/korona-wegier'),    label: 'Korona Wzgórz i Gór Węgier' },
+    ],
+  },
+  { local: '/kontakt', href: url('/kontakt'), label: 'Kontakt' },
 ];
 ---
 
@@ -44,14 +72,22 @@ const nav = [
         <label for="menu-toggle" class="hamburger" aria-label="Menu">&#9776;</label>
         <nav>
           <ul>
-            {nav.map(({ href, local, label }) => (
-              <li>
-                <a
-                  href={href}
-                  class={localPath === local || (local !== '/' && localPath.startsWith(local)) ? 'active' : ''}
-                >
-                  {label}
+            {nav.map(({ href, local, label, dropdown }) => (
+              <li class={dropdown ? 'has-dropdown' : ''}>
+                <a href={href} class={isActive(local) ? 'active' : ''}>
+                  {label}{dropdown && <span class="arrow"> ▾</span>}
                 </a>
+                {dropdown && (
+                  <ul class="dropdown">
+                    {dropdown.map(({ href: dHref, local: dLocal, label: dLabel }) => (
+                      <li>
+                        <a href={dHref} class={isActive(dLocal) ? 'active' : ''}>
+                          {dLabel}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </li>
             ))}
           </ul>
@@ -134,23 +170,68 @@ const nav = [
   nav ul {
     list-style: none;
     display: flex;
-    gap: 1.8rem;
+    gap: 1.2rem;
   }
 
   nav a {
     color: rgba(255,255,255,.85);
     text-decoration: none;
-    font-size: .95rem;
+    font-size: .9rem;
     font-weight: 600;
     letter-spacing: .02em;
     transition: color .2s;
     padding-bottom: 2px;
     border-bottom: 2px solid transparent;
+    white-space: nowrap;
   }
 
   nav a:hover, nav a.active {
     color: #fff;
     border-bottom-color: #fff;
+  }
+
+  /* ── Dropdown ── */
+  nav ul li.has-dropdown { position: relative; }
+
+  .arrow {
+    font-size: .7rem;
+    display: inline-block;
+    transition: transform .2s;
+  }
+
+  nav ul li.has-dropdown > ul.dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    background: var(--clr-accent);
+    min-width: 210px;
+    border-top: 2px solid rgba(255,255,255,.25);
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.25);
+    z-index: 200;
+    padding: .4rem 0;
+  }
+
+  nav ul li.has-dropdown:hover > ul.dropdown,
+  nav ul li.has-dropdown:focus-within > ul.dropdown { display: block; }
+
+  nav ul li.has-dropdown:hover .arrow,
+  nav ul li.has-dropdown:focus-within .arrow { transform: rotate(180deg); }
+
+  nav ul li.has-dropdown > ul.dropdown li { display: block; }
+
+  nav ul li.has-dropdown > ul.dropdown a {
+    display: block;
+    padding: .45rem 1.1rem;
+    border-bottom: none;
+    font-size: .88rem;
+  }
+
+  nav ul li.has-dropdown > ul.dropdown a:hover,
+  nav ul li.has-dropdown > ul.dropdown a.active {
+    background: rgba(255,255,255,.12);
+    border-bottom: none;
   }
 
   .hamburger {
@@ -174,7 +255,24 @@ const nav = [
 
     #menu-toggle:checked ~ nav { display: block; }
 
-    nav ul { flex-direction: column; gap: .8rem; }
+    nav ul { flex-direction: column; gap: .5rem; }
+
+    /* Show dropdowns inline on mobile */
+    nav ul li.has-dropdown > ul.dropdown {
+      display: block;
+      position: static;
+      box-shadow: none;
+      border-top: none;
+      border-radius: 0;
+      padding: .3rem 0 .3rem 1rem;
+      border-left: 2px solid rgba(255,255,255,.3);
+      margin-top: .3rem;
+      min-width: 0;
+    }
+
+    nav ul li.has-dropdown > ul.dropdown a {
+      padding: .3rem .5rem;
+    }
   }
 
   /* ── Footer ── */

@@ -1,0 +1,48 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="O nas"
+  description="Poznaj zespół stojący za projektem Włóczykij Beskidzki."
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>O nas</h1>
+      <p>Ludzie za projektem Włóczykij Beskidzki</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container content-body">
+
+      <h2>Nasz zespół</h2>
+      <p>
+        [PLACEHOLDER: Krótki opis zespołu — kto tworzy projekt, jakie są ich pasje i doświadczenie
+        turystyczne w Beskidach.]
+      </p>
+
+      <h2>Dlaczego to robimy?</h2>
+      <p>
+        [PLACEHOLDER: Motywacja za projektem — miłość do gór, chęć promowania turystyki,
+        budowanie społeczności.]
+      </p>
+
+      <h2>Kontakt z nami</h2>
+      <p>
+        Masz pytania lub sugestie? Napisz do nas przez
+        <a href="/wl_beskidzki/kontakt">formularz kontaktowy</a>.
+      </p>
+
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  .content-body { max-width: 720px; }
+  .content-body h2 { margin: 2rem 0 .7rem; font-size: 1.4rem; }
+  .content-body p  { color: var(--clr-muted); margin-bottom: 1rem; }
+  .content-body a  { color: var(--clr-accent); }
+</style>

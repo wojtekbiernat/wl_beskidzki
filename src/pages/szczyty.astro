@@ -1,0 +1,187 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Szczyty"
+  description="Wykaz szczytów objętych Odznaką Włóczykija Beskidzkiego — Polska, Czechy, Słowacja, Ukraina."
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Szczyty</h1>
+      <p>Kompletny wykaz szczytów Odznaki Włóczykija Beskidzkiego</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container">
+
+      <!-- Quick nav anchors -->
+      <nav class="section-nav" aria-label="Nawigacja po sekcjach">
+        <a href="#geografia">Geografia</a>
+        <a href="#wykaz">Wykaz Szczytów</a>
+        <a href="#pl">Polska</a>
+        <a href="#cz">Czechy</a>
+        <a href="#sk">Słowacja</a>
+        <a href="#ua">Ukraina</a>
+      </nav>
+
+      <!-- Geografia -->
+      <section id="geografia" class="peaks-section">
+        <h2>Geografia</h2>
+        <p>
+          [PLACEHOLDER: Ogólny opis geograficzny Beskidów — zasięg pasm, charakterystyczne cechy
+          terenu, podział na grupy górskie.]
+        </p>
+        <p>
+          [PLACEHOLDER: Informacje o granicach przebiegających przez Beskidy oraz o tym,
+          jak przekładają się one na szczyty objęte odznaką.]
+        </p>
+      </section>
+
+      <!-- Wykaz Szczytów -->
+      <section id="wykaz" class="peaks-section">
+        <h2>Wykaz Szczytów</h2>
+        <p>
+          [PLACEHOLDER: Wprowadzenie do wykazu — ile szczytów łącznie, jak są pogrupowane,
+          jakie są kryteria włączenia szczytu do listy.]
+        </p>
+      </section>
+
+      <!-- Polska -->
+      <section id="pl" class="peaks-section">
+        <h2>&#127987;&#65039; Polska</h2>
+        <p>[PLACEHOLDER: Opis polskiej części Beskidów objętej odznaką.]</p>
+        <table class="peaks-table">
+          <thead>
+            <tr>
+              <th>Lp.</th>
+              <th>Nazwa szczytu</th>
+              <th>Wysokość (m n.p.m.)</th>
+              <th>Pasmo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+            <tr><td>2</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Czechy -->
+      <section id="cz" class="peaks-section">
+        <h2>&#127810; Czechy</h2>
+        <p>[PLACEHOLDER: Opis czeskiej części Beskidów objętej odznaką.]</p>
+        <table class="peaks-table">
+          <thead>
+            <tr>
+              <th>Lp.</th>
+              <th>Nazwa szczytu</th>
+              <th>Wysokość (m n.p.m.)</th>
+              <th>Pasmo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+            <tr><td>2</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Słowacja -->
+      <section id="sk" class="peaks-section">
+        <h2>&#127820; Słowacja</h2>
+        <p>[PLACEHOLDER: Opis słowackiej części Beskidów objętej odznaką.]</p>
+        <table class="peaks-table">
+          <thead>
+            <tr>
+              <th>Lp.</th>
+              <th>Nazwa szczytu</th>
+              <th>Wysokość (m n.p.m.)</th>
+              <th>Pasmo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+            <tr><td>2</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Ukraina -->
+      <section id="ua" class="peaks-section">
+        <h2>&#127822; Ukraina</h2>
+        <p>[PLACEHOLDER: Opis ukraińskiej części Beskidów objętej odznaką.]</p>
+        <table class="peaks-table">
+          <thead>
+            <tr>
+              <th>Lp.</th>
+              <th>Nazwa szczytu</th>
+              <th>Wysokość (m n.p.m.)</th>
+              <th>Pasmo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+            <tr><td>2</td><td>[PLACEHOLDER]</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  /* Section quick-nav */
+  .section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-bottom: 2.5rem;
+  }
+  .section-nav a {
+    background: var(--clr-accent);
+    color: #fff;
+    padding: .35rem .9rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: background .2s;
+  }
+  .section-nav a:hover { background: var(--clr-accent-lt); }
+
+  /* Sections */
+  .peaks-section {
+    margin-bottom: 3rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--clr-border);
+  }
+  .peaks-section:first-of-type { border-top: none; }
+  .peaks-section h2 { font-size: 1.5rem; margin-bottom: .8rem; }
+  .peaks-section p  { color: var(--clr-muted); margin-bottom: 1rem; }
+
+  /* Table */
+  .peaks-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+    margin-top: .5rem;
+  }
+  .peaks-table th {
+    background: var(--clr-accent);
+    color: #fff;
+    padding: .5rem .8rem;
+    text-align: left;
+    font-weight: 600;
+  }
+  .peaks-table td {
+    padding: .45rem .8rem;
+    border-bottom: 1px solid var(--clr-border);
+  }
+  .peaks-table tbody tr:nth-child(even) { background: #e8f4fb; }
+  .peaks-table tbody tr:hover { background: #d4eaf6; }
+</style>

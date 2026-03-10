@@ -1,0 +1,150 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Weryfikacja"
+  description="Zasady weryfikacji Odznaki Włóczykija Beskidzkiego — jak zgłosić zdobyte szczyty."
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Weryfikacja</h1>
+      <p>Jak zgłosić zdobyte szczyty i odebrać Odznakę</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container">
+
+      <!-- Quick nav anchor -->
+      <nav class="section-nav" aria-label="Nawigacja po sekcjach">
+        <a href="#zasady">Zasady weryfikacji</a>
+      </nav>
+
+      <!-- Zasady -->
+      <section id="zasady" class="ver-section">
+        <h2>Zasady weryfikacji</h2>
+
+        <div class="steps">
+
+          <div class="step">
+            <span class="step-num">1</span>
+            <div class="step-content">
+              <h3>Zdobądź wymaganą liczbę szczytów</h3>
+              <p>[PLACEHOLDER: Ile szczytów trzeba zdobyć, w jakim czasie, jakie są warianty odznaki (brąz / srebro / złoto itp.).]</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <span class="step-num">2</span>
+            <div class="step-content">
+              <h3>Udokumentuj swoje wejścia</h3>
+              <p>[PLACEHOLDER: Wymagane dowody — zdjęcia na szczycie, wpis w książeczce, ślad GPS. Wymagania dotyczące zdjęć (widoczna tabliczka/znak szczytu, data).]</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <span class="step-num">3</span>
+            <div class="step-content">
+              <h3>Wypełnij formularz zgłoszeniowy</h3>
+              <p>[PLACEHOLDER: Jak wypełnić formularz — dane osobowe, lista szczytów, dołączone zdjęcia. Link do formularza lub instrukcja wysyłki e-mailem.]</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <span class="step-num">4</span>
+            <div class="step-content">
+              <h3>Oczekuj na weryfikację</h3>
+              <p>[PLACEHOLDER: Czas oczekiwania na weryfikację, co się dzieje po jej zakończeniu, jak zostaniesz powiadomiony.]</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <span class="step-num">5</span>
+            <div class="step-content">
+              <h3>Odbierz Odznakę</h3>
+              <p>[PLACEHOLDER: Sposób wysyłki / odbioru odznaki, koszt (wliczony czy dodatkowy), czy dołączony jest dyplom.]</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="ver-note">
+          <p>
+            Masz pytania dotyczące weryfikacji? Skontaktuj się z nami przez
+            <a href="/wl_beskidzki/kontakt">formularz kontaktowy</a>.
+          </p>
+        </div>
+
+      </section>
+
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  .section-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin-bottom: 2.5rem;
+  }
+  .section-nav a {
+    background: var(--clr-accent);
+    color: #fff;
+    padding: .35rem .9rem;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: background .2s;
+  }
+  .section-nav a:hover { background: var(--clr-accent-lt); }
+
+  .ver-section { padding-top: 1rem; }
+  .ver-section h2 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+
+  /* Steps */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 720px;
+  }
+
+  .step {
+    display: flex;
+    gap: 1.2rem;
+    align-items: flex-start;
+  }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: var(--clr-accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: .15rem;
+  }
+
+  .step-content h3 { font-size: 1.05rem; margin-bottom: .35rem; }
+  .step-content p  { color: var(--clr-muted); font-size: .95rem; }
+
+  .ver-note {
+    margin-top: 2rem;
+    padding: 1.2rem 1.5rem;
+    background: #e4f3fa;
+    border-radius: 8px;
+    max-width: 720px;
+  }
+  .ver-note p { color: var(--clr-muted); font-size: .95rem; }
+  .ver-note a { color: var(--clr-accent); }
+</style>
