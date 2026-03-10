@@ -74,7 +74,7 @@ const nav: NavItem[] = [
           <ul>
             {nav.map(({ href, local, label, dropdown, cta }) => (
               <li class={[dropdown ? 'has-dropdown' : '', cta ? 'nav-cta' : ''].filter(Boolean).join(' ') || undefined}>
-                <a href={href} class={!cta && isActive(local) ? 'active' : ''}>
+                <a href={href} class={cta ? 'nav-cta-btn' : (isActive(local) ? 'active' : '')}>
                   {label}{dropdown && <span class="arrow"> ▾</span>}
                 </a>
                 {dropdown && (
@@ -191,9 +191,15 @@ const nav: NavItem[] = [
   }
 
   /* ── CTA pill ("Przystąp") ── */
-  nav ul li.nav-cta { margin-left: .4rem; align-self: center; }
+  nav ul li.nav-cta {
+    margin-left: .4rem;
+    align-self: center;
+    position: relative; /* create stacking context */
+    z-index: 201;       /* sit above dropdown panels (z-index 200) */
+  }
 
-  nav ul li.nav-cta > a {
+  /* Class applied directly to <a> — no child combinator needed */
+  nav a.nav-cta-btn {
     background: #fff;
     color: var(--clr-accent);
     padding: .32rem .9rem;
@@ -205,7 +211,7 @@ const nav: NavItem[] = [
     box-shadow: 0 0 0 2px rgba(255,255,255,.5);
   }
 
-  nav ul li.nav-cta > a:hover {
+  nav a.nav-cta-btn:hover {
     background: var(--clr-accent-lt);
     color: var(--clr-accent);
     border-bottom: none;
