@@ -105,7 +105,7 @@ $safeSubject = htmlspecialchars($subject, ENT_QUOTES, 'UTF-8');
 $safeName    = htmlspecialchars($name,    ENT_QUOTES, 'UTF-8');
 $safeEmail   = filter_var($email, FILTER_SANITIZE_EMAIL);
 
-$emailSubject = "Kontakt Włóczykij Beskidzki — {$safeSubject}";
+$emailSubject = "Kontakt Beskidzki Włóczykij — {$safeSubject}";
 
 $emailBody = implode("\n", [
     "Nowa wiadomość z formularza kontaktowego:",
@@ -119,7 +119,7 @@ $emailBody = implode("\n", [
 ]);
 
 $headers = [
-    "From: WL Beskidzki <{$fromEmail}>",
+    "From: Beskidzki Włóczykij <{$fromEmail}>",
     "Reply-To: {$safeName} <{$safeEmail}>",
     "Content-Type: text/plain; charset=UTF-8",
 ];

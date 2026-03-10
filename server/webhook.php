@@ -95,7 +95,7 @@ $addressLine = implode(', ', array_filter([
 ])) ?: '—';
 
 // ── Send notification email ───────────────────────────────────────────────────
-$emailSubject = "Nowe zamówienie Włóczykij Beskidzki — {$customerName}";
+$emailSubject = "Nowe zamówienie Beskidzki Włóczykij — {$customerName}";
 
 $emailBody = implode("\n", [
     "Nowe zamówienie zrealizowane przez Stripe:",
@@ -116,7 +116,7 @@ $emailBody = implode("\n", [
 ]);
 
 $headers = [
-    "From: WL Beskidzki <{$fromEmail}>",
+    "From: Beskidzki Włóczykij <{$fromEmail}>",
     "Content-Type: text/plain; charset=UTF-8",
 ];
 
