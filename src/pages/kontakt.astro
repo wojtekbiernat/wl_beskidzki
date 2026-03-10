@@ -45,7 +45,27 @@ const HCAPTCHA_SITE_KEY = '5128481c-68c4-47ee-9a82-761e67b48fb4';
               Pon–Pt, 9:00–17:00
             </div>
           </li>
+          <li>
+            <span class="icon">&#128100;</span>
+            <div>
+              <strong>Facebook</strong><br />
+              <a href="https://facebook.com/[PLACEHOLDER]" target="_blank" rel="noopener">
+                facebook.com/[PLACEHOLDER]
+              </a>
+            </div>
+          </li>
         </ul>
+
+        <div class="bank-box">
+          <h3>Przelew bankowy</h3>
+          <p class="bank-label">Odbiorca</p>
+          <p class="bank-value">[Imię Nazwisko / Nazwa organizacji]</p>
+          <p class="bank-label">Numer konta</p>
+          <p class="bank-value bank-iban">[XX XXXX XXXX XXXX XXXX XXXX XXXX]</p>
+          <p class="bank-label">Tytuł przelewu</p>
+          <p class="bank-value">Odznaka WL Beskidzki – [Twoje imię i nazwisko]</p>
+        </div>
+
       </aside>
 
       <!-- Contact form -->
@@ -181,6 +201,20 @@ const HCAPTCHA_SITE_KEY = '5128481c-68c4-47ee-9a82-761e67b48fb4';
   .icon { font-size: 1.3rem; line-height: 1.4; flex-shrink: 0; }
   .contact-details a { color: var(--clr-accent-lt); text-decoration: none; }
   .contact-details a:hover { text-decoration: underline; }
+
+  /* Bank transfer box */
+  .bank-box {
+    margin-top: 1.8rem;
+    background: #e4f3fa;
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+    padding: 1.1rem 1.2rem;
+  }
+  .bank-box h3 { font-size: 1rem; margin-bottom: .8rem; color: var(--clr-accent); }
+  .bank-label  { font-size: .75rem; font-weight: 600; text-transform: uppercase;
+                 letter-spacing: .05em; color: var(--clr-muted); margin-top: .6rem; }
+  .bank-value  { font-size: .9rem; color: var(--clr-text); word-break: break-all; }
+  .bank-iban   { font-family: monospace; font-size: .95rem; letter-spacing: .04em; }
 
   /* Form */
   .contact-form-wrap h2 { font-size: 1.3rem; margin-bottom: 1.2rem; color: var(--clr-accent); }

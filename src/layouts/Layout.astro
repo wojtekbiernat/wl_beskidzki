@@ -5,7 +5,7 @@ interface Props {
 }
 
 interface DropdownItem { local: string; href: string; label: string; }
-interface NavItem      { local: string; href: string; label: string; dropdown?: DropdownItem[]; }
+interface NavItem      { local: string; href: string; label: string; dropdown?: DropdownItem[]; cta?: boolean; }
 
 const { title, description = 'Włóczykij Beskidzki' } = Astro.props;
 const currentPath = Astro.url.pathname;
@@ -36,7 +36,7 @@ const nav: NavItem[] = [
       { local: '/regulamin/rodo',      href: url('/regulamin/rodo'),      label: 'RODO'      },
     ],
   },
-  { local: '/przystap',    href: url('/przystap'),    label: 'Przystąp'    },
+  { local: '/przystap',    href: url('/przystap'),    label: 'Przystąp', cta: true },
   { local: '/weryfikacja', href: url('/weryfikacja'), label: 'Weryfikacja' },
   {
     local: '/inne-projekty', href: url('/inne-projekty/korona-slaskiego'), label: 'Inne projekty',
@@ -72,8 +72,8 @@ const nav: NavItem[] = [
         <label for="menu-toggle" class="hamburger" aria-label="Menu">&#9776;</label>
         <nav>
           <ul>
-            {nav.map(({ href, local, label, dropdown }) => (
-              <li class={dropdown ? 'has-dropdown' : ''}>
+            {nav.map(({ href, local, label, dropdown, cta }) => (
+              <li class={[dropdown ? 'has-dropdown' : '', cta ? 'nav-cta' : ''].filter(Boolean).join(' ') || undefined}>
                 <a href={href} class={isActive(local) ? 'active' : ''}>
                   {label}{dropdown && <span class="arrow"> ▾</span>}
                 </a>
@@ -188,6 +188,29 @@ const nav: NavItem[] = [
   nav a:hover, nav a.active {
     color: #fff;
     border-bottom-color: #fff;
+  }
+
+  /* ── CTA pill ("Przystąp") ── */
+  nav ul li.nav-cta { margin-left: .4rem; align-self: center; }
+
+  nav ul li.nav-cta > a {
+    background: #fff;
+    color: var(--clr-accent);
+    padding: .32rem .9rem;
+    border-radius: 20px;
+    border-bottom: none;
+    font-weight: 700;
+    font-size: .88rem;
+    transition: background .18s, color .18s, box-shadow .18s;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.5);
+  }
+
+  nav ul li.nav-cta > a:hover,
+  nav ul li.nav-cta > a.active {
+    background: var(--clr-accent-lt);
+    color: #fff;
+    border-bottom: none;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.8);
   }
 
   /* ── Dropdown ── */
