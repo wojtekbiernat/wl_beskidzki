@@ -1,6 +1,31 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import peaksData from '../../data/peaks.json';
+
+type Trail = 'on' | 'near' | 'off';
+type Country = 'PL' | 'CZ' | 'SK' | 'UA';
+
+interface Peak {
+  id: number; lp: number; country: Country;
+  name: string; region: string; height: number;
+  trail: Trail; highestInRegion: string;
+  lat: number | null; lng: number | null;
+}
+
+const peaks = peaksData as Peak[];
+const peaksWithCoords = peaks.filter(p => p.lat !== null);
+
+const flag: Record<Country, string> = { PL: '🇵🇱', CZ: '🇨🇿', SK: '🇸🇰', UA: '🇺🇦' };
+const trailLabel: Record<Trail, string> = { on: 'na szlaku', near: 'blisko szlaku', off: 'poza szlakiem' };
+
+// Safe JSON for inline <script> tag
+const coordsJson = JSON.stringify(
+  peaksWithCoords.map(p => ({ id: p.id, name: p.name, lat: p.lat, lng: p.lng }))
+).replace(/<\/script>/gi, '<\\/script>');
 ---
+
+<!-- Leaflet CSS injected into <head> via Layout slot -->
+<link slot="head" rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <Layout
   title="Wykaz Szczytów"
@@ -17,17 +42,8 @@ import Layout from '../../layouts/Layout.astro';
   <div class="content-section">
     <div class="container">
 
-      <!-- Quick nav anchors -->
-      <nav class="section-nav" aria-label="Nawigacja po sekcjach">
-        <a href="#wykaz">Odznaka</a>
-        <a href="#pl">🇵🇱 Polska (88)</a>
-        <a href="#cz">🇨🇿 Czechy (16)</a>
-        <a href="#sk">🇸🇰 Słowacja (27)</a>
-        <a href="#ua">🇺🇦 Ukraina (19)</a>
-      </nav>
-
       <!-- ── ODZNAKA / POZIOMY ── -->
-      <section id="wykaz" class="peaks-section">
+      <section id="wykaz" class="peaks-section peaks-section--first">
         <h2>Odznaka</h2>
         <p>
           Odznaka obejmuje łącznie <strong>150 szczytów</strong> w czterech krajach. Zdobywanie
@@ -55,378 +71,219 @@ import Layout from '../../layouts/Layout.astro';
         </div>
       </section>
 
-      <!-- ── POLSKA ── -->
-      <section id="pl" class="peaks-section">
-        <h2>🇵🇱 Polska <span class="count">(88 szczytów)</span></h2>
-        <iframe
-          src="https://frame.mapy.cz/turisticka?moje-mapy&cat=mista-trasy&mid=69918b4bcd37f35033fe329c&x=20.7555684&y=49.4179513&z=6"
-          class="map-embed"
-          title="Mapa szczytów – Polska"
-          allowfullscreen
-          loading="lazy"
-        ></iframe>
-        <div class="table-wrap">
-          <table class="peaks-table">
-            <thead>
-              <tr>
-                <th>Lp.</th>
-                <th>Szczyt</th>
-                <th>Mezoregion</th>
-                <th>Wys. (m)</th>
-                <th>Szlak</th>
-                <th>Najwyższy szczyt mezoregionu</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>Kamiennik Północny</td><td>Beskid Makowski</td><td>785</td><td><span class="badge on">na szlaku</span></td><td>Lubomir</td></tr>
-              <tr><td>2</td><td>Kotoń (Solnisko)</td><td>Beskid Makowski</td><td>857</td><td><span class="badge off">poza szlakiem</span></td><td>Lubomir</td></tr>
-              <tr><td>3</td><td>Ostrysz</td><td>Beskid Makowski</td><td>701</td><td><span class="badge off">poza szlakiem</span></td><td>Lubomir</td></tr>
-              <tr><td>4</td><td>Sularzówka (Sularzowa)</td><td>Beskid Makowski</td><td>617</td><td><span class="badge near">blisko szlaku</span></td><td>Lubomir</td></tr>
-              <tr><td>5</td><td>Uklejna</td><td>Beskid Makowski</td><td>680</td><td><span class="badge near">blisko szlaku</span></td><td>Lubomir</td></tr>
-              <tr><td>6</td><td>Kościelec (Kościelec Mały)</td><td>Beskid Mały</td><td>795</td><td><span class="badge on">na szlaku</span></td><td>Czupel</td></tr>
-              <tr><td>7</td><td>Magurka Ponikiewska</td><td>Beskid Mały</td><td>817</td><td><span class="badge on">na szlaku</span></td><td>Czupel</td></tr>
-              <tr><td>8</td><td>Sokołówka</td><td>Beskid Mały</td><td>858</td><td><span class="badge off">poza szlakiem</span></td><td>Czupel</td></tr>
-              <tr><td>9</td><td>Ferdel</td><td>Beskid Niski</td><td>648</td><td><span class="badge near">blisko szlaku</span></td><td>Lackowa</td></tr>
-              <tr><td>10</td><td>Kamień (Kamień nad Jaśliskami)</td><td>Beskid Niski</td><td>857</td><td><span class="badge on">na szlaku</span></td><td>Lackowa</td></tr>
-              <tr><td>11</td><td>Kanasiówka (Baba)</td><td>Beskid Niski</td><td>830</td><td><span class="badge on">na szlaku</span></td><td>Lackowa</td></tr>
-              <tr><td>12</td><td>Łysula</td><td>Beskid Niski</td><td>551</td><td><span class="badge on">na szlaku</span></td><td>Lackowa</td></tr>
-              <tr><td>13</td><td>Maślana Góra</td><td>Beskid Niski</td><td>753</td><td><span class="badge on">na szlaku</span></td><td>Lackowa</td></tr>
-              <tr><td>14</td><td>Pachanowa Góra</td><td>Beskid Niski</td><td>512</td><td><span class="badge off">poza szlakiem</span></td><td>Lackowa</td></tr>
-              <tr><td>15</td><td>Piotruś</td><td>Beskid Niski</td><td>727</td><td><span class="badge on">na szlaku</span></td><td>Lackowa</td></tr>
-              <tr><td>16</td><td>Rzepedka</td><td>Beskid Niski</td><td>707</td><td><span class="badge on">na szlaku</span></td><td>Lackowa</td></tr>
-              <tr><td>17</td><td>Wiśniowa Góra (Kozieniec)</td><td>Beskid Niski</td><td>702</td><td><span class="badge off">poza szlakiem</span></td><td>Lackowa</td></tr>
-              <tr><td>18</td><td>Błyszcz</td><td>Beskid Sądecki</td><td>945</td><td><span class="badge near">blisko szlaku</span></td><td>Radziejowa</td></tr>
-              <tr><td>19</td><td>Czubakowska</td><td>Beskid Sądecki</td><td>1082</td><td><span class="badge near">blisko szlaku</span></td><td>Radziejowa</td></tr>
-              <tr><td>20</td><td>Dzwonkówka</td><td>Beskid Sądecki</td><td>982</td><td><span class="badge near">blisko szlaku</span></td><td>Radziejowa</td></tr>
-              <tr><td>21</td><td>Góra Sokołowska</td><td>Beskid Sądecki</td><td>1028</td><td><span class="badge on">na szlaku</span></td><td>Radziejowa</td></tr>
-              <tr><td>22</td><td>Pusta Wielka</td><td>Beskid Sądecki</td><td>1061</td><td><span class="badge on">na szlaku</span></td><td>Radziejowa</td></tr>
-              <tr><td>23</td><td>Wdżary Wyżne</td><td>Beskid Sądecki</td><td>865</td><td><span class="badge near">blisko szlaku</span></td><td>Radziejowa</td></tr>
-              <tr><td>24</td><td>Kyrkawica (Krkavice)</td><td>Beskid Śląski</td><td>977</td><td><span class="badge near">blisko szlaku</span></td><td>Skrzyczne</td></tr>
-              <tr><td>25</td><td>Lipowski Groń</td><td>Beskid Śląski</td><td>745</td><td><span class="badge off">poza szlakiem</span></td><td>Skrzyczne</td></tr>
-              <tr><td>26</td><td>Magura</td><td>Beskid Śląski</td><td>1109</td><td><span class="badge on">na szlaku</span></td><td>Skrzyczne</td></tr>
-              <tr><td>27</td><td>Muronka</td><td>Beskid Śląski</td><td>1017</td><td><span class="badge near">blisko szlaku</span></td><td>Skrzyczne</td></tr>
-              <tr><td>28</td><td>Skalite</td><td>Beskid Śląski</td><td>864</td><td><span class="badge off">poza szlakiem</span></td><td>Skrzyczne</td></tr>
-              <tr><td>29</td><td>Tuł</td><td>Beskid Śląski</td><td>621</td><td><span class="badge off">poza szlakiem</span></td><td>Skrzyczne</td></tr>
-              <tr><td>30</td><td>Chełm</td><td>Beskid Wyspowy</td><td>793</td><td><span class="badge off">poza szlakiem</span></td><td>Mogielica</td></tr>
-              <tr><td>31</td><td>Ćwilin</td><td>Beskid Wyspowy</td><td>1072</td><td><span class="badge on">na szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>32</td><td>Grodzisko</td><td>Beskid Wyspowy</td><td>618</td><td><span class="badge on">na szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>33</td><td>Kiczora</td><td>Beskid Wyspowy</td><td>725</td><td><span class="badge off">poza szlakiem</span></td><td>Mogielica</td></tr>
-              <tr><td>34</td><td>Łyżka</td><td>Beskid Wyspowy</td><td>803</td><td><span class="badge on">na szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>35</td><td>Mała Modyń</td><td>Beskid Wyspowy</td><td>988</td><td><span class="badge near">blisko szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>36</td><td>Ostra</td><td>Beskid Wyspowy</td><td>780</td><td><span class="badge on">na szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>37</td><td>Paproć</td><td>Beskid Wyspowy</td><td>643</td><td><span class="badge on">na szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>38</td><td>Polana Łąki</td><td>Beskid Wyspowy</td><td>1001</td><td><span class="badge near">blisko szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>39</td><td>Wielki Wierch</td><td>Beskid Wyspowy</td><td>1016</td><td><span class="badge off">poza szlakiem</span></td><td>Mogielica</td></tr>
-              <tr><td>40</td><td>Witów</td><td>Beskid Wyspowy</td><td>720</td><td><span class="badge off">poza szlakiem</span></td><td>Mogielica</td></tr>
-              <tr><td>41</td><td>Złote Wierchy (Matuchówka)</td><td>Beskid Wyspowy</td><td>536</td><td><span class="badge on">na szlaku</span></td><td>Mogielica</td></tr>
-              <tr><td>42</td><td>Orło (Orol)</td><td>Beskid Żywiecko-Kisucki</td><td>1119</td><td><span class="badge near">blisko szlaku</span></td><td>Wielka Racza</td></tr>
-              <tr><td>43</td><td>Oźna</td><td>Beskid Żywiecko-Kisucki</td><td>952</td><td><span class="badge off">poza szlakiem</span></td><td>Wielka Racza</td></tr>
-              <tr><td>44</td><td>Wiertalówka</td><td>Beskid Żywiecko-Kisucki</td><td>1071</td><td><span class="badge on">na szlaku</span></td><td>Wielka Racza</td></tr>
-              <tr><td>45</td><td>Jałowcowy Garb</td><td>Beskid Żywiecko-Orawski</td><td>1017</td><td><span class="badge on">na szlaku</span></td><td>Babia Góra</td></tr>
-              <tr><td>46</td><td>Lachów Groń</td><td>Beskid Żywiecko-Orawski</td><td>1045</td><td><span class="badge on">na szlaku</span></td><td>Babia Góra</td></tr>
-              <tr><td>47</td><td>Łosek (Lasek)</td><td>Beskid Żywiecko-Orawski</td><td>868</td><td><span class="badge on">na szlaku</span></td><td>Babia Góra</td></tr>
-              <tr><td>48</td><td>Martoszka</td><td>Beskid Żywiecko-Orawski</td><td>1288</td><td><span class="badge near">blisko szlaku</span></td><td>Babia Góra</td></tr>
-              <tr><td>49</td><td>Munczolik (Szczawinka)</td><td>Beskid Żywiecko-Orawski</td><td>1356</td><td><span class="badge near">blisko szlaku</span></td><td>Babia Góra</td></tr>
-              <tr><td>50</td><td>Oszus (Úšust)</td><td>Beskid Żywiecko-Orawski</td><td>1156</td><td><span class="badge near">blisko szlaku</span></td><td>Wielka Racza</td></tr>
-              <tr><td>51</td><td>Urwanica</td><td>Beskid Żywiecko-Orawski</td><td>1106</td><td><span class="badge on">na szlaku</span></td><td>Babia Góra</td></tr>
-              <tr><td>52</td><td>Borsuk (Borsukov Vrch)</td><td>Bieszczady Zachodnie</td><td>991</td><td><span class="badge near">blisko szlaku</span></td><td>Tarnica</td></tr>
-              <tr><td>53</td><td>Brańcowa</td><td>Bieszczady Zachodnie</td><td>677</td><td><span class="badge near">blisko szlaku</span></td><td>Tarnica</td></tr>
-              <tr><td>54</td><td>Czerenin (Černiny)</td><td>Bieszczady Zachodnie</td><td>929</td><td><span class="badge on">na szlaku</span></td><td>Tarnica</td></tr>
-              <tr><td>55</td><td>Falowa</td><td>Bieszczady Zachodnie</td><td>968</td><td><span class="badge on">na szlaku</span></td><td>Tarnica</td></tr>
-              <tr><td>56</td><td>Halicz</td><td>Bieszczady Zachodnie</td><td>1333</td><td><span class="badge on">na szlaku</span></td><td>Tarnica</td></tr>
-              <tr><td>57</td><td>Jaworne</td><td>Bieszczady Zachodnie</td><td>992</td><td><span class="badge on">na szlaku</span></td><td>Tarnica</td></tr>
-              <tr><td>58</td><td>Jeleniowaty</td><td>Bieszczady Zachodnie</td><td>907</td><td><span class="badge on">na szlaku</span></td><td>Tarnica</td></tr>
-              <tr><td>59</td><td>Wajdów Groń</td><td>Działy Orawskie</td><td>933</td><td><span class="badge on">na szlaku</span></td><td>Wajdów Groń</td></tr>
-              <tr><td>60</td><td>Bukowina Obidowska</td><td>Gorce</td><td>1039</td><td><span class="badge off">poza szlakiem</span></td><td>Turbacz</td></tr>
-              <tr><td>61</td><td>Bukowinka</td><td>Gorce</td><td>937</td><td><span class="badge on">na szlaku</span></td><td>Turbacz</td></tr>
-              <tr><td>62</td><td>Kudłoń</td><td>Gorce</td><td>1274</td><td><span class="badge on">na szlaku</span></td><td>Turbacz</td></tr>
-              <tr><td>63</td><td>Kudowski Wierch</td><td>Gorce</td><td>1025</td><td><span class="badge on">na szlaku</span></td><td>Turbacz</td></tr>
-              <tr><td>64</td><td>Mostownica</td><td>Gorce</td><td>1251</td><td><span class="badge off">poza szlakiem</span></td><td>Turbacz</td></tr>
-              <tr><td>65</td><td>Wierch Babieniec</td><td>Gorce</td><td>1061</td><td><span class="badge near">blisko szlaku</span></td><td>Turbacz</td></tr>
-              <tr><td>66</td><td>Jaworniki</td><td>Góry Sanocko-Turczańskie</td><td>908</td><td><span class="badge off">poza szlakiem</span></td><td>Jaworniki</td></tr>
-              <tr><td>67</td><td>Wielki Król</td><td>Góry Sanocko-Turczańskie</td><td>732</td><td><span class="badge on">na szlaku</span></td><td>Jaworniki</td></tr>
-              <tr><td>68</td><td>Patria</td><td>Kotlina Jasielsko-Krośnieńska</td><td>474</td><td><span class="badge off">poza szlakiem</span></td><td>Patria</td></tr>
-              <tr><td>69</td><td>Pirogówka</td><td>Kotlina Orawsko-Nowotarska</td><td>650</td><td><span class="badge off">poza szlakiem</span></td><td>—</td></tr>
-              <tr><td>70</td><td>Grzebień</td><td>Kotlina Rabczańska</td><td>677</td><td><span class="badge near">blisko szlaku</span></td><td>Grzebień</td></tr>
-              <tr><td>71</td><td>Winna Góra</td><td>Kotlina Sądecka</td><td>353</td><td><span class="badge off">poza szlakiem</span></td><td>Wierzchowina</td></tr>
-              <tr><td>72</td><td>Grojec</td><td>Kotlina Żywiecka</td><td>612</td><td><span class="badge on">na szlaku</span></td><td>Grojec</td></tr>
-              <tr><td>73</td><td>Stefanka</td><td>Międzygórze Jabłonkowsko-Koniakowskie</td><td>722</td><td><span class="badge near">blisko szlaku</span></td><td>Ochodzita</td></tr>
-              <tr><td>74</td><td>Łysa Góra</td><td>Obniżenie Gorlickie</td><td>436</td><td><span class="badge near">blisko szlaku</span></td><td>Łysa Góra</td></tr>
-              <tr><td>75</td><td>Garlejów Groń</td><td>Pasma Pewelsko-Krzeszowskie</td><td>730</td><td><span class="badge on">na szlaku</span></td><td>Bąków</td></tr>
-              <tr><td>76</td><td>Żurawinka</td><td>Pogórze Bukowskie</td><td>664</td><td><span class="badge off">poza szlakiem</span></td><td>Jawornik</td></tr>
-              <tr><td>77</td><td>Liwocz</td><td>Pogórze Ciężkowickie</td><td>562</td><td><span class="badge near">blisko szlaku</span></td><td>Liwocz</td></tr>
-              <tr><td>78</td><td>Królewska Góra</td><td>Pogórze Dynowskie</td><td>564</td><td><span class="badge on">na szlaku</span></td><td>Sucha Góra</td></tr>
-              <tr><td>79</td><td>Liwocz</td><td>Pogórze Jasielskie</td><td>533</td><td><span class="badge off">poza szlakiem</span></td><td>Liwocz</td></tr>
-              <tr><td>80</td><td>Pająków Wierch</td><td>Pogórze Orawsko-Jordanowskie</td><td>934</td><td><span class="badge off">poza szlakiem</span></td><td>Kiełek</td></tr>
-              <tr><td>81</td><td>Kraczonik</td><td>Pogórze Popradzkie</td><td>936</td><td><span class="badge on">na szlaku</span></td><td>Eliaszówka</td></tr>
-              <tr><td>82</td><td>Wielka Polana</td><td>Pogórze Popradzkie</td><td>794</td><td><span class="badge off">poza szlakiem</span></td><td>Eliaszówka</td></tr>
-              <tr><td>83</td><td>Kopystańka</td><td>Pogórze Przemyskie</td><td>541</td><td><span class="badge on">na szlaku</span></td><td>Suchy Obycz</td></tr>
-              <tr><td>84</td><td>Bukowiec</td><td>Pogórze Rożnowskie</td><td>493</td><td><span class="badge on">na szlaku</span></td><td>Dąbrowska Góra</td></tr>
-              <tr><td>85</td><td>Bardo</td><td>Pogórze Strzyżowskie</td><td>534</td><td><span class="badge on">na szlaku</span></td><td>Bardo</td></tr>
-              <tr><td>86</td><td>Bucze</td><td>Pogórze Śląskie</td><td>417</td><td><span class="badge on">na szlaku</span></td><td>Jasieniowa</td></tr>
-              <tr><td>87</td><td>Barnasiówka</td><td>Pogórze Wielickie</td><td>566</td><td><span class="badge near">blisko szlaku</span></td><td>Barnasiówka</td></tr>
-              <tr><td>88</td><td>Paprotna (Paprocka)</td><td>Pogórze Wiśnickie</td><td>440</td><td><span class="badge off">poza szlakiem</span></td><td>Górki</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ── CZECHY ── -->
-      <section id="cz" class="peaks-section">
-        <h2>🇨🇿 Czechy <span class="count">(16 szczytów)</span></h2>
-        <div class="cz-layout">
-          <div id="cz-map" class="map-embed"></div>
-          <div class="table-wrap">
-          <table class="peaks-table" id="cz-peaks-table">
-            <thead>
-              <tr>
-                <th>Lp.</th>
-                <th>Szczyt</th>
-                <th>Mezoregion</th>
-                <th>Wys. (m)</th>
-                <th>Szlak</th>
-                <th>Najwyższy szczyt mezoregionu</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>Žár <a href="https://mapy.com/en/turisticka?x=18.3647803&y=49.5379817&z=15&source=coor&id=18.3647803,49.5379817" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Frenštátská brázda</td><td>630</td><td><span class="badge near">blisko szlaku</span></td><td>Žár</td></tr>
-              <tr><td>2</td><td>Čečetkov <a href="https://mapy.com/en/turisticka?x=18.0649911&y=49.2684503&z=15&source=coor&id=49.3941169,17.8487575" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Hostýnsko-vsetínská hornatina</td><td>687</td><td><span class="badge on">na szlaku</span></td><td>Vysoká</td></tr>
-              <tr><td>3</td><td>Tanečnice <a href="https://mapy.com/en/turisticka?x=18.0649911&y=49.2684503&z=15&source=coor&id=18.0649911,49.2684503" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Hostýnsko-vsetínská hornatina</td><td>736</td><td><span class="badge on">na szlaku</span></td><td>Vysoká</td></tr>
-              <tr><td>4</td><td>Komorovský Grúň <a href="https://mapy.com/en/turisticka?x=18.8171828&y=49.5339144&z=15&source=coor&id=18.8171828,49.5339144" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Jablunkovské mezihoří</td><td>733</td><td><span class="badge on">na szlaku</span></td><td>Girová</td></tr>
-              <tr><td>5</td><td>Studeničné (Studeničný) <a href="https://mapy.com/en/turisticka?x=18.7807353&y=49.5278425&z=15&source=coor&id=18.7807353,49.5278425" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Jablunkovské mezihoří</td><td>717</td><td><span class="badge near">blisko szlaku</span></td><td>Girová</td></tr>
-              <tr><td>6</td><td>Javorníček <a href="https://mapy.com/en/turisticka?x=18.3012592&y=49.3273039&z=15&source=coor&id=18.3012592,49.3273039" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Javorníky</td><td>862</td><td><span class="badge on">na szlaku</span></td><td>Malý Javorník</td></tr>
-              <tr><td>7</td><td>Huštýn <a href="https://mapy.com/en/turisticka?x=18.0723442&y=49.5159639&z=15&source=coor&id=18.0723442,49.5159639" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Moravskoslezské Beskydy</td><td>748</td><td><span class="badge on">na szlaku</span></td><td>Lysá hora</td></tr>
-              <tr><td>8</td><td>Ostrý <a href="https://mapy.com/en/turisticka?x=18.6571078&y=49.6010961&z=15&source=coor&id=18.6571078,49.6010961" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Moravskoslezské Beskydy</td><td>1044</td><td><span class="badge off">poza szlakiem</span></td><td>Lysá hora</td></tr>
-              <tr><td>9</td><td>Slavíč <a href="https://mapy.com/en/turisticka?x=18.5883575&y=49.5682342&z=15&source=coor&id=18.5883575,49.5682342" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Moravskoslezské Beskydy</td><td>1055</td><td><span class="badge off">poza szlakiem</span></td><td>Lysá hora</td></tr>
-              <tr><td>10</td><td>Smrk <a href="https://mapy.com/en/turisticka?x=18.3704911&y=49.5081531&z=15&source=coor&id=18.3704911,49.5081531" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Moravskoslezské Beskydy</td><td>1276</td><td><span class="badge on">na szlaku</span></td><td>Lysá hora</td></tr>
-              <tr><td>11</td><td>Travný <a href="https://mapy.com/en/turisticka?x=18.5069253&y=49.5616136&z=15&source=coor&id=18.5069253,49.5616136" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Moravskoslezské Beskydy</td><td>1203</td><td><span class="badge off">poza szlakiem</span></td><td>Lysá hora</td></tr>
-              <tr><td>12</td><td>Petřkovická hora <a href="https://mapy.com/en/turisticka?x=17.9637844&y=49.5445369&z=15&source=coor&id=17.9637844,49.5445369" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Podbeskydská pahorkatina</td><td>608</td><td><span class="badge on">na szlaku</span></td><td>Skalka</td></tr>
-              <tr><td>13</td><td>Skalka <a href="https://mapy.com/en/turisticka?x=18.3008600&y=49.5528039&z=15&source=coor&id=18.3008600,49.5528039" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Podbeskydská pahorkatina</td><td>964</td><td><span class="badge on">na szlaku</span></td><td>Skalka</td></tr>
-              <tr><td>14</td><td>Hradisko <a href="https://mapy.com/en/turisticka?x=18.1212639&y=49.4533828&z=15&source=coor&id=18.1212639,49.4533828" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Rožnovská brázda</td><td>522</td><td><span class="badge on">na szlaku</span></td><td>Požiska</td></tr>
-              <tr><td>15</td><td>Hrbel <a href="https://mapy.com/en/turisticka?x=18.7738078&y=49.6366097&z=15&source=coor&id=18.7738078,49.6366097" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Slezské Beskydy</td><td>727</td><td><span class="badge near">blisko szlaku</span></td><td>Velká Čantoryje</td></tr>
-              <tr><td>16</td><td>Prašivá hora <a href="https://mapy.com/en/turisticka?x=18.7332139&y=49.6572925&z=15&source=coor&id=18.7332139,49.6572925" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Slezské Beskydy</td><td>542</td><td><span class="badge on">na szlaku</span></td><td>Velká Čantoryje</td></tr>
-            </tbody>
-          </table>
-          </div><!-- /.table-wrap -->
-        </div><!-- /.cz-layout -->
-      </section>
-
-      <!-- ── SŁOWACJA ── -->
-      <section id="sk" class="peaks-section">
-        <h2>🇸🇰 Słowacja <span class="count">(27 szczytów)</span></h2>
-        <iframe
-          src="https://frame.mapy.cz/turisticka?moje-mapy&cat=mista-trasy&mid=699492e01ea2654e125f01b3&x=20.3818526&y=49.1320932&z=6"
-          class="map-embed"
-          title="Mapa szczytów – Słowacja"
-          allowfullscreen
-          loading="lazy"
-        ></iframe>
-        <div class="table-wrap">
-          <table class="peaks-table">
-            <thead>
-              <tr>
-                <th>Lp.</th>
-                <th>Szczyt</th>
-                <th>Mezoregion</th>
-                <th>Wys. (m)</th>
-                <th>Szlak</th>
-                <th>Najwyższy szczyt mezoregionu</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>Paprtný vrch (Paportny)</td><td>Beskydské predhorie</td><td>622</td><td><span class="badge on">na szlaku</span></td><td>Hôrka</td></tr>
-              <tr><td>2</td><td>Ďurkovec (Dziurkowiec)</td><td>Bukovské vrchy</td><td>1189</td><td><span class="badge on">na szlaku</span></td><td>Veľký Bukovec</td></tr>
-              <tr><td>3</td><td>Čergov</td><td>Čergov</td><td>1050</td><td><span class="badge on">na szlaku</span></td><td>Minčol</td></tr>
-              <tr><td>4</td><td>Grúň</td><td>Jablunkovské mezihoří</td><td>775</td><td><span class="badge on">na szlaku</span></td><td>Kykuľa</td></tr>
-              <tr><td>5</td><td>Marťácky vrch</td><td>Javorníky</td><td>854</td><td><span class="badge on">na szlaku</span></td><td>Veľký Javorník</td></tr>
-              <tr><td>6</td><td>Stratenec</td><td>Javorníky</td><td>1055</td><td><span class="badge on">na szlaku</span></td><td>Veľký Javorník</td></tr>
-              <tr><td>7</td><td>Ľadonhora</td><td>Kysucká vrchovina</td><td>999</td><td><span class="badge on">na szlaku</span></td><td>Pupov</td></tr>
-              <tr><td>8</td><td>Masnicova grapa</td><td>Kysucká vrchovina</td><td>901</td><td><span class="badge near">blisko szlaku</span></td><td>Pupov</td></tr>
-              <tr><td>9</td><td>Mravecník</td><td>Kysucká vrchovina</td><td>992</td><td><span class="badge on">na szlaku</span></td><td>Pupov</td></tr>
-              <tr><td>10</td><td>Pupov</td><td>Kysucká vrchovina</td><td>1096</td><td><span class="badge off">poza szlakiem</span></td><td>Pupov</td></tr>
-              <tr><td>11</td><td>Dedová</td><td>Kysucké Beskydy</td><td>959</td><td><span class="badge near">blisko szlaku</span></td><td>Veľká Rača</td></tr>
-              <tr><td>12</td><td>Hladký vrch</td><td>Kysucké Beskydy</td><td>761</td><td><span class="badge near">blisko szlaku</span></td><td>Veľká Rača</td></tr>
-              <tr><td>13</td><td>Eliášovka</td><td>Ľubovnianska vrchovina</td><td>1023</td><td><span class="badge on">na szlaku</span></td><td>Eliášovka</td></tr>
-              <tr><td>14</td><td>Široký vrch</td><td>Ľubovnianska vrchovina</td><td>885</td><td><span class="badge off">poza szlakiem</span></td><td>Eliášovka</td></tr>
-              <tr><td>15</td><td>Busov</td><td>Nízke Beskydy</td><td>1002</td><td><span class="badge on">na szlaku</span></td><td>Busov</td></tr>
-              <tr><td>16</td><td>Smilniańsky Vrch</td><td>Nízke Beskydy</td><td>750</td><td><span class="badge off">poza szlakiem</span></td><td>Busov</td></tr>
-              <tr><td>17</td><td>Stebnická Magura</td><td>Nízke Beskydy</td><td>900</td><td><span class="badge on">na szlaku</span></td><td>Busov</td></tr>
-              <tr><td>18</td><td>Haľagoš</td><td>Nízke Beskydy</td><td>642</td><td><span class="badge off">poza szlakiem</span></td><td>Busov</td></tr>
-              <tr><td>19</td><td>Budín</td><td>Oravská Magura</td><td>1221</td><td><span class="badge on">na szlaku</span></td><td>Minčol</td></tr>
-              <tr><td>20</td><td>Kubínska hoľa</td><td>Oravská Magura</td><td>1347</td><td><span class="badge on">na szlaku</span></td><td>Minčol</td></tr>
-              <tr><td>21</td><td>Paráč</td><td>Oravská Magura</td><td>1325</td><td><span class="badge off">poza szlakiem</span></td><td>Minčol</td></tr>
-              <tr><td>22</td><td>Surov</td><td>Oravská Magura</td><td>902</td><td><span class="badge near">blisko szlaku</span></td><td>Minčol</td></tr>
-              <tr><td>23</td><td>Borsučie</td><td>Oravské Beskydy</td><td>1004</td><td><span class="badge off">poza szlakiem</span></td><td>Babia hora</td></tr>
-              <tr><td>24</td><td>Dudová</td><td>Oravské Beskydy</td><td>1095</td><td><span class="badge on">na szlaku</span></td><td>Babia hora</td></tr>
-              <tr><td>25</td><td>Mechy</td><td>Oravské Beskydy</td><td>1485</td><td><span class="badge off">poza szlakiem</span></td><td>Babia hora</td></tr>
-              <tr><td>26</td><td>Sihelniansky hrádok</td><td>Podbeskydská brázda</td><td>993</td><td><span class="badge off">poza szlakiem</span></td><td>Sihelniansky hrádok</td></tr>
-              <tr><td>27</td><td>Vráta</td><td>Podbeskydská vrchovina</td><td>1051</td><td><span class="badge off">poza szlakiem</span></td><td>Vráta</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ── UKRAINA ── -->
-      <section id="ua" class="peaks-section">
-        <h2>🇺🇦 Ukraina <span class="count">(19 szczytów)</span></h2>
-        <iframe
-          src="https://frame.mapy.cz/turisticka?moje-mapy&cat=mista-trasy&mid=6993fa305130fd04d5fe329c&x=24.0008423&y=48.5866399&z=7"
-          class="map-embed"
-          title="Mapa szczytów – Ukraina"
-          allowfullscreen
-          loading="lazy"
-        ></iframe>
+      <!-- ── MAPA + TABELA ── -->
+      <section id="szczyty" class="peaks-section">
         <p class="ua-note">
-          ⚠️ Zdobywanie szczytów leżących na terenie kraju objętego trwającymi działaniami
+          ⚠️ Zdobywanie szczytów leżących na terenie Ukrainy objętej trwającymi działaniami
           wojennymi nie jest obowiązkowe, a autorzy projektu odradzają podejmowanie takiej
           aktywności.
         </p>
-        <div class="table-wrap">
-          <table class="peaks-table">
-            <thead>
-              <tr>
-                <th>Lp.</th>
-                <th>Szczyt</th>
-                <th>Mezoregion</th>
-                <th>Wys. (m)</th>
-                <th>Szlak</th>
-                <th>Najwyższy szczyt mezoregionu</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>1</td><td>Ciuchowy dział (Цюхів Діл)</td><td>Beskidy Brzeżne</td><td>939</td><td><span class="badge on">na szlaku</span></td><td>Ciuchowy dział</td></tr>
-              <tr><td>2</td><td>Kinashka (Кінашка)</td><td>Beskidy Pokucko-Bukowińskie</td><td>1081</td><td><span class="badge on">na szlaku</span></td><td>Rotyło</td></tr>
-              <tr><td>3</td><td>Rotyło (Ротило)</td><td>Beskidy Pokucko-Bukowińskie</td><td>1483</td><td><span class="badge on">na szlaku</span></td><td>Rotyło</td></tr>
-              <tr><td>4</td><td>Behar (Бегар)</td><td>Bieszczady Wschodnie</td><td>1280</td><td><span class="badge near">blisko szlaku</span></td><td>Pikuj</td></tr>
-              <tr><td>5</td><td>Menchul (Менчул)</td><td>Bieszczady Wschodnie</td><td>1247</td><td><span class="badge on">na szlaku</span></td><td>Pikuj</td></tr>
-              <tr><td>6</td><td>Paraszka (Парашка)</td><td>Bieszczady Wschodnie</td><td>1268</td><td><span class="badge on">na szlaku</span></td><td>Pikuj</td></tr>
-              <tr><td>7</td><td>Pikuj (Пікуй)</td><td>Bieszczady Wschodnie</td><td>1408</td><td><span class="badge on">na szlaku</span></td><td>Pikuj</td></tr>
-              <tr><td>8</td><td>Howerla (Говерла)</td><td>Czarnohora</td><td>2061</td><td><span class="badge on">na szlaku</span></td><td>Howerla</td></tr>
-              <tr><td>9</td><td>Pop Iwan (Чорна Гора)</td><td>Czarnohora</td><td>2028</td><td><span class="badge on">na szlaku</span></td><td>Howerla</td></tr>
-              <tr><td>10</td><td>Gorgan (Ґорґан)</td><td>Gorgany</td><td>1579</td><td><span class="badge near">blisko szlaku</span></td><td>Wielka Sywula</td></tr>
-              <tr><td>11</td><td>Wielka Sywula (Велика Сивуля)</td><td>Gorgany</td><td>1836</td><td><span class="badge on">na szlaku</span></td><td>Wielka Sywula</td></tr>
-              <tr><td>12</td><td>Magura Łomniańska (Маґура-Лімнянська)</td><td>Góry Sanocko-Turczańskie</td><td>1022</td><td><span class="badge on">na szlaku</span></td><td>Magura Łomniańska</td></tr>
-              <tr><td>13</td><td>Plaj (Плай)</td><td>Połonina Borżawa</td><td>1323</td><td><span class="badge on">na szlaku</span></td><td>Stij</td></tr>
-              <tr><td>14</td><td>Stij (Стій)</td><td>Połonina Borżawa</td><td>1681</td><td><span class="badge on">na szlaku</span></td><td>Stij</td></tr>
-              <tr><td>15</td><td>Ruża (Ружа)</td><td>Połonina Krasna</td><td>1568</td><td><span class="badge on">na szlaku</span></td><td>Syhłański</td></tr>
-              <tr><td>16</td><td>Połonina Równa (Полонина Рівна)</td><td>Połonina Równa</td><td>1480</td><td><span class="badge near">blisko szlaku</span></td><td>Połonina Równa</td></tr>
-              <tr><td>17</td><td>Hala Michajłowa (Галя Михайлова)</td><td>Połoniny Hryniawskie</td><td>1605</td><td><span class="badge off">poza szlakiem</span></td><td>Baba Ludowa</td></tr>
-              <tr><td>18</td><td>Apećka (Апецька)</td><td>Świdowiec</td><td>1512</td><td><span class="badge off">poza szlakiem</span></td><td>Bliźnica</td></tr>
-              <tr><td>19</td><td>Bliźnica (Близниця)</td><td>Świdowiec</td><td>1881</td><td><span class="badge on">na szlaku</span></td><td>Bliźnica</td></tr>
-            </tbody>
-          </table>
-        </div>
+
+        <div class="peaks-layout">
+
+          <!-- Left: sticky Leaflet map -->
+          <div id="peaks-map" class="map-embed"></div>
+
+          <!-- Right: unified table -->
+          <div class="table-wrap">
+            <table class="peaks-table" id="peaks-table">
+              <thead>
+                <tr>
+                  <th>Lp.</th>
+                  <th>Kraj</th>
+                  <th>Szczyt</th>
+                  <th>Mezoregion</th>
+                  <th>Wys.&nbsp;(m)</th>
+                  <th>Szlak</th>
+                  <th>Najwyższy szczyt mezoregionu</th>
+                </tr>
+              </thead>
+              <tbody>
+                {peaks.map(peak => (
+                  <tr data-peak-id={peak.lat !== null ? String(peak.id) : undefined}>
+                    <td>{peak.lp}</td>
+                    <td class="td-flag">{flag[peak.country]}</td>
+                    <td>
+                      {peak.name}
+                      {peak.lat !== null && (
+                        <a
+                          href={`https://mapy.com/en/turisticka?x=${peak.lng}&y=${peak.lat}&z=15&source=coor&id=${peak.lng},${peak.lat}`}
+                          class="map-link"
+                          target="_blank"
+                          rel="noopener"
+                          title="Pokaż na mapie"
+                        >📍</a>
+                      )}
+                    </td>
+                    <td>{peak.region}</td>
+                    <td>{peak.height}</td>
+                    <td><span class={`badge ${peak.trail}`}>{trailLabel[peak.trail]}</span></td>
+                    <td>{peak.highestInRegion}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div><!-- /.table-wrap -->
+
+        </div><!-- /.peaks-layout -->
       </section>
 
     </div>
   </div>
 
-<!-- Leaflet CSS injected into <head> via Layout slot -->
-<link
-  slot="head"
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
-
 </Layout>
 
+<!-- Peak coordinates for Leaflet (only peaks that have coords) -->
+<script id="peaks-data" type="application/json" set:html={coordsJson}></script>
+
+<!-- Leaflet JS (CDN, synchronous) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script is:inline>
+  function initMap() {
+    var el = document.getElementById('peaks-map');
+    if (!el || typeof L === 'undefined') return;
+
+    var rawData = document.getElementById('peaks-data');
+    if (!rawData) return;
+    var peaks = JSON.parse(rawData.textContent || '[]');
+
+    var map = L.map('peaks-map');
+
+    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      attribution:
+        'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+        '<a href="http://viewfinderpanoramas.org">SRTM</a> | ' +
+        'Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    }).addTo(map);
+
+    function makeIcon(color, size) {
+      return L.divIcon({
+        className: '',
+        html:
+          '<div style="width:' + size + 'px;height:' + size + 'px;' +
+          'background:' + color + ';border:2px solid #fff;border-radius:50%;' +
+          'box-shadow:0 2px 5px rgba(0,0,0,.45)"></div>',
+        iconSize:    [size, size],
+        iconAnchor:  [size / 2, size / 2],
+        popupAnchor: [0, -(size / 2 + 4)],
+      });
+    }
+
+    var normalIcon = makeIcon('#358dc2', 12);
+    var activeIcon = makeIcon('#e74c3c', 18);
+
+    var markerById = {};
+    var peakById   = {};
+
+    peaks.forEach(function (peak) {
+      peakById[peak.id] = peak;
+      markerById[peak.id] = L.marker([peak.lat, peak.lng], { icon: normalIcon })
+        .addTo(map)
+        .bindPopup('<strong>' + peak.name + '</strong>');
+    });
+
+    // Fit map to all markers, or fall back to Beskydy centre
+    var allMarkers = Object.values(markerById);
+    if (allMarkers.length > 0) {
+      map.fitBounds(L.featureGroup(allMarkers).getBounds().pad(0.15));
+    } else {
+      map.setView([49.47, 18.35], 8);
+    }
+
+    // Table-row ↔ marker interaction
+    var activeId = null;
+    var rows = document.querySelectorAll('#peaks-table tbody tr[data-peak-id]');
+
+    rows.forEach(function (row) {
+      var id = parseInt(row.dataset.peakId, 10);
+
+      // Hover preview (desktop)
+      row.addEventListener('mouseenter', function () {
+        if (activeId === id) return;
+        if (markerById[id]) {
+          markerById[id].setIcon(activeIcon);
+          markerById[id].openPopup();
+          map.panTo([peakById[id].lat, peakById[id].lng], { animate: true, duration: 0.3 });
+        }
+      });
+      row.addEventListener('mouseleave', function () {
+        if (activeId === id) return;
+        if (markerById[id]) {
+          markerById[id].setIcon(normalIcon);
+          markerById[id].closePopup();
+        }
+      });
+
+      // Click / tap — lock / unlock selection
+      row.addEventListener('click', function () {
+        var prev = activeId;
+        if (prev !== null && markerById[prev]) {
+          markerById[prev].setIcon(normalIcon);
+          markerById[prev].closePopup();
+          var prevRow = document.querySelector('#peaks-table tbody tr[data-peak-id="' + prev + '"]');
+          if (prevRow) prevRow.classList.remove('row-active');
+        }
+        if (prev === id) {
+          activeId = null;
+        } else {
+          activeId = id;
+          if (markerById[id]) {
+            markerById[id].setIcon(activeIcon);
+            markerById[id].openPopup();
+            map.panTo([peakById[id].lat, peakById[id].lng], { animate: true, duration: 0.3 });
+          }
+          row.classList.add('row-active');
+        }
+      });
+    });
+  }
+
+  if (document.readyState !== 'loading') {
+    initMap();
+  } else {
+    document.addEventListener('DOMContentLoaded', initMap);
+  }
+</script>
+
 <style>
-  /* Section quick-nav */
-  .section-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .6rem;
-    margin-bottom: 2.5rem;
-  }
-  .section-nav a {
-    background: var(--clr-accent);
-    color: #fff;
-    padding: .35rem .9rem;
-    border-radius: 20px;
-    text-decoration: none;
-    font-size: .85rem;
-    font-weight: 600;
-    transition: background .2s;
-  }
-  .section-nav a:hover { background: var(--clr-accent-lt); }
-
-  /* Sections */
-  .peaks-section {
-    margin-bottom: 3.5rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid var(--clr-border);
-  }
-  .peaks-section:first-of-type { border-top: none; }
-  .peaks-section h2 { font-size: 1.6rem; margin-bottom: .8rem; }
-  .peaks-section p  { color: var(--clr-muted); margin-bottom: 1.1rem; line-height: 1.8; }
-  .count { font-size: 1rem; font-weight: 400; color: var(--clr-muted); }
-
-  /* Czech side-by-side layout */
-  .cz-layout {
+  /* ── Layout: map left + table right ── */
+  .peaks-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 3fr;
     gap: 1rem;
     align-items: start;
   }
-  .cz-layout #cz-map {
+  .peaks-layout #peaks-map {
     margin: 0;
-    height: 500px;
+    height: 560px;
     position: sticky;
-    top: 68px; /* below the 60px sticky nav */
+    top: 68px;
   }
-  .cz-layout .table-wrap { overflow-x: auto; }
-
-  /* Active row (tap/click selection) */
-  #cz-peaks-table tbody tr { cursor: pointer; }
-  #cz-peaks-table tbody tr.row-active {
-    background: #afd4ec !important;
-    outline: 2px solid #358dc2;
-    outline-offset: -2px;
-  }
+  .peaks-layout .table-wrap { overflow-x: auto; }
 
   @media (max-width: 900px) {
-    .cz-layout {
+    .peaks-layout {
       grid-template-columns: 1fr;
     }
-    .cz-layout #cz-map {
+    .peaks-layout #peaks-map {
       position: static;
       height: 280px;
     }
   }
 
-  /* Peak map links */
-  .map-link {
-    font-size: .85em;
-    text-decoration: none;
-    opacity: .6;
-    margin-left: .25em;
-    vertical-align: middle;
-    transition: opacity .15s;
+  /* ── Sections ── */
+  .peaks-section {
+    margin-bottom: 3rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--clr-border);
   }
-  .map-link:hover { opacity: 1; }
+  .peaks-section--first { border-top: none; }
+  .peaks-section h2  { font-size: 1.6rem; margin-bottom: .8rem; }
+  .peaks-section p   { color: var(--clr-muted); margin-bottom: 1.1rem; line-height: 1.8; }
 
-  /* Embedded map */
-  .map-embed {
-    display: block;
-    width: 100%;
-    height: 420px;
-    border: 1px solid var(--clr-border);
-    border-radius: 8px;
-    margin: .6rem 0 1.2rem;
-  }
-
-  /* QR codes */
-  .qr-code {
-    display: block;
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    margin: .6rem 0 1rem;
-    border-radius: 6px;
-    border: 1px solid var(--clr-border);
-  }
-
-  /* Levels grid */
+  /* ── Levels grid ── */
   .levels-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -447,7 +304,7 @@ import Layout from '../../layouts/Layout.astro';
   .level-name   { font-weight: 700; font-size: .95rem; }
   .level-req    { font-size: .85rem; color: var(--clr-muted); }
 
-  /* Trail legend */
+  /* ── Trail legend ── */
   .trail-legend {
     display: flex;
     align-items: center;
@@ -458,7 +315,7 @@ import Layout from '../../layouts/Layout.astro';
     color: var(--clr-muted);
   }
 
-  /* Trail access badges */
+  /* ── Trail badges ── */
   .badge {
     display: inline-block;
     padding: .15rem .55rem;
@@ -471,7 +328,7 @@ import Layout from '../../layouts/Layout.astro';
   .badge.near { background: #fff3cd; color: #856404; }
   .badge.off  { background: #f8d7da; color: #721c24; }
 
-  /* Ukraine warning */
+  /* ── Ukraine warning ── */
   .ua-note {
     background: #fff3cd;
     border: 1px solid #ffc107;
@@ -482,13 +339,34 @@ import Layout from '../../layouts/Layout.astro';
     margin-bottom: 1.2rem;
   }
 
-  /* Table */
+  /* ── Map embed container ── */
+  .map-embed {
+    display: block;
+    width: 100%;
+    height: 420px;
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+    margin: .6rem 0 1.2rem;
+  }
+
+  /* ── Map pin links ── */
+  .map-link {
+    font-size: .85em;
+    text-decoration: none;
+    opacity: .6;
+    margin-left: .25em;
+    vertical-align: middle;
+    transition: opacity .15s;
+  }
+  .map-link:hover { opacity: 1; }
+
+  /* ── Table ── */
   .table-wrap { overflow-x: auto; }
   .peaks-table {
     width: 100%;
     border-collapse: collapse;
     font-size: .85rem;
-    min-width: 600px;
+    min-width: 620px;
   }
   .peaks-table th {
     background: var(--clr-accent);
@@ -504,117 +382,19 @@ import Layout from '../../layouts/Layout.astro';
     vertical-align: middle;
   }
   .peaks-table tbody tr:nth-child(even) { background: #f0f7fc; }
-  .peaks-table tbody tr:hover { background: #d4eaf6; }
+  .peaks-table tbody tr:hover           { background: #d4eaf6; }
   .peaks-table td:first-child { text-align: center; color: var(--clr-muted); width: 2.5rem; }
+  .td-flag { text-align: center !important; font-size: 1.1em; width: 2rem; }
+
+  /* Active row (tap/click on mobile) */
+  #peaks-table tbody tr[data-peak-id] { cursor: pointer; }
+  #peaks-table tbody tr.row-active {
+    background: #afd4ec !important;
+    outline: 2px solid #358dc2;
+    outline-offset: -2px;
+  }
 
   @media (max-width: 640px) {
     .levels-grid { grid-template-columns: 1fr; }
   }
 </style>
-
-<!-- Leaflet JS (CDN, synchronous so L is ready before the init script) -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-<script is:inline>
-  function initCzMap() {
-    var el = document.getElementById('cz-map');
-    if (!el || typeof L === 'undefined') return;
-
-    var peaks = [
-      { name: 'Žár',               lat: 49.5379817, lng: 18.3647803 },
-      { name: 'Čečetkov',          lat: 49.2684503, lng: 18.0649911 },
-      { name: 'Tanečnice',         lat: 49.2684503, lng: 18.0649911 },
-      { name: 'Komorovský Grúň',   lat: 49.5339144, lng: 18.8171828 },
-      { name: 'Studeničné',        lat: 49.5278425, lng: 18.7807353 },
-      { name: 'Javorníček',        lat: 49.3273039, lng: 18.3012592 },
-      { name: 'Huštýn',            lat: 49.5159639, lng: 18.0723442 },
-      { name: 'Ostrý',             lat: 49.6010961, lng: 18.6571078 },
-      { name: 'Slavíč',            lat: 49.5682342, lng: 18.5883575 },
-      { name: 'Smrk',              lat: 49.5081531, lng: 18.3704911 },
-      { name: 'Travný',            lat: 49.5616136, lng: 18.5069253 },
-      { name: 'Petřkovická hora',  lat: 49.5445369, lng: 17.9637844 },
-      { name: 'Skalka',            lat: 49.5528039, lng: 18.3008600 },
-      { name: 'Hradisko',          lat: 49.4533828, lng: 18.1212639 },
-      { name: 'Hrbel',             lat: 49.6366097, lng: 18.7738078 },
-      { name: 'Prašivá hora',      lat: 49.6572925, lng: 18.7332139 },
-    ];
-
-    var map = L.map('cz-map').setView([49.47, 18.35], 9);
-
-    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-      maxZoom: 17,
-      attribution:
-        'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-        '<a href="http://viewfinderpanoramas.org">SRTM</a> | ' +
-        'Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
-    }).addTo(map);
-
-    function makeIcon(color, size) {
-      return L.divIcon({
-        className: '',
-        html:
-          '<div style="width:' + size + 'px;height:' + size + 'px;' +
-          'background:' + color + ';border:2px solid #fff;border-radius:50%;' +
-          'box-shadow:0 2px 5px rgba(0,0,0,.45)"></div>',
-        iconSize:   [size, size],
-        iconAnchor: [size / 2, size / 2],
-        popupAnchor:[0, -(size / 2 + 4)],
-      });
-    }
-
-    var normalIcon = makeIcon('#358dc2', 12);
-    var activeIcon = makeIcon('#e74c3c', 18);
-
-    var markers = peaks.map(function (peak) {
-      return L.marker([peak.lat, peak.lng], { icon: normalIcon })
-        .addTo(map)
-        .bindPopup('<strong>' + peak.name + '</strong>');
-    });
-
-    var activeIdx = -1;
-    var rows = document.querySelectorAll('#cz-peaks-table tbody tr');
-
-    rows.forEach(function (row, i) {
-      // Hover preview — desktop only, skipped when a row is locked
-      row.addEventListener('mouseenter', function () {
-        if (activeIdx === i) return;
-        markers[i].setIcon(activeIcon);
-        markers[i].openPopup();
-        map.panTo([peaks[i].lat, peaks[i].lng], { animate: true, duration: 0.3 });
-      });
-      row.addEventListener('mouseleave', function () {
-        if (activeIdx === i) return; // keep locked state
-        markers[i].setIcon(normalIcon);
-        markers[i].closePopup();
-      });
-
-      // Click / tap — select or deselect a peak (works on both desktop and mobile)
-      row.addEventListener('click', function () {
-        var prev = activeIdx;
-        // Clear previous selection
-        if (prev !== -1) {
-          markers[prev].setIcon(normalIcon);
-          markers[prev].closePopup();
-          rows[prev].classList.remove('row-active');
-        }
-        if (prev === i) {
-          // Tap same row again → deselect
-          activeIdx = -1;
-        } else {
-          // New selection
-          activeIdx = i;
-          markers[i].setIcon(activeIcon);
-          markers[i].openPopup();
-          map.panTo([peaks[i].lat, peaks[i].lng], { animate: true, duration: 0.3 });
-          row.classList.add('row-active');
-        }
-      });
-    });
-  }
-
-  if (document.readyState !== 'loading') {
-    initCzMap();
-  } else {
-    document.addEventListener('DOMContentLoaded', initCzMap);
-  }
-</script>
