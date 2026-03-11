@@ -9,8 +9,8 @@ import Layout from '../layouts/Layout.astro';
     <div class="container">
       <div class="hero-inner">
         <div class="hero-text">
-          <p class="hero-label">Nowość wydawnicza</p>
-          <h1>[TYTUŁ KSIĄŻKI]</h1>
+          <p class="hero-label">Nowy projekt górski</p>
+          <h1>Książeczka odznaki Beskidzki Włóczykij</h1>
           <p class="hero-sub">[PLACEHOLDER: jedno zdanie — o czym jest książka, co wyróżnia, dla kogo.]</p>
           <div class="hero-cta">
             <a href="/wl_beskidzki/przystap" class="btn">Przystąp teraz</a>
@@ -52,6 +52,16 @@ import Layout from '../layouts/Layout.astro';
         <p>&#8222;[PLACEHOLDER: cytat z książki lub recenzji — maksymalnie 2–3 zdania]&#8221;</p>
         <cite>— [Imię i nazwisko recenzenta / tytuł recenzji]</cite>
       </blockquote>
+    </div>
+  </section>
+
+  <!-- Patron strip -->
+  <section class="patron-strip content-section">
+    <div class="container">
+      <p class="patron-label">Patron Projektu</p>
+      <a href="https://www.pttk.pl" target="_blank" rel="noopener">
+        <img src="/wl_beskidzki/img/logo-pttk.png" alt="PTTK — Polskie Towarzystwo Turystyczno-Krajoznawcze" class="patron-logo" />
+      </a>
     </div>
   </section>
 
@@ -124,6 +134,23 @@ import Layout from '../layouts/Layout.astro';
   }
   blockquote p    { margin-bottom: .6rem; }
   blockquote cite { font-style: normal; font-size: .9rem; color: var(--clr-muted); }
+
+  /* Patron strip */
+  .patron-strip { text-align: center; padding: 2.5rem 0; }
+  .patron-label {
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-size: .75rem;
+    color: var(--clr-muted);
+    margin-bottom: 1rem;
+  }
+  .patron-logo {
+    height: 60px;
+    width: auto;
+    opacity: .85;
+    transition: opacity .2s;
+  }
+  .patron-logo:hover { opacity: 1; }
 
   /* CTA banner */
   .cta-banner {

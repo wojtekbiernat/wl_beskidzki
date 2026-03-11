@@ -108,7 +108,13 @@ const nav: NavItem[] = [
 
     <footer>
       <div class="container">
-        <p>&copy; {new Date().getFullYear()} Beskidzki Włóczykij. Wszelkie prawa zastrzeżone.</p>
+        <div class="footer-patron">
+          <span class="footer-patron-label">Patron Projektu</span>
+          <a href="https://www.pttk.pl" target="_blank" rel="noopener">
+            <img src={url('/img/logo-pttk.png')} alt="PTTK" class="footer-patron-logo" />
+          </a>
+        </div>
+        <p class="footer-copy">&copy; {new Date().getFullYear()} Beskidzki Włóczykij. Wszelkie prawa zastrzeżone.</p>
       </div>
     </footer>
   </body>
@@ -314,11 +320,33 @@ const nav: NavItem[] = [
   footer {
     background: var(--clr-accent);
     color: rgba(255,255,255,.7);
-    padding: 1.2rem 0;
+    padding: 1.5rem 0 1.2rem;
     text-align: center;
     font-size: .875rem;
     margin-top: 4rem;
   }
+  .footer-patron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .8rem;
+    margin-bottom: .9rem;
+  }
+  .footer-patron-label {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: .7rem;
+    opacity: .7;
+  }
+  .footer-patron-logo {
+    height: 28px;
+    width: auto;
+    opacity: .85;
+    filter: brightness(0) invert(1);
+    transition: opacity .2s;
+  }
+  .footer-patron-logo:hover { opacity: 1; }
+  .footer-copy { opacity: .7; font-size: .8rem; }
 
   /* ── Shared helpers ── */
   h1, h2, h3 { font-family: var(--font-serif); line-height: 1.25; }
