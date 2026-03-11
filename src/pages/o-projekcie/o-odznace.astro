@@ -17,22 +17,49 @@ import Layout from '../../layouts/Layout.astro';
   <div class="content-section">
     <div class="container content-body">
 
-      <h2>Czym jest Odznaka?</h2>
       <p>
-        [PLACEHOLDER: Opis odznaki — skąd pochodzi pomysł, co symbolizuje, jakie ma znaczenie
-        dla miłośników Beskidów.]
+        Beskidy to góry długich wędrówek, spokojnych grzbietów i ścieżek prowadzących z dala od
+        tłumów. To pasma, w których liczy się nie tylko zdobywanie najwyższych szczytów, ale
+        przede wszystkim droga, rytm marszu i uważne poznawanie krajobrazu, historii oraz
+        przyrody. Właśnie z tej potrzeby wędrowania poza utartymi schematami narodził się
+        „Beskidzki Włóczykij".
       </p>
 
-      <h2>Historia projektu</h2>
       <p>
-        [PLACEHOLDER: Krótka historia powstania projektu — kiedy i przez kogo został założony,
-        jak się rozwijał.]
+        Projekt ma charakter autorski i powstał w oparciu o wieloletnie doświadczenia terenowe,
+        liczne wędrówki oraz szczegółową analizę pasm beskidzkich. Dobór szczytów poprzedziły
+        dziesiątki kilometrów przebytych na szlakach i bezdrożach, a także studia nad
+        regionalizacją fizycznogeograficzną i dostępnością terenu. Dzięki temu zestawienie nie
+        jest przypadkowe, lecz stanowi świadomą propozycję wędrowania po Beskidach z dala od
+        najbardziej uczęszczanych tras.
       </p>
 
-      <h2>Cel i misja</h2>
       <p>
-        [PLACEHOLDER: Jaki jest główny cel projektu — promowanie turystyki górskiej, zachowanie
-        tradycji, integracja środowiska turystów.]
+        Odznaka skierowana jest do tych, którzy w górach szukają ciszy, przestrzeni
+        i autentyczności. Do turystów, którzy chętnie zboczą z głównego szlaku, by odkryć mniej
+        znane wierzchołki, zapomniane grzbiety i miejsca, gdzie Beskidy pokazują swoje
+        najbardziej naturalne oblicze. To propozycja dla wędrowców ciekawych świata, gotowych na
+        dłuższe trasy i świadome poznawanie górskiego pogranicza kultur.
+      </p>
+
+      <p>
+        „Beskidzki Włóczykij" obejmuje szczyty położone w Beskidach Polski, Czech, Słowacji oraz
+        Ukrainy, ukazując ich niezwykłą różnorodność — od łagodnych pasm zachodnich po dzikie,
+        lesiste grzbiety wschodniej części Karpat. Zestawienie szczytów obejmuje miejsca często
+        pomijane w klasycznych zestawieniach, a jednocześnie warte uwagi ze względu na swoje
+        walory krajobrazowe, historyczne i przyrodnicze.
+      </p>
+
+      <blockquote>
+        Niech ta książeczka stanie się nie tylko dokumentem potwierdzającym zdobycie odznaki,
+        ale również osobistym dziennikiem wędrówek — zapisem spotkań z Beskidami widzianymi
+        z mniej oczywistej perspektywy. Każdy wpis to kolejny krok na górskiej ścieżce, każda
+        pieczątka lub fotografia to fragment większej opowieści o wędrowaniu bez pośpiechu.
+      </blockquote>
+
+      <p class="closing">
+        Życzymy wielu bezpiecznych tras, dobrych decyzji na szlaku i satysfakcji płynącej
+        z odkrywania Beskidów w duchu prawdziwego włóczykija.
       </p>
 
     </div>
@@ -42,6 +69,20 @@ import Layout from '../../layouts/Layout.astro';
 
 <style>
   .content-body { max-width: 720px; }
-  .content-body h2 { margin: 2rem 0 .7rem; font-size: 1.4rem; }
-  .content-body p  { color: var(--clr-muted); margin-bottom: 1rem; }
+  .content-body p {
+    color: var(--clr-muted);
+    margin-bottom: 1.4rem;
+    font-size: 1.02rem;
+    line-height: 1.8;
+  }
+  blockquote {
+    border-left: 4px solid var(--clr-accent-lt);
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    background: #e4f3fa;
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    line-height: 1.8;
+  }
+  .closing { font-weight: 600; color: var(--clr-accent) !important; }
 </style>
