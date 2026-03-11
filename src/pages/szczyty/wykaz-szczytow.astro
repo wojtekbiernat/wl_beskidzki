@@ -173,6 +173,55 @@ const coordsJson = JSON.stringify(
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script is:inline>
+  // ── Shared map state (accessed by both initMap and initFilters) ────────────
+  var _map        = null;
+  var _markerById = {};
+  var _peakById   = {};
+  var _normalIcon = null;
+  var _activeIcon = null;
+  var _activeId   = null;
+
+  function makeIcon(color, size) {
+    return L.divIcon({
+      className: '',
+      html:
+        '<div style="width:' + size + 'px;height:' + size + 'px;' +
+        'background:' + color + ';border:2px solid #fff;border-radius:50%;' +
+        'box-shadow:0 2px 5px rgba(0,0,0,.45)"></div>',
+      iconSize:    [size, size],
+      iconAnchor:  [size / 2, size / 2],
+      popupAnchor: [0, -(size / 2 + 4)],
+    });
+  }
+
+  // Show/hide markers to match filter, then zoom map to visible ones
+  function updateMapView(visibleIds) {
+    if (!_map) return;
+    var visibleMarkers = [];
+    Object.keys(_markerById).forEach(function (idStr) {
+      var id = parseInt(idStr, 10);
+      var marker = _markerById[id];
+      if (visibleIds.has(id)) {
+        if (!_map.hasLayer(marker)) marker.addTo(_map);
+        visibleMarkers.push(marker);
+      } else {
+        // If the hidden marker was active, clear that state
+        if (_activeId === id) {
+          _activeId = null;
+          marker.setIcon(_normalIcon);
+          marker.closePopup();
+          var row = document.querySelector('#peaks-table tbody tr[data-peak-id="' + id + '"]');
+          if (row) row.classList.remove('row-active');
+        }
+        if (_map.hasLayer(marker)) marker.remove();
+      }
+    });
+    if (visibleMarkers.length > 0) {
+      _map.fitBounds(L.featureGroup(visibleMarkers).getBounds().pad(0.15));
+    }
+  }
+
+  // ── Map init ───────────────────────────────────────────────────────────────
   function initMap() {
     var el = document.getElementById('peaks-map');
     if (!el || typeof L === 'undefined') return;
@@ -181,7 +230,7 @@ const coordsJson = JSON.stringify(
     if (!rawData) return;
     var peaks = JSON.parse(rawData.textContent || '[]');
 
-    var map = L.map('peaks-map');
+    _map = L.map('peaks-map');
 
     L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
       maxZoom: 17,
@@ -189,83 +238,65 @@ const coordsJson = JSON.stringify(
         'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
         '<a href="http://viewfinderpanoramas.org">SRTM</a> | ' +
         'Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
-    }).addTo(map);
+    }).addTo(_map);
 
-    function makeIcon(color, size) {
-      return L.divIcon({
-        className: '',
-        html:
-          '<div style="width:' + size + 'px;height:' + size + 'px;' +
-          'background:' + color + ';border:2px solid #fff;border-radius:50%;' +
-          'box-shadow:0 2px 5px rgba(0,0,0,.45)"></div>',
-        iconSize:    [size, size],
-        iconAnchor:  [size / 2, size / 2],
-        popupAnchor: [0, -(size / 2 + 4)],
-      });
-    }
-
-    var normalIcon = makeIcon('#358dc2', 12);
-    var activeIcon = makeIcon('#e74c3c', 18);
-
-    var markerById = {};
-    var peakById   = {};
+    _normalIcon = makeIcon('#358dc2', 12);
+    _activeIcon = makeIcon('#e74c3c', 18);
 
     peaks.forEach(function (peak) {
-      peakById[peak.id] = peak;
-      markerById[peak.id] = L.marker([peak.lat, peak.lng], { icon: normalIcon })
-        .addTo(map)
+      _peakById[peak.id] = peak;
+      _markerById[peak.id] = L.marker([peak.lat, peak.lng], { icon: _normalIcon })
+        .addTo(_map)
         .bindPopup('<strong>' + peak.name + '</strong>');
     });
 
-    // Fit map to all markers, or fall back to Beskydy centre
-    var allMarkers = Object.values(markerById);
+    // Fit map to all markers initially
+    var allMarkers = Object.values(_markerById);
     if (allMarkers.length > 0) {
-      map.fitBounds(L.featureGroup(allMarkers).getBounds().pad(0.15));
+      _map.fitBounds(L.featureGroup(allMarkers).getBounds().pad(0.15));
     } else {
-      map.setView([49.47, 18.35], 8);
+      _map.setView([49.47, 18.35], 8);
     }
 
     // Table-row ↔ marker interaction
-    var activeId = null;
     var rows = document.querySelectorAll('#peaks-table tbody tr[data-peak-id]');
-
     rows.forEach(function (row) {
       var id = parseInt(row.dataset.peakId, 10);
 
       // Hover preview (desktop)
       row.addEventListener('mouseenter', function () {
-        if (activeId === id) return;
-        if (markerById[id]) {
-          markerById[id].setIcon(activeIcon);
-          markerById[id].openPopup();
-          map.panTo([peakById[id].lat, peakById[id].lng], { animate: true, duration: 0.3 });
+        if (_activeId === id) return;
+        if (_markerById[id] && _map.hasLayer(_markerById[id])) {
+          _markerById[id].setIcon(_activeIcon);
+          _markerById[id].openPopup();
+          _map.panTo([_peakById[id].lat, _peakById[id].lng], { animate: true, duration: 0.3 });
         }
       });
       row.addEventListener('mouseleave', function () {
-        if (activeId === id) return;
-        if (markerById[id]) {
-          markerById[id].setIcon(normalIcon);
-          markerById[id].closePopup();
+        if (_activeId === id) return;
+        if (_markerById[id]) {
+          _markerById[id].setIcon(_normalIcon);
+          _markerById[id].closePopup();
         }
       });
 
       // Click / tap — lock / unlock selection
       row.addEventListener('click', function () {
-        var prev = activeId;
-        if (prev !== null && markerById[prev]) {
-          markerById[prev].setIcon(normalIcon);
-          markerById[prev].closePopup();
+        var prev = _activeId;
+        if (prev !== null && _markerById[prev]) {
+          _markerById[prev].setIcon(_normalIcon);
+          _markerById[prev].closePopup();
           var prevRow = document.querySelector('#peaks-table tbody tr[data-peak-id="' + prev + '"]');
           if (prevRow) prevRow.classList.remove('row-active');
         }
         if (prev === id) {
-          activeId = null;
+          _activeId = null;
         } else {
-          activeId = id;
-          if (markerById[id]) {
-            markerById[id].setIcon(activeIcon);
-            markerById[id].openPopup();
-            map.panTo([peakById[id].lat, peakById[id].lng], { animate: true, duration: 0.3 });
+          _activeId = id;
+          if (_markerById[id] && _map.hasLayer(_markerById[id])) {
+            _markerById[id].setIcon(_activeIcon);
+            _markerById[id].openPopup();
+            _map.panTo([_peakById[id].lat, _peakById[id].lng], { animate: true, duration: 0.3 });
           }
           row.classList.add('row-active');
         }
@@ -283,19 +314,26 @@ const coordsJson = JSON.stringify(
 
     var allRows = Array.from(document.querySelectorAll('#peaks-table tbody tr'));
 
+    // Build region dropdown; append "(PL)" etc. when showing all countries
     function populateRegions(country) {
-      var seen = new Set();
+      var regionCountries = {};
       allRows.forEach(function (row) {
         if (country === 'all' || row.dataset.country === country) {
-          seen.add(row.dataset.region);
+          var r = row.dataset.region;
+          if (!regionCountries[r]) regionCountries[r] = [];
+          if (regionCountries[r].indexOf(row.dataset.country) === -1) {
+            regionCountries[r].push(row.dataset.country);
+          }
         }
       });
-      var sorted = Array.from(seen).sort(function (a, b) { return a.localeCompare(b, 'pl'); });
+      var sorted = Object.keys(regionCountries).sort(function (a, b) { return a.localeCompare(b, 'pl'); });
       regionSelect.innerHTML = '<option value="all">Wszystkie mezoregiony</option>';
       sorted.forEach(function (r) {
         var opt = document.createElement('option');
         opt.value = r;
-        opt.textContent = r;
+        opt.textContent = country === 'all'
+          ? r + ' (' + regionCountries[r].sort().join(', ') + ')'
+          : r;
         regionSelect.appendChild(opt);
       });
     }
@@ -305,17 +343,22 @@ const coordsJson = JSON.stringify(
     }
 
     function applyFilters() {
-      var country = countrySelect.value;
-      var region  = regionSelect.value;
-      var trail   = trailSelect.value;
+      var country    = countrySelect.value;
+      var region     = regionSelect.value;
+      var trail      = trailSelect.value;
+      var visibleIds = new Set();
       allRows.forEach(function (row) {
         var match =
           (country === 'all' || row.dataset.country === country) &&
           (region  === 'all' || row.dataset.region  === region)  &&
           (trail   === 'all' || row.dataset.trail    === trail);
         row.style.display = match ? '' : 'none';
+        if (match && row.dataset.peakId) {
+          visibleIds.add(parseInt(row.dataset.peakId, 10));
+        }
       });
       resetBtn.style.display = isActive() ? '' : 'none';
+      updateMapView(visibleIds);
     }
 
     countrySelect.addEventListener('change', function () {
