@@ -182,7 +182,6 @@ const coordsJson = JSON.stringify(
   var _normalIcon = null;
   var _activeIcon = null;
   var _activeId   = null;
-  var _flyTimer   = null; // cancellable handle for two-step fly animation
 
   function makeIcon(color, size) {
     return L.divIcon({
@@ -197,12 +196,9 @@ const coordsJson = JSON.stringify(
     });
   }
 
-  // Show/hide markers to match filter, then fly to visible ones with a pause
+  // Show/hide markers to match filter, then fly to visible ones
   function updateMapView(visibleIds) {
     if (!_map) return;
-
-    // Cancel any in-progress two-step animation
-    if (_flyTimer) { clearTimeout(_flyTimer); _flyTimer = null; }
 
     var visibleMarkers = [];
     Object.keys(_markerById).forEach(function (idStr) {
@@ -225,18 +221,7 @@ const coordsJson = JSON.stringify(
     });
 
     if (visibleMarkers.length > 0) {
-      var targetBounds = L.featureGroup(visibleMarkers).getBounds().pad(0.15);
-      var targetZoom   = _map.getBoundsZoom(targetBounds);
-
-      // Phase 1: fly out to 3 zoom levels above target (min zoom 6)
-      var midZoom = Math.max(6, targetZoom - 3);
-      _map.flyTo(targetBounds.getCenter(), midZoom, { duration: 0.9 });
-
-      // Phase 2: after zoom-out (900ms) + pause (350ms), fly into target
-      _flyTimer = setTimeout(function () {
-        _flyTimer = null;
-        _map.flyToBounds(targetBounds, { duration: 1.0 });
-      }, 1250);
+      _map.flyToBounds(L.featureGroup(visibleMarkers).getBounds().pad(0.15), { duration: 2.0 });
     }
   }
 
