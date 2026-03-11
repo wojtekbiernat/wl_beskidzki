@@ -174,15 +174,9 @@ import Layout from '../../layouts/Layout.astro';
       <!-- ── CZECHY ── -->
       <section id="cz" class="peaks-section">
         <h2>🇨🇿 Czechy <span class="count">(16 szczytów)</span></h2>
-        <iframe
-          src="https://frame.mapy.cz/turisticka?moje-mapy&cat=mista-trasy&mid=6986f9efba68d456a1598f5f&x=18.3329701&y=49.4589780&z=10"
-          class="map-embed"
-          title="Mapa szczytów – Czechy"
-          allowfullscreen
-          loading="lazy"
-        ></iframe>
+        <div id="cz-map" class="map-embed"></div>
         <div class="table-wrap">
-          <table class="peaks-table">
+          <table class="peaks-table" id="cz-peaks-table">
             <thead>
               <tr>
                 <th>Lp.</th>
@@ -324,6 +318,13 @@ import Layout from '../../layouts/Layout.astro';
 
     </div>
   </div>
+
+<!-- Leaflet CSS injected into <head> via Layout slot -->
+<link
+  slot="head"
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
 </Layout>
 
@@ -475,3 +476,85 @@ import Layout from '../../layouts/Layout.astro';
     .levels-grid { grid-template-columns: 1fr; }
   }
 </style>
+
+<!-- Leaflet JS (CDN, synchronous so L is ready before the init script) -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script is:inline>
+  function initCzMap() {
+    var el = document.getElementById('cz-map');
+    if (!el || typeof L === 'undefined') return;
+
+    var peaks = [
+      { name: 'Žár',               lat: 49.5379817, lng: 18.3647803 },
+      { name: 'Čečetkov',          lat: 49.2684503, lng: 18.0649911 },
+      { name: 'Tanečnice',         lat: 49.2684503, lng: 18.0649911 },
+      { name: 'Komorovský Grúň',   lat: 49.5339144, lng: 18.8171828 },
+      { name: 'Studeničné',        lat: 49.5278425, lng: 18.7807353 },
+      { name: 'Javorníček',        lat: 49.3273039, lng: 18.3012592 },
+      { name: 'Huštýn',            lat: 49.5159639, lng: 18.0723442 },
+      { name: 'Ostrý',             lat: 49.6010961, lng: 18.6571078 },
+      { name: 'Slavíč',            lat: 49.5682342, lng: 18.5883575 },
+      { name: 'Smrk',              lat: 49.5081531, lng: 18.3704911 },
+      { name: 'Travný',            lat: 49.5616136, lng: 18.5069253 },
+      { name: 'Petřkovická hora',  lat: 49.5445369, lng: 17.9637844 },
+      { name: 'Skalka',            lat: 49.5528039, lng: 18.3008600 },
+      { name: 'Hradisko',          lat: 49.4533828, lng: 18.1212639 },
+      { name: 'Hrbel',             lat: 49.6366097, lng: 18.7738078 },
+      { name: 'Prašivá hora',      lat: 49.6572925, lng: 18.7332139 },
+    ];
+
+    var map = L.map('cz-map').setView([49.47, 18.35], 9);
+
+    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      attribution:
+        'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+        '<a href="http://viewfinderpanoramas.org">SRTM</a> | ' +
+        'Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
+    }).addTo(map);
+
+    function makeIcon(color, size) {
+      return L.divIcon({
+        className: '',
+        html:
+          '<div style="width:' + size + 'px;height:' + size + 'px;' +
+          'background:' + color + ';border:2px solid #fff;border-radius:50%;' +
+          'box-shadow:0 2px 5px rgba(0,0,0,.45)"></div>',
+        iconSize:   [size, size],
+        iconAnchor: [size / 2, size / 2],
+        popupAnchor:[0, -(size / 2 + 4)],
+      });
+    }
+
+    var normalIcon = makeIcon('#358dc2', 12);
+    var activeIcon = makeIcon('#e74c3c', 18);
+
+    var markers = peaks.map(function (peak) {
+      return L.marker([peak.lat, peak.lng], { icon: normalIcon })
+        .addTo(map)
+        .bindPopup('<strong>' + peak.name + '</strong>');
+    });
+
+    var rows = document.querySelectorAll('#cz-peaks-table tbody tr');
+    rows.forEach(function (row, i) {
+      row.addEventListener('mouseenter', function () {
+        if (!markers[i]) return;
+        markers[i].setIcon(activeIcon);
+        markers[i].openPopup();
+        map.panTo([peaks[i].lat, peaks[i].lng], { animate: true, duration: 0.3 });
+      });
+      row.addEventListener('mouseleave', function () {
+        if (!markers[i]) return;
+        markers[i].setIcon(normalIcon);
+        markers[i].closePopup();
+      });
+    });
+  }
+
+  if (document.readyState !== 'loading') {
+    initCzMap();
+  } else {
+    document.addEventListener('DOMContentLoaded', initCzMap);
+  }
+</script>
