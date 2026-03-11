@@ -58,6 +58,7 @@ import Layout from '../../layouts/Layout.astro';
       <!-- ── POLSKA ── -->
       <section id="pl" class="peaks-section">
         <h2>🇵🇱 Polska <span class="count">(88 szczytów)</span></h2>
+        <img src="/wl_beskidzki/img/BW_PL.jpg" alt="QR kod – Polska" class="qr-code" />
         <div class="table-wrap">
           <table class="peaks-table">
             <thead>
@@ -167,6 +168,7 @@ import Layout from '../../layouts/Layout.astro';
       <!-- ── CZECHY ── -->
       <section id="cz" class="peaks-section">
         <h2>🇨🇿 Czechy <span class="count">(16 szczytów)</span></h2>
+        <img src="/wl_beskidzki/img/BW_CZ.jpg" alt="QR kod – Czechy" class="qr-code" />
         <div class="table-wrap">
           <table class="peaks-table">
             <thead>
@@ -204,6 +206,7 @@ import Layout from '../../layouts/Layout.astro';
       <!-- ── SŁOWACJA ── -->
       <section id="sk" class="peaks-section">
         <h2>🇸🇰 Słowacja <span class="count">(27 szczytów)</span></h2>
+        <img src="/wl_beskidzki/img/BW_SK.jpg" alt="QR kod – Słowacja" class="qr-code" />
         <div class="table-wrap">
           <table class="peaks-table">
             <thead>
@@ -252,6 +255,7 @@ import Layout from '../../layouts/Layout.astro';
       <!-- ── UKRAINA ── -->
       <section id="ua" class="peaks-section">
         <h2>🇺🇦 Ukraina <span class="count">(19 szczytów)</span></h2>
+        <img src="/wl_beskidzki/img/BW_UA.jpg" alt="QR kod – Ukraina" class="qr-code" />
         <p class="ua-note">
           ⚠️ Zdobywanie szczytów leżących na terenie kraju objętego trwającymi działaniami
           wojennymi nie jest obowiązkowe, a autorzy projektu odradzają podejmowanie takiej
@@ -329,6 +333,17 @@ import Layout from '../../layouts/Layout.astro';
   .peaks-section h2 { font-size: 1.6rem; margin-bottom: .8rem; }
   .peaks-section p  { color: var(--clr-muted); margin-bottom: 1.1rem; line-height: 1.8; }
   .count { font-size: 1rem; font-weight: 400; color: var(--clr-muted); }
+
+  /* QR codes */
+  .qr-code {
+    display: block;
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    margin: .6rem 0 1rem;
+    border-radius: 6px;
+    border: 1px solid var(--clr-border);
+  }
 
   /* Levels grid */
   .levels-grid {
