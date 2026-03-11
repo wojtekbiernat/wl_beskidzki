@@ -219,7 +219,7 @@ const coordsJson = JSON.stringify(
       }
     });
     if (visibleMarkers.length > 0) {
-      _map.fitBounds(L.featureGroup(visibleMarkers).getBounds().pad(0.15));
+      _map.flyToBounds(L.featureGroup(visibleMarkers).getBounds().pad(0.15), { duration: 1.2 });
     }
   }
 
