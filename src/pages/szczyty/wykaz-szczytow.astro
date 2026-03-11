@@ -269,7 +269,6 @@ const coordsJson = JSON.stringify(
         if (_markerById[id] && _map.hasLayer(_markerById[id])) {
           _markerById[id].setIcon(_activeIcon);
           _markerById[id].openPopup();
-          _map.panTo([_peakById[id].lat, _peakById[id].lng], { animate: true, duration: 0.3 });
         }
       });
       row.addEventListener('mouseleave', function () {
@@ -296,7 +295,6 @@ const coordsJson = JSON.stringify(
           if (_markerById[id] && _map.hasLayer(_markerById[id])) {
             _markerById[id].setIcon(_activeIcon);
             _markerById[id].openPopup();
-            _map.panTo([_peakById[id].lat, _peakById[id].lng], { animate: true, duration: 0.3 });
           }
           row.classList.add('row-active');
         }
