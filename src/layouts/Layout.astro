@@ -29,10 +29,10 @@ const nav: NavItem[] = [
     ],
   },
   {
-    local: '/szczyty', href: url('/szczyty/geografia'), label: 'Szczyty',
+    local: '/szczyty', href: url('/szczyty/wykaz-szczytow'), label: 'Szczyty',
     dropdown: [
-      { local: '/szczyty/geografia',      href: url('/szczyty/geografia'),      label: 'Geografia'      },
       { local: '/szczyty/wykaz-szczytow', href: url('/szczyty/wykaz-szczytow'), label: 'Wykaz Szczytów' },
+      { local: '/szczyty/geografia',      href: url('/szczyty/geografia'),      label: 'Geografia'      },
     ],
   },
   {
@@ -69,7 +69,7 @@ const nav: NavItem[] = [
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <header>
@@ -130,7 +130,7 @@ const nav: NavItem[] = [
     --clr-accent:    #358dc2;
     --clr-accent-lt: #67BED9;
     --clr-border:    #b8ddf0;
-    --font-serif:    'Playfair Display', Georgia, serif;
+    --font-serif:    'Source Sans 3', system-ui, sans-serif;
     --font-sans:     'Source Sans 3', system-ui, sans-serif;
     --max-w:         860px;
   }
