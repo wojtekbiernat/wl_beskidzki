@@ -28,7 +28,13 @@ const nav: NavItem[] = [
       { local: '/o-projekcie/o-nas',     href: url('/o-projekcie/o-nas'),     label: 'O nas'     },
     ],
   },
-  { local: '/szczyty', href: url('/szczyty'), label: 'Szczyty' },
+  {
+    local: '/szczyty', href: url('/szczyty/geografia'), label: 'Szczyty',
+    dropdown: [
+      { local: '/szczyty/geografia',      href: url('/szczyty/geografia'),      label: 'Geografia'      },
+      { local: '/szczyty/wykaz-szczytow', href: url('/szczyty/wykaz-szczytow'), label: 'Wykaz Szczytów' },
+    ],
+  },
   {
     local: '/regulamin', href: url('/regulamin/regulamin'), label: 'Regulamin',
     dropdown: [
