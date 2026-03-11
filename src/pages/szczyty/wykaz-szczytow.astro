@@ -84,46 +84,73 @@ const coordsJson = JSON.stringify(
           <!-- Left: sticky Leaflet map -->
           <div id="peaks-map" class="map-embed"></div>
 
-          <!-- Right: unified table -->
-          <div class="table-wrap">
-            <table class="peaks-table" id="peaks-table">
-              <thead>
-                <tr>
-                  <th>Lp.</th>
-                  <th>Kraj</th>
-                  <th>Szczyt</th>
-                  <th>Mezoregion</th>
-                  <th>Wys.&nbsp;(m)</th>
-                  <th>Szlak</th>
-                  <th>Najwyższy szczyt mezoregionu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {peaks.map(peak => (
-                  <tr data-peak-id={peak.lat !== null ? String(peak.id) : undefined}>
-                    <td>{peak.lp}</td>
-                    <td class="td-flag">{flag[peak.country]}</td>
-                    <td>
-                      {peak.name}
-                      {peak.lat !== null && (
-                        <a
-                          href={`https://mapy.com/en/turisticka?x=${peak.lng}&y=${peak.lat}&z=15&source=coor&id=${peak.lng},${peak.lat}`}
-                          class="map-link"
-                          target="_blank"
-                          rel="noopener"
-                          title="Pokaż na mapie"
-                        >📍</a>
-                      )}
-                    </td>
-                    <td>{peak.region}</td>
-                    <td>{peak.height}</td>
-                    <td><span class={`badge ${peak.trail}`}>{trailLabel[peak.trail]}</span></td>
-                    <td>{peak.highestInRegion}</td>
+          <!-- Right: filters + table -->
+          <div class="table-panel">
+
+            <!-- Dropdown filters -->
+            <div class="table-filters">
+              <label>
+                <span>Kraj</span>
+                <select id="filter-country">
+                  <option value="all">Wszystkie kraje</option>
+                  <option value="PL">🇵🇱 Polska</option>
+                  <option value="CZ">🇨🇿 Czechy</option>
+                  <option value="SK">🇸🇰 Słowacja</option>
+                  <option value="UA">🇺🇦 Ukraina</option>
+                </select>
+              </label>
+              <label>
+                <span>Mezoregion</span>
+                <select id="filter-region">
+                  <option value="all">Wszystkie mezoregiony</option>
+                </select>
+              </label>
+              <button id="filter-reset" class="filter-reset" type="button">✕ Resetuj</button>
+            </div>
+
+            <div class="table-wrap">
+              <table class="peaks-table" id="peaks-table">
+                <thead>
+                  <tr>
+                    <th>Nr</th>
+                    <th>Kraj</th>
+                    <th>Szczyt</th>
+                    <th>Mezoregion</th>
+                    <th>Wys.&nbsp;(m)</th>
+                    <th>Szlak</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div><!-- /.table-wrap -->
+                </thead>
+                <tbody>
+                  {peaks.map(peak => (
+                    <tr
+                      data-peak-id={peak.lat !== null ? String(peak.id) : undefined}
+                      data-country={peak.country}
+                      data-region={peak.region}
+                    >
+                      <td>{peak.id}</td>
+                      <td class="td-flag">{flag[peak.country]}</td>
+                      <td>
+                        {peak.name}
+                        {peak.lat !== null && (
+                          <a
+                            href={`https://mapy.com/en/turisticka?x=${peak.lng}&y=${peak.lat}&z=15&source=coor&id=${peak.lng},${peak.lat}`}
+                            class="map-link"
+                            target="_blank"
+                            rel="noopener"
+                            title="Pokaż na mapie"
+                          >📍</a>
+                        )}
+                      </td>
+                      <td>{peak.region}</td>
+                      <td>{peak.height}</td>
+                      <td><span class={`badge ${peak.trail}`}>{trailLabel[peak.trail]}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div><!-- /.table-wrap -->
+
+          </div><!-- /.table-panel -->
 
         </div><!-- /.peaks-layout -->
       </section>
@@ -240,15 +267,75 @@ const coordsJson = JSON.stringify(
     });
   }
 
-  if (document.readyState !== 'loading') {
+  // ── Table filters ──────────────────────────────────────────────────────────
+  function initFilters() {
+    var countrySelect = document.getElementById('filter-country');
+    var regionSelect  = document.getElementById('filter-region');
+    var resetBtn      = document.getElementById('filter-reset');
+    if (!countrySelect || !regionSelect) return;
+
+    var allRows = Array.from(document.querySelectorAll('#peaks-table tbody tr'));
+
+    function populateRegions(country) {
+      var seen = new Set();
+      allRows.forEach(function (row) {
+        if (country === 'all' || row.dataset.country === country) {
+          seen.add(row.dataset.region);
+        }
+      });
+      var sorted = Array.from(seen).sort(function (a, b) { return a.localeCompare(b, 'pl'); });
+      regionSelect.innerHTML = '<option value="all">Wszystkie mezoregiony</option>';
+      sorted.forEach(function (r) {
+        var opt = document.createElement('option');
+        opt.value = r;
+        opt.textContent = r;
+        regionSelect.appendChild(opt);
+      });
+    }
+
+    function applyFilters() {
+      var country = countrySelect.value;
+      var region  = regionSelect.value;
+      allRows.forEach(function (row) {
+        var match =
+          (country === 'all' || row.dataset.country === country) &&
+          (region  === 'all' || row.dataset.region  === region);
+        row.style.display = match ? '' : 'none';
+      });
+      resetBtn.style.display = (country !== 'all' || region !== 'all') ? '' : 'none';
+    }
+
+    countrySelect.addEventListener('change', function () {
+      populateRegions(this.value);
+      regionSelect.value = 'all';
+      applyFilters();
+    });
+    regionSelect.addEventListener('change', applyFilters);
+    resetBtn.addEventListener('click', function () {
+      countrySelect.value = 'all';
+      populateRegions('all');
+      regionSelect.value = 'all';
+      applyFilters();
+    });
+
+    populateRegions('all');
+    resetBtn.style.display = 'none';
+  }
+
+  function init() {
     initMap();
+    initFilters();
+  }
+
+  if (document.readyState !== 'loading') {
+    init();
   } else {
-    document.addEventListener('DOMContentLoaded', initMap);
+    document.addEventListener('DOMContentLoaded', init);
   }
 </script>
 
 <style>
-  /* ── Layout: map left + table right ── */
+  /* ── Layout: map left + table panel right ── */
   .peaks-layout {
     display: grid;
     grid-template-columns: 2fr 3fr;
@@ -261,7 +348,50 @@ const coordsJson = JSON.stringify(
     position: sticky;
     top: 68px;
   }
-  .peaks-layout .table-wrap { overflow-x: auto; }
+  .table-panel { display: flex; flex-direction: column; gap: .6rem; }
+  .table-wrap  { overflow-x: auto; }
+
+  /* ── Filters ── */
+  .table-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem 1rem;
+    align-items: center;
+    padding: .6rem .8rem;
+    background: #f4f8fb;
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+  }
+  .table-filters label {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--clr-text);
+  }
+  .table-filters select {
+    padding: .3rem .55rem;
+    border: 1px solid var(--clr-border);
+    border-radius: 6px;
+    font-size: .85rem;
+    background: #fff;
+    cursor: pointer;
+    max-width: 220px;
+  }
+  .filter-reset {
+    margin-left: auto;
+    padding: .28rem .7rem;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-muted);
+    background: transparent;
+    border: 1px solid var(--clr-border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .filter-reset:hover { background: #e8eff5; color: var(--clr-text); }
 
   @media (max-width: 900px) {
     .peaks-layout {
