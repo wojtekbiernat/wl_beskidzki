@@ -120,9 +120,9 @@ const coordsJson = JSON.stringify(
                 <thead>
                   <tr>
                     <th>Kraj</th>
-                    <th>Szczyt</th>
-                    <th>Mezoregion</th>
-                    <th>Wys.&nbsp;(m)</th>
+                    <th data-sort="name">Szczyt</th>
+                    <th data-sort="region">Mezoregion</th>
+                    <th data-sort="height">Wys.&nbsp;(m)</th>
                     <th>Szlak</th>
                   </tr>
                 </thead>
@@ -133,6 +133,8 @@ const coordsJson = JSON.stringify(
                       data-country={peak.country}
                       data-region={peak.region}
                       data-trail={peak.trail}
+                      data-name={peak.name}
+                      data-height={String(peak.height)}
                     >
                       <td class="td-flag">{flag[peak.country]}</td>
                       <td>
@@ -378,9 +380,46 @@ const coordsJson = JSON.stringify(
     resetBtn.style.display = 'none';
   }
 
+  // ── Table sorting ──────────────────────────────────────────────────────────
+  function initSort() {
+    var tbody = document.querySelector('#peaks-table tbody');
+    var ths   = document.querySelectorAll('#peaks-table thead th[data-sort]');
+    var sortCol = null;
+    var sortDir = 1; // 1 = asc, -1 = desc
+
+    ths.forEach(function (th) {
+      th.addEventListener('click', function () {
+        var col = th.dataset.sort;
+        if (sortCol === col) {
+          sortDir = -sortDir;
+        } else {
+          sortCol = col;
+          sortDir = 1;
+        }
+
+        // Update arrow indicators
+        ths.forEach(function (t) { t.classList.remove('sort-asc', 'sort-desc'); });
+        th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
+
+        // Sort all rows (filter visibility is preserved via display style)
+        var rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.sort(function (a, b) {
+          if (col === 'height') {
+            return sortDir * (parseInt(a.dataset.height, 10) - parseInt(b.dataset.height, 10));
+          }
+          var av = col === 'name' ? a.dataset.name : a.dataset.region;
+          var bv = col === 'name' ? b.dataset.name : b.dataset.region;
+          return sortDir * av.localeCompare(bv, 'pl');
+        });
+        rows.forEach(function (r) { tbody.appendChild(r); });
+      });
+    });
+  }
+
   function init() {
     initMap();
     initFilters();
+    initSort();
   }
 
   if (document.readyState !== 'loading') {
@@ -569,6 +608,13 @@ const coordsJson = JSON.stringify(
     font-weight: 600;
     white-space: nowrap;
   }
+  .peaks-table th[data-sort] {
+    cursor: pointer;
+    user-select: none;
+  }
+  .peaks-table th[data-sort]::after        { content: ' ↕'; opacity: .4; font-size: .75em; }
+  .peaks-table th[data-sort].sort-asc::after  { content: ' ↑'; opacity: 1; }
+  .peaks-table th[data-sort].sort-desc::after { content: ' ↓'; opacity: 1; }
   .peaks-table td {
     padding: .4rem .7rem;
     border-bottom: 1px solid var(--clr-border);
