@@ -71,13 +71,11 @@ const coordsJson = JSON.stringify(
         </div>
       </section>
 
-      <!-- ── MAPA + TABELA ── -->
+    </div><!-- /.container -->
+
+    <!-- Wide section: map + table break out of the narrow 860px container -->
+    <div class="peaks-outer">
       <section id="szczyty" class="peaks-section">
-        <p class="ua-note">
-          ⚠️ Zdobywanie szczytów leżących na terenie Ukrainy objętej trwającymi działaniami
-          wojennymi nie jest obowiązkowe, a autorzy projektu odradzają podejmowanie takiej
-          aktywności.
-        </p>
 
         <div class="peaks-layout">
 
@@ -105,6 +103,15 @@ const coordsJson = JSON.stringify(
                   <option value="all">Wszystkie mezoregiony</option>
                 </select>
               </label>
+              <label>
+                <span>Szlak</span>
+                <select id="filter-trail">
+                  <option value="all">Wszystkie</option>
+                  <option value="on">Na szlaku</option>
+                  <option value="near">Blisko szlaku</option>
+                  <option value="off">Poza szlakiem</option>
+                </select>
+              </label>
               <button id="filter-reset" class="filter-reset" type="button">✕ Resetuj</button>
             </div>
 
@@ -112,7 +119,6 @@ const coordsJson = JSON.stringify(
               <table class="peaks-table" id="peaks-table">
                 <thead>
                   <tr>
-                    <th>Nr</th>
                     <th>Kraj</th>
                     <th>Szczyt</th>
                     <th>Mezoregion</th>
@@ -126,8 +132,8 @@ const coordsJson = JSON.stringify(
                       data-peak-id={peak.lat !== null ? String(peak.id) : undefined}
                       data-country={peak.country}
                       data-region={peak.region}
+                      data-trail={peak.trail}
                     >
-                      <td>{peak.id}</td>
                       <td class="td-flag">{flag[peak.country]}</td>
                       <td>
                         {peak.name}
@@ -154,9 +160,9 @@ const coordsJson = JSON.stringify(
 
         </div><!-- /.peaks-layout -->
       </section>
+    </div><!-- /.peaks-outer -->
 
-    </div>
-  </div>
+  </div><!-- /.content-section -->
 
 </Layout>
 
@@ -271,8 +277,9 @@ const coordsJson = JSON.stringify(
   function initFilters() {
     var countrySelect = document.getElementById('filter-country');
     var regionSelect  = document.getElementById('filter-region');
+    var trailSelect   = document.getElementById('filter-trail');
     var resetBtn      = document.getElementById('filter-reset');
-    if (!countrySelect || !regionSelect) return;
+    if (!countrySelect || !regionSelect || !trailSelect) return;
 
     var allRows = Array.from(document.querySelectorAll('#peaks-table tbody tr'));
 
@@ -293,16 +300,22 @@ const coordsJson = JSON.stringify(
       });
     }
 
+    function isActive() {
+      return countrySelect.value !== 'all' || regionSelect.value !== 'all' || trailSelect.value !== 'all';
+    }
+
     function applyFilters() {
       var country = countrySelect.value;
       var region  = regionSelect.value;
+      var trail   = trailSelect.value;
       allRows.forEach(function (row) {
         var match =
           (country === 'all' || row.dataset.country === country) &&
-          (region  === 'all' || row.dataset.region  === region);
+          (region  === 'all' || row.dataset.region  === region)  &&
+          (trail   === 'all' || row.dataset.trail    === trail);
         row.style.display = match ? '' : 'none';
       });
-      resetBtn.style.display = (country !== 'all' || region !== 'all') ? '' : 'none';
+      resetBtn.style.display = isActive() ? '' : 'none';
     }
 
     countrySelect.addEventListener('change', function () {
@@ -311,10 +324,12 @@ const coordsJson = JSON.stringify(
       applyFilters();
     });
     regionSelect.addEventListener('change', applyFilters);
+    trailSelect.addEventListener('change', applyFilters);
     resetBtn.addEventListener('click', function () {
       countrySelect.value = 'all';
       populateRegions('all');
       regionSelect.value = 'all';
+      trailSelect.value  = 'all';
       applyFilters();
     });
 
@@ -335,16 +350,23 @@ const coordsJson = JSON.stringify(
 </script>
 
 <style>
+  /* ── Wide wrapper: breaks out of the 860px container ── */
+  .peaks-outer {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
   /* ── Layout: map left + table panel right ── */
   .peaks-layout {
     display: grid;
-    grid-template-columns: 2fr 3fr;
-    gap: 1rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
     align-items: start;
   }
   .peaks-layout #peaks-map {
     margin: 0;
-    height: 560px;
+    height: 620px;
     position: sticky;
     top: 68px;
   }
@@ -393,13 +415,14 @@ const coordsJson = JSON.stringify(
   }
   .filter-reset:hover { background: #e8eff5; color: var(--clr-text); }
 
-  @media (max-width: 900px) {
+  @media (max-width: 960px) {
+    .peaks-outer { padding: 0 1rem; }
     .peaks-layout {
       grid-template-columns: 1fr;
     }
     .peaks-layout #peaks-map {
       position: static;
-      height: 280px;
+      height: 300px;
     }
   }
 
@@ -513,8 +536,7 @@ const coordsJson = JSON.stringify(
   }
   .peaks-table tbody tr:nth-child(even) { background: #f0f7fc; }
   .peaks-table tbody tr:hover           { background: #d4eaf6; }
-  .peaks-table td:first-child { text-align: center; color: var(--clr-muted); width: 2.5rem; }
-  .td-flag { text-align: center !important; font-size: 1.1em; width: 2rem; }
+  .td-flag { text-align: center; font-size: 1.1em; width: 2rem; }
 
   /* Active row (tap/click on mobile) */
   #peaks-table tbody tr[data-peak-id] { cursor: pointer; }
