@@ -174,8 +174,9 @@ import Layout from '../../layouts/Layout.astro';
       <!-- ── CZECHY ── -->
       <section id="cz" class="peaks-section">
         <h2>🇨🇿 Czechy <span class="count">(16 szczytów)</span></h2>
-        <div id="cz-map" class="map-embed"></div>
-        <div class="table-wrap">
+        <div class="cz-layout">
+          <div id="cz-map" class="map-embed"></div>
+          <div class="table-wrap">
           <table class="peaks-table" id="cz-peaks-table">
             <thead>
               <tr>
@@ -206,7 +207,8 @@ import Layout from '../../layouts/Layout.astro';
               <tr><td>16</td><td>Prašivá hora <a href="https://mapy.com/en/turisticka?x=18.7332139&y=49.6572925&z=15&source=coor&id=18.7332139,49.6572925" class="map-link" target="_blank" rel="noopener" title="Pokaż na mapie">📍</a></td><td>Slezské Beskydy</td><td>542</td><td><span class="badge on">na szlaku</span></td><td>Velká Čantoryje</td></tr>
             </tbody>
           </table>
-        </div>
+          </div><!-- /.table-wrap -->
+        </div><!-- /.cz-layout -->
       </section>
 
       <!-- ── SŁOWACJA ── -->
@@ -358,6 +360,39 @@ import Layout from '../../layouts/Layout.astro';
   .peaks-section h2 { font-size: 1.6rem; margin-bottom: .8rem; }
   .peaks-section p  { color: var(--clr-muted); margin-bottom: 1.1rem; line-height: 1.8; }
   .count { font-size: 1rem; font-weight: 400; color: var(--clr-muted); }
+
+  /* Czech side-by-side layout */
+  .cz-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
+  .cz-layout #cz-map {
+    margin: 0;
+    height: 500px;
+    position: sticky;
+    top: 68px; /* below the 60px sticky nav */
+  }
+  .cz-layout .table-wrap { overflow-x: auto; }
+
+  /* Active row (tap/click selection) */
+  #cz-peaks-table tbody tr { cursor: pointer; }
+  #cz-peaks-table tbody tr.row-active {
+    background: #afd4ec !important;
+    outline: 2px solid #358dc2;
+    outline-offset: -2px;
+  }
+
+  @media (max-width: 900px) {
+    .cz-layout {
+      grid-template-columns: 1fr;
+    }
+    .cz-layout #cz-map {
+      position: static;
+      height: 280px;
+    }
+  }
 
   /* Peak map links */
   .map-link {
@@ -536,18 +571,43 @@ import Layout from '../../layouts/Layout.astro';
         .bindPopup('<strong>' + peak.name + '</strong>');
     });
 
+    var activeIdx = -1;
     var rows = document.querySelectorAll('#cz-peaks-table tbody tr');
+
     rows.forEach(function (row, i) {
+      // Hover preview — desktop only, skipped when a row is locked
       row.addEventListener('mouseenter', function () {
-        if (!markers[i]) return;
+        if (activeIdx === i) return;
         markers[i].setIcon(activeIcon);
         markers[i].openPopup();
         map.panTo([peaks[i].lat, peaks[i].lng], { animate: true, duration: 0.3 });
       });
       row.addEventListener('mouseleave', function () {
-        if (!markers[i]) return;
+        if (activeIdx === i) return; // keep locked state
         markers[i].setIcon(normalIcon);
         markers[i].closePopup();
+      });
+
+      // Click / tap — select or deselect a peak (works on both desktop and mobile)
+      row.addEventListener('click', function () {
+        var prev = activeIdx;
+        // Clear previous selection
+        if (prev !== -1) {
+          markers[prev].setIcon(normalIcon);
+          markers[prev].closePopup();
+          rows[prev].classList.remove('row-active');
+        }
+        if (prev === i) {
+          // Tap same row again → deselect
+          activeIdx = -1;
+        } else {
+          // New selection
+          activeIdx = i;
+          markers[i].setIcon(activeIcon);
+          markers[i].openPopup();
+          map.panTo([peaks[i].lat, peaks[i].lng], { animate: true, duration: 0.3 });
+          row.classList.add('row-active');
+        }
       });
     });
   }
