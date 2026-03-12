@@ -41,6 +41,13 @@ $allowedPriceIds = array_values(array_filter([
     getenv('STRIPE_PRICE_KW'),
 ]));
 
+// ── Validate required config ──────────────────────────────────────────────────
+// Do this before sending any CORS headers so misconfiguration is obvious.
+$missing = [];
+if (!$stripeSecretKey) $missing[] = 'STRIPE_SECRET_KEY';
+if (!$successUrl)      $missing[] = 'CHECKOUT_SUCCESS_URL';
+if (!$cancelUrl)       $missing[] = 'CHECKOUT_CANCEL_URL';
+
 // ── CORS ─────────────────────────────────────────────────────────────────────
 header("Access-Control-Allow-Origin: {$allowedOrigin}");
 header('Access-Control-Allow-Methods: POST, OPTIONS');
@@ -55,6 +62,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(['error' => 'Method not allowed']);
+    exit;
+}
+
+// ── Fail early on missing config ─────────────────────────────────────────────
+if (!empty($missing)) {
+    http_response_code(500);
+    echo json_encode(['error' => 'Brak konfiguracji serwera: ' . implode(', ', $missing)]);
     exit;
 }
 

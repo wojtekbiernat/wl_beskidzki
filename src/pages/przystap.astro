@@ -142,6 +142,18 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     if (!btn) return;
 
     btn.addEventListener('click', function () {
+      // Guard: catch unconfigured placeholders before sending the request
+      if (cfg.serverUrl.indexOf('[') !== -1) {
+        errEl.textContent = 'Konfiguracja: ustaw SERVER_CHECKOUT_URL w przystap.astro na adres twojego serwera.';
+        errEl.hidden = false;
+        return;
+      }
+      if (cfg.mainPriceId.indexOf('[') !== -1) {
+        errEl.textContent = 'Konfiguracja: ustaw MAIN_PRICE_ID w przystap.astro na rzeczywisty Stripe Price ID (price_...).';
+        errEl.hidden = false;
+        return;
+      }
+
       // Always include the main book
       var items = [{ price: cfg.mainPriceId, quantity: 1 }];
 
