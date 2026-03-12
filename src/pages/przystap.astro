@@ -1,9 +1,28 @@
 ---
 import Layout from '../layouts/Layout.astro';
 
-// TEST link — swap for live URL before going to production
-const STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/test_4gM5kF7PganUbttcSo8ww00';
+// ── Server endpoint ───────────────────────────────────────────────────────────
+// URL of server/checkout.php on your PHP server.
+// e.g. 'https://wbiernat.eu/server/checkout.php'
+const SERVER_CHECKOUT_URL = '[PLACEHOLDER: URL/server/checkout.php]';
+
+// ── Prices ────────────────────────────────────────────────────────────────────
 const BOOK_PRICE = '43 zł';
+
+// ── Stripe Price IDs ──────────────────────────────────────────────────────────
+// Get these from Stripe Dashboard → Products → (product) → Pricing.
+// Must match the IDs configured in server/.env (STRIPE_PRICE_* vars).
+const MAIN_PRICE_ID = '[STRIPE_PRICE_WL]';
+
+const ADDONS = [
+  { id: 'kws',  priceId: '[STRIPE_PRICE_KWS]',  cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '[CENA]' },
+  { id: 'ggmf', priceId: '[STRIPE_PRICE_GGMF]', cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '[CENA]' },
+  { id: 'ggwf', priceId: '[STRIPE_PRICE_GGWF]', cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '[CENA]' },
+  { id: 'ggnt', priceId: '[STRIPE_PRICE_GGNT]', cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '[CENA]' },
+  { id: 'kw',   priceId: '[STRIPE_PRICE_KW]',   cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '[CENA]' },
+];
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <Layout
@@ -20,12 +39,11 @@ const BOOK_PRICE = '43 zł';
 
   <div class="content-section">
     <div class="container">
-
       <div class="order-box">
 
-        <!-- Book summary -->
+        <!-- ── Main book ────────────────────────────────────────────────── -->
         <div class="order-summary">
-          <img src="/wl_beskidzki/img/BookCover.jpg" alt="Okładka książki" class="cover-img" />
+          <img src={`${base}img/BookCover.jpg`} alt="Okładka książki" class="cover-img" />
           <div class="order-info">
             <h2>Książeczka odznaki Beskidzki Włóczykij</h2>
             <p class="price">{BOOK_PRICE}</p>
@@ -33,7 +51,26 @@ const BOOK_PRICE = '43 zł';
           </div>
         </div>
 
-        <!-- Payment section -->
+        <!-- ── Add-ons ───────────────────────────────────────────────────── -->
+        <div class="addons-section">
+          <h3>Dokup inne książeczki</h3>
+          <p class="addons-desc">Zaznacz publikacje, które chcesz dołączyć do zamówienia.</p>
+          <div class="addons-grid">
+            {ADDONS.map(addon => (
+              <label class="addon-card" for={`addon-${addon.id}`}>
+                <input type="checkbox" id={`addon-${addon.id}`} class="addon-cb" value={addon.priceId} />
+                <div class="addon-check">✓</div>
+                <img src={`${base}img/${addon.cover}`} alt={addon.title} class="addon-cover cover-img" />
+                <div class="addon-info">
+                  <span class="addon-title">{addon.title}</span>
+                  <span class="addon-price">{addon.price}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- ── Payment ───────────────────────────────────────────────────── -->
         <div class="payment-section">
           <h3>Wybierz sposób płatności</h3>
           <p class="payment-desc">
@@ -42,18 +79,19 @@ const BOOK_PRICE = '43 zł';
           </p>
           <ul class="payment-methods">
             <li>&#128241; BLIK</li>
-            <li><img src="/wl_beskidzki/img/przelewy24.svg" alt="Przelewy24" class="pm-logo" />Przelewy24</li>
+            <li><img src={`${base}img/przelewy24.svg`} alt="Przelewy24" class="pm-logo" />Przelewy24</li>
             <li>&#128179; Karta płatnicza</li>
             <li>&#128242; Google Pay / Apple Pay</li>
           </ul>
 
-          <a href={STRIPE_PAYMENT_LINK} class="btn btn-order" target="_blank" rel="noopener">
+          <button id="checkout-btn" class="btn btn-order">
             Przejdź do kasy &rarr;
-          </a>
+          </button>
+          <p id="checkout-error" class="checkout-error" hidden></p>
           <p class="secure-note">&#128274; Płatność chroniona szyfrowaniem SSL/TLS</p>
         </div>
 
-        <!-- Shipping info -->
+        <!-- ── Shipping ──────────────────────────────────────────────────── -->
         <div class="shipping-info">
           <h3>Koszty wysyłki (z pakowaniem)</h3>
 
@@ -76,22 +114,69 @@ const BOOK_PRICE = '43 zł';
           </table>
 
           <p class="free-shipping">✅ Powyżej 10 książeczek — <strong>wysyłka gratis</strong> (DPD lub InPost)</p>
-
-
         </div>
 
-        <!-- PTTK note -->
+        <!-- ── PTTK ──────────────────────────────────────────────────────── -->
         <div class="pttk-note">
           <h3>Zakup stacjonarny</h3>
           <p>Książeczkę można nabyć osobiście w <strong>PTTK Katowice</strong> w cenie <strong>43 zł</strong>.</p>
         </div>
 
       </div>
-
     </div>
   </div>
 
 </Layout>
+
+<!-- Pass server URL and main price ID to the inline script -->
+<script id="checkout-data" type="application/json" set:html={JSON.stringify({
+  serverUrl:   SERVER_CHECKOUT_URL,
+  mainPriceId: MAIN_PRICE_ID,
+})}></script>
+
+<script is:inline>
+  (function () {
+    var cfg   = JSON.parse(document.getElementById('checkout-data').textContent);
+    var btn   = document.getElementById('checkout-btn');
+    var errEl = document.getElementById('checkout-error');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      // Always include the main book
+      var items = [{ price: cfg.mainPriceId, quantity: 1 }];
+
+      // Add any checked add-ons
+      document.querySelectorAll('.addon-cb:checked').forEach(function (cb) {
+        items.push({ price: cb.value, quantity: 1 });
+      });
+
+      // Loading state
+      btn.disabled    = true;
+      btn.textContent = 'Ładowanie\u2026';
+      errEl.hidden    = true;
+
+      fetch(cfg.serverUrl, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ items: items }),
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (json) {
+          if (json.url) {
+            window.location.href = json.url;
+          } else {
+            throw new Error(json.error || 'Nieznany błąd');
+          }
+        })
+        .catch(function (err) {
+          btn.disabled    = false;
+          btn.textContent = 'Przejdź do kasy \u2192';
+          errEl.textContent = 'Błąd: ' + err.message;
+          errEl.hidden = false;
+        });
+    });
+  })();
+</script>
 
 <style>
   .order-box {
@@ -102,7 +187,7 @@ const BOOK_PRICE = '43 zł';
     gap: 2.5rem;
   }
 
-  /* Summary row */
+  /* ── Main book summary ── */
   .order-summary {
     display: flex;
     gap: 1.5rem;
@@ -112,19 +197,76 @@ const BOOK_PRICE = '43 zł';
     border-radius: 8px;
     padding: 1.5rem;
   }
-  .cover-img {
-    width: 100px;
-    height: auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 10px rgba(53,141,194,.2);
-    flex-shrink: 0;
-  }
+  .cover-img    { width: 100px; height: auto; border-radius: 4px; box-shadow: 0 2px 10px rgba(53,141,194,.2); flex-shrink: 0; }
   .order-info h2 { font-size: 1.3rem; margin-bottom: .3rem; }
-  .author-name   { color: var(--clr-muted); font-size: .9rem; margin-bottom: .6rem; }
   .price         { font-size: 1.6rem; font-weight: 700; color: var(--clr-accent); }
   .price-note    { font-size: .8rem; color: var(--clr-muted); margin-top: .2rem; }
 
-  /* Payment */
+  /* ── Add-ons ── */
+  .addons-section {
+    background: #fff;
+    border: 1px solid var(--clr-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+  .addons-section h3 { font-size: 1.1rem; margin-bottom: .35rem; }
+  .addons-desc  { font-size: .88rem; color: var(--clr-muted); margin-bottom: 1rem; }
+
+  .addons-grid  {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+    gap: .7rem;
+  }
+
+  .addon-card {
+    position: relative;
+    border: 2px solid var(--clr-border);
+    border-radius: 8px;
+    cursor: pointer;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color .15s, box-shadow .15s;
+    user-select: none;
+  }
+  .addon-card:hover { border-color: var(--clr-accent-lt); }
+  .addon-card:has(input:checked) {
+    border-color: var(--clr-accent);
+    box-shadow: 0 0 0 3px rgba(53,141,194,.15);
+  }
+
+  /* Hide the real checkbox — card is the interactive element */
+  .addon-cb { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
+
+  /* Custom checkmark bubble */
+  .addon-check {
+    position: absolute;
+    top: .35rem; right: .35rem;
+    width: 1.25rem; height: 1.25rem;
+    background: rgba(255,255,255,.9);
+    border: 2px solid #bbb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .68rem;
+    color: transparent;
+    transition: background .15s, border-color .15s, color .15s;
+    z-index: 1;
+    line-height: 1;
+  }
+  .addon-card:has(input:checked) .addon-check {
+    background: var(--clr-accent);
+    border-color: var(--clr-accent);
+    color: #fff;
+  }
+
+  .addon-cover { width: 100%; height: auto; display: block; border-radius: 0; box-shadow: none; width: auto; }
+  .addon-info  { padding: .4rem .5rem .55rem; display: flex; flex-direction: column; gap: .1rem; }
+  .addon-title { font-size: .72rem; font-weight: 600; line-height: 1.3; color: var(--clr-text); }
+  .addon-price { font-size: .72rem; font-weight: 700; color: var(--clr-accent); }
+
+  /* ── Payment ── */
   .payment-section {
     background: #fff;
     border: 1px solid var(--clr-border);
@@ -141,76 +283,47 @@ const BOOK_PRICE = '43 zł';
     margin-bottom: 1.5rem;
     font-size: .95rem;
   }
-  .pm-logo {
-    height: 24px;
-    width: auto;
-    vertical-align: middle;
-    display: inline-block;
-  }
+  .pm-logo { height: 24px; width: auto; vertical-align: middle; display: inline-block; }
+
   .btn-order {
     display: block;
+    width: 100%;
     text-align: center;
     font-size: 1.1rem;
     padding: 1rem;
     background: #2ea44f;
+    cursor: pointer;
+    border: none;
   }
-  .btn-order:hover { background: #22813d; }
-  .secure-note {
-    text-align: center;
-    font-size: .8rem;
-    color: var(--clr-muted);
-    margin-top: .7rem;
-  }
+  .btn-order:hover:not(:disabled) { background: #22813d; }
+  .btn-order:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
-  /* Shipping table */
-  .shipping-info {
-    background: #e4f3fa;
-    border-radius: 8px;
-    padding: 1.5rem;
+  .checkout-error {
+    color: #c0392b;
+    font-size: .85rem;
+    text-align: center;
+    margin-top: .5rem;
   }
+  .secure-note { text-align: center; font-size: .8rem; color: var(--clr-muted); margin-top: .7rem; }
+
+  /* ── Shipping ── */
+  .shipping-info { background: #e4f3fa; border-radius: 8px; padding: 1.5rem; }
   .shipping-info h3 { font-size: 1.1rem; margin-bottom: .9rem; }
   .shipping-tier-label {
-    font-size: .8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    color: var(--clr-accent);
-    margin: 1rem 0 .3rem;
+    font-size: .8rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .05em; color: var(--clr-accent); margin: 1rem 0 .3rem;
   }
   .shipping-tier-label:first-of-type { margin-top: 0; }
   .shipping-info table { width: 100%; border-collapse: collapse; margin-bottom: .4rem; }
-  .shipping-info td {
-    padding: .3rem 0;
-    font-size: .9rem;
-    border-bottom: 1px solid var(--clr-border);
-  }
+  .shipping-info td { padding: .3rem 0; font-size: .9rem; border-bottom: 1px solid var(--clr-border); }
   .shipping-info td:last-child { text-align: right; font-weight: 600; }
   .free-shipping {
-    margin-top: 1rem;
-    font-size: .9rem;
-    color: var(--clr-text);
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
-    border-radius: 6px;
-    padding: .6rem .9rem;
-  }
-  .inpost-note {
-    margin-top: .8rem;
-    font-size: .88rem;
-    color: var(--clr-muted);
-    background: #fff;
-    border-radius: 6px;
-    padding: .6rem .9rem;
-    border: 1px solid var(--clr-border);
+    margin-top: 1rem; font-size: .9rem;
+    background: #d4edda; border: 1px solid #c3e6cb; border-radius: 6px; padding: .6rem .9rem;
   }
 
-  /* PTTK note */
-  .pttk-note {
-    background: #fefbe6;
-    border: 1px solid #d4a017;
-    border-radius: 8px;
-    padding: 1.2rem 1.5rem;
-  }
+  /* ── PTTK ── */
+  .pttk-note { background: #fefbe6; border: 1px solid #d4a017; border-radius: 8px; padding: 1.2rem 1.5rem; }
   .pttk-note h3 { font-size: 1rem; margin-bottom: .4rem; color: var(--clr-accent); }
   .pttk-note p  { font-size: .95rem; color: var(--clr-muted); }
 </style>
