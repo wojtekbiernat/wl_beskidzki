@@ -1,8 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const STRIPE_PAYMENT_LINK = '#';
-const BOOK_PRICE = '[CENA]';
+const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
+const PRICE_ID  = 'price_1TACguPCvjb6WUdan20UcyeX';
+const BOOK_PRICE = '43 zł';
 ---
 
 <Layout
@@ -42,9 +43,10 @@ const BOOK_PRICE = '[CENA]';
             <li>&#128179; Karta płatnicza</li>
             <li>&#128242; Google Pay / Apple Pay</li>
           </ul>
-          <a href={STRIPE_PAYMENT_LINK} class="btn btn-order" target="_blank" rel="noopener">
+          <button id="checkout-btn" class="btn btn-order">
             Przejdź do kasy &rarr;
-          </a>
+          </button>
+          <p id="checkout-error" class="checkout-error" hidden></p>
           <p class="secure-note">&#128274; Płatność chroniona szyfrowaniem SSL/TLS</p>
         </div>
 
@@ -80,6 +82,46 @@ const BOOK_PRICE = '[CENA]';
 
 </Layout>
 
+<script id="checkout-data" type="application/json" set:html={JSON.stringify({
+  serverUrl: SERVER_CHECKOUT_URL,
+  priceId:   PRICE_ID,
+})}></script>
+
+<script is:inline>
+  (function () {
+    var cfg   = JSON.parse(document.getElementById('checkout-data').textContent);
+    var btn   = document.getElementById('checkout-btn');
+    var errEl = document.getElementById('checkout-error');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      btn.disabled    = true;
+      btn.textContent = 'Ładowanie\u2026';
+      errEl.hidden    = true;
+
+      fetch(cfg.serverUrl, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ items: [{ price: cfg.priceId, quantity: 1 }] }),
+      })
+        .then(function (res) { return res.json(); })
+        .then(function (json) {
+          if (json.url) {
+            window.location.href = json.url;
+          } else {
+            throw new Error(json.error || 'Nieznany błąd');
+          }
+        })
+        .catch(function (err) {
+          btn.disabled    = false;
+          btn.textContent = 'Przejdź do kasy \u2192';
+          errEl.textContent = 'Błąd: ' + err.message;
+          errEl.hidden = false;
+        });
+    });
+  })();
+</script>
+
 <style>
   .order-box { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 2.5rem; }
   .order-summary {
@@ -97,8 +139,10 @@ const BOOK_PRICE = '[CENA]';
   .payment-desc { color: var(--clr-muted); margin-bottom: 1rem; font-size: .95rem; }
   .payment-methods { list-style: none; display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.5rem; font-size: .95rem; }
   .pm-logo { height: 24px; width: auto; vertical-align: middle; display: inline-block; }
-  .btn-order { display: block; text-align: center; font-size: 1.1rem; padding: 1rem; background: #2ea44f; }
-  .btn-order:hover { background: #22813d; }
+  .btn-order { display: block; width: 100%; text-align: center; font-size: 1.1rem; padding: 1rem; background: #2ea44f; cursor: pointer; border: none; }
+  .btn-order:hover:not(:disabled) { background: #22813d; }
+  .btn-order:disabled { opacity: .6; cursor: not-allowed; }
+  .checkout-error { color: #c0392b; font-size: .85rem; text-align: center; margin-top: .5rem; }
   .secure-note { text-align: center; font-size: .8rem; color: var(--clr-muted); margin-top: .7rem; }
   .shipping-info { background: #e4f3fa; border-radius: 8px; padding: 1.5rem; }
   .shipping-info h3 { font-size: 1.1rem; margin-bottom: .9rem; }
