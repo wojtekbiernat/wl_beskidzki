@@ -1,0 +1,151 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+
+<Layout
+  title="Dziękujemy za zamówienie!"
+  description="Twoje zamówienie zostało przyjęte. Dziękujemy za zakup!"
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Dziękujemy za zamówienie!</h1>
+      <p>Twoja płatność została zrealizowana pomyślnie</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container">
+      <div class="success-box">
+
+        <div class="success-icon">✓</div>
+
+        <h2>Zamówienie przyjęte</h2>
+        <p class="lead">
+          Twoja płatność przebiegła pomyślnie. Wkrótce otrzymasz e-mail z potwierdzeniem zamówienia.
+        </p>
+
+        <div class="info-card">
+          <h3>Co dalej?</h3>
+          <ol>
+            <li>Sprawdź skrzynkę e-mail — wyślemy potwierdzenie z detalami zamówienia.</li>
+            <li>Przygotujemy i wyślemy Twoją przesyłkę w ciągu kilku dni roboczych.</li>
+            <li>Po otrzymaniu książeczki <strong>zacznij zdobywać szczyty!</strong></li>
+          </ol>
+        </div>
+
+        <div class="actions">
+          <a href={`${base}`} class="btn btn-primary">Strona główna</a>
+          <a href={`${base}szczyty/wykaz-szczytow`} class="btn btn-secondary">Lista szczytów →</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  .success-box {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .success-icon {
+    width: 5rem;
+    height: 5rem;
+    background: #2ea44f;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    line-height: 1;
+    box-shadow: 0 4px 20px rgba(46,164,79,.3);
+  }
+
+  .success-box h2 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--clr-text);
+  }
+
+  .lead {
+    font-size: 1.05rem;
+    color: var(--clr-muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .info-card {
+    background: #e4f3fa;
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    text-align: left;
+    width: 100%;
+  }
+
+  .info-card h3 {
+    font-size: 1rem;
+    margin-bottom: .8rem;
+    color: var(--clr-accent);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    font-size: .8rem;
+  }
+
+  .info-card ol {
+    margin: 0;
+    padding-left: 1.3rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+  }
+
+  .info-card li {
+    font-size: .95rem;
+    color: var(--clr-text);
+    line-height: 1.5;
+  }
+
+  .actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    background: var(--clr-accent);
+    color: #fff;
+    padding: .75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .btn-primary:hover { background: var(--clr-accent-dk, #1e6fa0); }
+
+  .btn-secondary {
+    background: #fff;
+    color: var(--clr-accent);
+    border: 2px solid var(--clr-accent);
+    padding: .75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background .15s, color .15s;
+  }
+  .btn-secondary:hover {
+    background: var(--clr-accent);
+    color: #fff;
+  }
+</style>

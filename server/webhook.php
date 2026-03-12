@@ -79,12 +79,13 @@ $session  = $event['data']['object'];
 $customer = $session['customer_details'] ?? [];
 $address  = $customer['address'] ?? [];
 
-$customerName  = $customer['name']  ?? '—';
-$customerEmail = $customer['email'] ?? '—';
-$orderId       = $session['id']     ?? '—';
-$amountTotal   = number_format((int)($session['amount_total'] ?? 0) / 100, 2, ',', ' ');
-$currency      = strtoupper($session['currency'] ?? 'PLN');
-$paymentStatus = $session['payment_status'] ?? '—';
+$customerName    = $customer['name']        ?? '—';
+$customerEmail   = $customer['email']       ?? '—';
+$orderId         = $session['id']           ?? '—';
+$paymentIntentId = $session['payment_intent'] ?? null;
+$amountTotal     = number_format((int)($session['amount_total'] ?? 0) / 100, 2, ',', ' ');
+$currency        = strtoupper($session['currency'] ?? 'PLN');
+$paymentStatus   = $session['payment_status'] ?? '—';
 
 $addressLine = implode(', ', array_filter([
     $address['line1']       ?? '',
@@ -112,7 +113,9 @@ $emailBody = implode("\n", [
     "",
     str_repeat("─", 40),
     "Stripe Dashboard:",
-    "https://dashboard.stripe.com/payments/{$orderId}",
+    $paymentIntentId
+        ? "https://dashboard.stripe.com/payments/{$paymentIntentId}"
+        : "https://dashboard.stripe.com/checkout/sessions/{$orderId}",
 ]);
 
 $headers = [
