@@ -17,16 +17,28 @@ import Layout from '../../layouts/Layout.astro';
   <div class="content-section">
     <div class="container content-body">
 
-      <h2>Nasz zespół</h2>
       <p>
-        [PLACEHOLDER: Krótki opis zespołu — kto tworzy projekt, jakie są ich pasje i doświadczenie
-        turystyczne w Beskidach.]
+        Beskidzki Włóczykij zrodził się z górskich wędrówek, rozmów na szlaku i godzin spędzonych
+        nad mapami. Powstał z przekonania, że w Beskidach to, co najciekawsze, często czeka nieco
+        z boku, z dala od tych najpopularniejszych tras. Niekoniecznie na najwyższym szczycie i nie
+        zawsze tam, gdzie idą wszyscy, ale gdzie jest ciszej, spokojniej i można po prostu pobyć
+        z górami sam na sam.
+      </p>
+
+      <h2>Zespół</h2>
+      <p>
+        Za projektem stoją – <strong>Aleksandra Torbus</strong> i <strong>Tomasz Biernat</strong>.
+        Ludzie, którzy po prostu lubią być w drodze: długo, daleko i najchętniej z dala od zgiełku.
+        Z tej pasji do włóczenia się po Beskidach, ich pogórzach i zapomnianych zakątkach pogranicza
+        wzięła się chęć, by pokazać Wam, że w górach wcale nie trzeba trzymać się tylko głównych
+        szlaków.
       </p>
 
       <h2>Dlaczego to robimy?</h2>
       <p>
-        [PLACEHOLDER: Motywacja za projektem — miłość do gór, chęć promowania turystyki,
-        budowanie społeczności.]
+        Beskidzki Włóczykij powstał z miłości do beskidzkich dróg i chęci pokazania tego, co nas
+        w tych górach zachwyca najbardziej: spokoju, przestrzeni i frajdy z odkrywania miejsc,
+        o których mało kto wie.
       </p>
 
       <h2>Kontakt z nami</h2>
@@ -42,7 +54,8 @@ import Layout from '../../layouts/Layout.astro';
 
 <style>
   .content-body { max-width: 720px; }
+  .content-body > p { color: var(--clr-muted); margin-bottom: 1.6rem; line-height: 1.85; }
   .content-body h2 { margin: 2rem 0 .7rem; font-size: 1.4rem; }
-  .content-body p  { color: var(--clr-muted); margin-bottom: 1rem; }
+  .content-body h2 + p { color: var(--clr-muted); margin-bottom: 1rem; line-height: 1.85; }
   .content-body a  { color: var(--clr-accent); }
 </style>
