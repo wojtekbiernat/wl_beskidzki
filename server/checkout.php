@@ -122,8 +122,11 @@ $params = [
 ];
 
 foreach ($lineItems as $i => $item) {
-    $params["line_items[{$i}][price]"]    = $item['price'];
-    $params["line_items[{$i}][quantity]"] = $item['quantity'];
+    $params["line_items[{$i}][price]"]                            = $item['price'];
+    $params["line_items[{$i}][quantity]"]                         = $item['quantity'];
+    $params["line_items[{$i}][adjustable_quantity][enabled]"]     = 'true';
+    $params["line_items[{$i}][adjustable_quantity][minimum]"]     = 1;
+    $params["line_items[{$i}][adjustable_quantity][maximum]"]     = 50;
 }
 
 // ── Call Stripe API ───────────────────────────────────────────────────────────
