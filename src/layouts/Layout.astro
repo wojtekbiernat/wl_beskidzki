@@ -49,9 +49,9 @@ const nav: NavItem[] = [
     local: '/inne-projekty', href: url('/inne-projekty/korona-slaskiego'), label: 'Inne projekty',
     dropdown: [
       { local: '/inne-projekty/korona-slaskiego', href: url('/inne-projekty/korona-slaskiego'), label: 'Korona Woj. Śląskiego'      },
-      { local: '/inne-projekty/ggmf',             href: url('/inne-projekty/ggmf'),             label: 'GGMF'                        },
-      { local: '/inne-projekty/ggwf',             href: url('/inne-projekty/ggwf'),             label: 'GGWF'                        },
-      { local: '/inne-projekty/ggnt',             href: url('/inne-projekty/ggnt'),             label: 'GGNT'                        },
+      { local: '/inne-projekty/ggmf',             href: url('/inne-projekty/ggmf'),             label: 'Główny Grzebiet Małej Fatry'    },
+      { local: '/inne-projekty/ggwf',             href: url('/inne-projekty/ggwf'),             label: 'Główny Grzebiet Wielkiej Fatry' },
+      { local: '/inne-projekty/ggnt',             href: url('/inne-projekty/ggnt'),             label: 'Główny Grzebiet Niżnych Tatr'   },
       { local: '/inne-projekty/korona-wegier',    href: url('/inne-projekty/korona-wegier'),    label: 'Korona Wzgórz i Gór Węgier' },
     ],
   },
@@ -106,6 +106,12 @@ const nav: NavItem[] = [
     <main>
       <slot />
     </main>
+
+    <!-- Lightbox overlay (activated by any .cover-img click) -->
+    <div id="lightbox" role="dialog" aria-modal="true" aria-label="Powiększony widok okładki">
+      <button id="lightbox-close" aria-label="Zamknij">&times;</button>
+      <img id="lightbox-img" src="" alt="" />
+    </div>
 
     <footer>
       <div class="container">
@@ -385,4 +391,78 @@ const nav: NavItem[] = [
     color: var(--clr-accent);
   }
   .btn-outline:hover { background: var(--clr-accent); color: #fff; }
+
+  /* ── Lightbox ── */
+  .cover-img { cursor: zoom-in; }
+
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .82);
+    z-index: 9000;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+  #lightbox.open { display: flex; }
+
+  #lightbox-img {
+    max-width: min(480px, 90vw);
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 8px 40px rgba(0,0,0,.6);
+    animation: lb-in .2s ease;
+  }
+
+  #lightbox-close {
+    position: fixed;
+    top: 1rem;
+    right: 1.2rem;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2.4rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: .8;
+    transition: opacity .15s;
+    z-index: 9001;
+  }
+  #lightbox-close:hover { opacity: 1; }
+
+  @keyframes lb-in {
+    from { transform: scale(.88); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
 </style>
+
+<script is:inline>
+  (function () {
+    var lb    = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lightbox-img');
+    var lbBtn = document.getElementById('lightbox-close');
+    if (!lb || !lbImg || !lbBtn) return;
+
+    function open(src, alt) {
+      lbImg.src = src;
+      lbImg.alt = alt || '';
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function close() {
+      lb.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.cover-img').forEach(function (img) {
+      img.addEventListener('click', function () { open(img.src, img.alt); });
+    });
+
+    lbBtn.addEventListener('click', close);
+    lb.addEventListener('click', function (e) { if (e.target === lb) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  })();
+</script>
