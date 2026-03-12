@@ -18,6 +18,32 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   <div class="content-section">
     <div class="container content-body">
 
+      <!-- ── Badge levels ── -->
+      <h2>Poziomy odznaki</h2>
+      <div class="badges-grid">
+        <div class="badge-card bronze">
+          <img src={`${base}img/BRAZ.png`} alt="Odznaka Brązowa" class="badge-img" />
+          <div class="badge-info">
+            <h3>🥉 Brązowa</h3>
+            <p>50 dowolnych szczytów</p>
+          </div>
+        </div>
+        <div class="badge-card silver">
+          <img src={`${base}img/SREBRO.png`} alt="Odznaka Srebrna" class="badge-img" />
+          <div class="badge-info">
+            <h3>🥈 Srebrna</h3>
+            <p>100 szczytów łącznie</p>
+          </div>
+        </div>
+        <div class="badge-card gold">
+          <img src={`${base}img/ZLOTO.png`} alt="Odznaka Złota" class="badge-img" />
+          <div class="badge-info">
+            <h3>🥇 Złota</h3>
+            <p>Wszystkie 150 szczytów</p>
+          </div>
+        </div>
+      </div>
+
       <p>
         Beskidy to góry długich wędrówek, spokojnych grzbietów i ścieżek prowadzących z dala od
         tłumów. To pasma, w których liczy się nie tylko zdobywanie najwyższych szczytów, ale
@@ -51,31 +77,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         walory krajobrazowe, historyczne i przyrodnicze.
       </p>
 
-      <!-- ── Badge levels ── -->
-      <h2>Poziomy odznaki</h2>
-      <div class="badges-grid">
-        <div class="badge-card bronze">
-          <img src={`${base}img/BRAZ.png`} alt="Odznaka Brązowa" class="badge-img" />
-          <div class="badge-info">
-            <h3>🥉 Brązowa</h3>
-            <p>50 dowolnych szczytów</p>
-          </div>
-        </div>
-        <div class="badge-card silver">
-          <img src={`${base}img/SREBRO.png`} alt="Odznaka Srebrna" class="badge-img" />
-          <div class="badge-info">
-            <h3>🥈 Srebrna</h3>
-            <p>100 szczytów łącznie</p>
-          </div>
-        </div>
-        <div class="badge-card gold">
-          <img src={`${base}img/ZLOTO.png`} alt="Odznaka Złota" class="badge-img" />
-          <div class="badge-info">
-            <h3>🥇 Złota</h3>
-            <p>Wszystkie 150 szczytów</p>
-          </div>
-        </div>
-      </div>
+ 
 
       <blockquote>
         Niech ta książeczka stanie się nie tylko dokumentem potwierdzającym zdobycie odznaki,
