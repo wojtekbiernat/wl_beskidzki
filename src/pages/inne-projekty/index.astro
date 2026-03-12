@@ -1,0 +1,127 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+
+const projekty = [
+  {
+    title:  'Korona Województwa Śląskiego',
+    cover:  'KWŚ_Cover.jpg',
+    href:   `${base}inne-projekty/korona-slaskiego`,
+  },
+  {
+    title:  'Główny Grzbiet Małej Fatry',
+    cover:  'GGMF_Cover.jpg',
+    href:   `${base}inne-projekty/ggmf`,
+  },
+  {
+    title:  'Główny Grzbiet Wielkiej Fatry',
+    cover:  'GGWF_Cover.jpg',
+    href:   `${base}inne-projekty/ggwf`,
+  },
+  {
+    title:  'Główny Grzbiet Niżnych Tatr',
+    cover:  'GGNT_Cover.jpg',
+    href:   `${base}inne-projekty/ggnt`,
+  },
+  {
+    title:  'Korona Wzgórz i Gór Węgier',
+    cover:  'KORONA_WEGIER_Cover.jpg',
+    href:   `${base}inne-projekty/korona-wegier`,
+  },
+];
+---
+
+<Layout
+  title="Inne projekty"
+  description="Pozostałe projekty górskie naszego zespołu — książeczki, odznaki i korony."
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Inne projekty</h1>
+      <p>Odkryj pozostałe książeczki i odznaki naszego zespołu</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container">
+      <div class="projects-grid">
+        {projekty.map(({ title, cover, href }) => (
+          <div class="project-card">
+            <a href={href} class="card-cover-link">
+              <img
+                src={`${base}img/${cover}`}
+                alt={`Okładka – ${title}`}
+                class="card-cover cover-img"
+              />
+            </a>
+            <div class="card-body">
+              <h2 class="card-title">{title}</h2>
+              <a href={href} class="btn btn-outline card-btn">Zobacz więcej →</a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 0.5rem;
+  }
+
+  .project-card {
+    background: #fff;
+    border: 1px solid var(--clr-border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: box-shadow .2s, transform .2s;
+  }
+
+  .project-card:hover {
+    box-shadow: 0 6px 24px rgba(53,141,194,.18);
+    transform: translateY(-3px);
+  }
+
+  .card-cover-link {
+    display: block;
+    line-height: 0;
+  }
+
+  .card-cover {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 0;
+    cursor: zoom-in;
+  }
+
+  .card-body {
+    padding: 1.1rem 1.2rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 1rem;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--clr-text);
+  }
+
+  .card-btn {
+    margin-top: auto;
+    text-align: center;
+    font-size: .9rem;
+    padding: .5rem 1rem;
+  }
+</style>
