@@ -14,12 +14,16 @@ const BOOK_PRICE = '43 zł';
 const MAIN_PRICE_ID = 'price_1TACezPCvjb6WUdamFdMW5CO';
 
 const ADDONS = [
-  { id: 'kws',  priceId: '[STRIPE_PRICE_KWS]',  cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '[CENA]' },
-  { id: 'ggmf', priceId: '[STRIPE_PRICE_GGMF]', cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '[CENA]' },
-  { id: 'ggwf', priceId: '[STRIPE_PRICE_GGWF]', cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '[CENA]' },
-  { id: 'ggnt', priceId: '[STRIPE_PRICE_GGNT]', cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '[CENA]' },
-  { id: 'kw',   priceId: '[STRIPE_PRICE_KW]',   cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '[CENA]' },
+  { id: 'kws',  priceId: 'price_1TACezPCvjb6WUdamFdMW5CO',  cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '43' },
+  { id: 'ggmf', priceId: 'price_1TACguPCvjb6WUdan20UcyeX', cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '43' },
+  { id: 'ggwf', priceId: 'price_1TACitPCvjb6WUdaajVADkSr', cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '43' },
+  { id: 'ggnt', priceId: 'price_1TACjOPCvjb6WUdaaDSH9auo', cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '43' },
+  { id: 'kw',   priceId: 'price_1TACkoPCvjb6WUda6GxrUBrT',   cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '43' },
 ];
+
+// Only show add-ons whose Stripe Price ID has been filled in.
+// To activate a book: replace its placeholder with a real price_xxx value.
+const ACTIVE_ADDONS = ADDONS.filter(a => !a.priceId.startsWith('['));
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
@@ -51,23 +55,26 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         </div>
 
         <!-- ── Add-ons ───────────────────────────────────────────────────── -->
-        <div class="addons-section">
-          <h3>Dokup inne książeczki</h3>
-          <p class="addons-desc">Zaznacz publikacje, które chcesz dołączyć do zamówienia.</p>
-          <div class="addons-grid">
-            {ADDONS.map(addon => (
-              <label class="addon-card" for={`addon-${addon.id}`}>
-                <input type="checkbox" id={`addon-${addon.id}`} class="addon-cb" value={addon.priceId} />
-                <div class="addon-check">✓</div>
-                <img src={`${base}img/${addon.cover}`} alt={addon.title} class="addon-cover cover-img" />
-                <div class="addon-info">
-                  <span class="addon-title">{addon.title}</span>
-                  <span class="addon-price">{addon.price}</span>
-                </div>
-              </label>
-            ))}
+        <!-- Section is hidden until at least one add-on has a real Stripe Price ID -->
+        {ACTIVE_ADDONS.length > 0 && (
+          <div class="addons-section">
+            <h3>Dokup inne książeczki</h3>
+            <p class="addons-desc">Zaznacz publikacje, które chcesz dołączyć do zamówienia.</p>
+            <div class="addons-grid">
+              {ACTIVE_ADDONS.map(addon => (
+                <label class="addon-card" for={`addon-${addon.id}`}>
+                  <input type="checkbox" id={`addon-${addon.id}`} class="addon-cb" value={addon.priceId} />
+                  <div class="addon-check">✓</div>
+                  <img src={`${base}img/${addon.cover}`} alt={addon.title} class="addon-cover cover-img" />
+                  <div class="addon-info">
+                    <span class="addon-title">{addon.title}</span>
+                    <span class="addon-price">{addon.price}</span>
+                  </div>
+                </label>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <!-- ── Payment ───────────────────────────────────────────────────── -->
         <div class="payment-section">
