@@ -2,9 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 
 // ── Server endpoint ───────────────────────────────────────────────────────────
-// URL of server/checkout.php on your PHP server.
-// e.g. 'https://wbiernat.eu/server/checkout.php'
-const SERVER_CHECKOUT_URL = '[PLACEHOLDER: URL/server/checkout.php]';
+
+const SERVER_CHECKOUT_URL = 'korunahor.cz/wl_beskidzki/checkout.php';
 
 // ── Prices ────────────────────────────────────────────────────────────────────
 const BOOK_PRICE = '43 zł';
@@ -12,7 +11,7 @@ const BOOK_PRICE = '43 zł';
 // ── Stripe Price IDs ──────────────────────────────────────────────────────────
 // Get these from Stripe Dashboard → Products → (product) → Pricing.
 // Must match the IDs configured in server/.env (STRIPE_PRICE_* vars).
-const MAIN_PRICE_ID = '[STRIPE_PRICE_WL]';
+const MAIN_PRICE_ID = 'price_1TACezPCvjb6WUdamFdMW5CO';
 
 const ADDONS = [
   { id: 'kws',  priceId: '[STRIPE_PRICE_KWS]',  cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '[CENA]' },
