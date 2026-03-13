@@ -70,7 +70,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 <label class="addon-card" for={`addon-${addon.id}`}>
                   <input type="checkbox" id={`addon-${addon.id}`} class="addon-cb" value={addon.priceId} />
                   <div class="addon-check">✓</div>
-                  <img src={`${base}img/${addon.cover}`} alt={addon.title} class="addon-cover cover-img" />
+                  <img src={`${base}img/${addon.cover}`} alt={addon.title} class="addon-cover" />
                   <div class="addon-info">
                     <span class="addon-title">{addon.title}</span>
                     <span class="addon-price">{addon.price}</span>
@@ -78,6 +78,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                 </label>
               ))}
             </div>
+            <a href={`${base}inne-projekty/`} class="other-projects-link">Poznaj inne projekty &rarr;</a>
           </div>
         )}
 
@@ -261,6 +262,8 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   }
   .addons-section h3 { font-size: 1.1rem; margin-bottom: .35rem; }
   .addons-desc  { font-size: .88rem; color: var(--clr-muted); margin-bottom: 1rem; }
+  .other-projects-link { display: block; text-align: center; font-size: .88rem; color: var(--clr-accent); text-decoration: none; margin-top: .9rem; }
+  .other-projects-link:hover { text-decoration: underline; }
 
   .addons-grid  {
     display: grid;
