@@ -28,6 +28,11 @@ const BOOK_PRICE = '43 zł';
             <h2>Książeczka Głównego Grzbietu Małego Fatry</h2>
             <p class="price">{BOOK_PRICE}</p>
             <p class="price-note">Cena nie zawiera kosztów wysyłki.</p>
+            <ul class="order-hints">
+              <li>🔢 Liczbę książeczek możesz zmienić przy kasie</li>
+              <li>🏷️ Zniżki naliczane są automatycznie</li>
+              <li>🎟️ Kod rabatowy możesz dodać przy kasie</li>
+            </ul>
           </div>
         </div>
 
@@ -132,6 +137,8 @@ const BOOK_PRICE = '43 zł';
   .order-info h2 { font-size: 1.3rem; margin-bottom: .3rem; }
   .price      { font-size: 1.6rem; font-weight: 700; color: var(--clr-accent); }
   .price-note { font-size: .8rem; color: var(--clr-muted); margin-top: .2rem; }
+  .order-hints { list-style: none; margin: .6rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .25rem; }
+  .order-hints li { font-size: .78rem; color: var(--clr-muted); }
   .payment-section {
     background: #fff; border: 1px solid var(--clr-border); border-radius: 8px; padding: 1.8rem;
   }
