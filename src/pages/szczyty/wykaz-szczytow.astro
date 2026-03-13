@@ -149,7 +149,6 @@ const coordsJson = JSON.stringify(
   var _peakById   = {};
   var _normalIcon = null;
   var _activeIcon = null;
-  var _activeId   = null;
 
   function makeIcon(color, size) {
     return L.divIcon({
@@ -176,14 +175,6 @@ const coordsJson = JSON.stringify(
         if (!_map.hasLayer(marker)) marker.addTo(_map);
         visibleMarkers.push(marker);
       } else {
-        // If the hidden marker was active, clear that state
-        if (_activeId === id) {
-          _activeId = null;
-          marker.setIcon(_normalIcon);
-          marker.closePopup();
-          var row = document.querySelector('#peaks-table tbody tr[data-peak-id="' + id + '"]');
-          if (row) row.classList.remove('row-active');
-        }
         if (_map.hasLayer(marker)) marker.remove();
       }
     });
@@ -237,38 +228,15 @@ const coordsJson = JSON.stringify(
 
       // Hover preview (desktop)
       row.addEventListener('mouseenter', function () {
-        if (_activeId === id) return;
         if (_markerById[id] && _map.hasLayer(_markerById[id])) {
           _markerById[id].setIcon(_activeIcon);
           _markerById[id].openPopup();
         }
       });
       row.addEventListener('mouseleave', function () {
-        if (_activeId === id) return;
         if (_markerById[id]) {
           _markerById[id].setIcon(_normalIcon);
           _markerById[id].closePopup();
-        }
-      });
-
-      // Click / tap — lock / unlock selection
-      row.addEventListener('click', function () {
-        var prev = _activeId;
-        if (prev !== null && _markerById[prev]) {
-          _markerById[prev].setIcon(_normalIcon);
-          _markerById[prev].closePopup();
-          var prevRow = document.querySelector('#peaks-table tbody tr[data-peak-id="' + prev + '"]');
-          if (prevRow) prevRow.classList.remove('row-active');
-        }
-        if (prev === id) {
-          _activeId = null;
-        } else {
-          _activeId = id;
-          if (_markerById[id] && _map.hasLayer(_markerById[id])) {
-            _markerById[id].setIcon(_activeIcon);
-            _markerById[id].openPopup();
-          }
-          row.classList.add('row-active');
         }
       });
     });
@@ -593,14 +561,6 @@ const coordsJson = JSON.stringify(
   .peaks-table tbody tr:nth-child(even) { background: #f0f7fc; }
   .peaks-table tbody tr:hover           { background: #d4eaf6; }
   .td-flag { text-align: center; font-size: 1.1em; width: 2rem; }
-
-  /* Active row (tap/click on mobile) */
-  #peaks-table tbody tr[data-peak-id] { cursor: pointer; }
-  #peaks-table tbody tr.row-active {
-    background: #afd4ec !important;
-    outline: 2px solid #358dc2;
-    outline-offset: -2px;
-  }
 
   @media (max-width: 640px) {
     .levels-grid { grid-template-columns: 1fr; }
