@@ -95,7 +95,17 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             <li>&#128242; Google Pay / Apple Pay</li>
           </ul>
 
-          <button id="checkout-btn" class="btn btn-order">
+          <div class="consent-group">
+            <label class="consent-label">
+              <input type="checkbox" id="cb-regulamin" />
+              <span>Zapoznałem/am się z <a href={`${base}regulamin/`} target="_blank" rel="noopener">Regulaminem</a> i akceptuję jego postanowienia. <span class="consent-required">*</span></span>
+            </label>
+            <label class="consent-label">
+              <input type="checkbox" id="cb-newsletter" />
+              <span>Chcę otrzymywać newsletter z aktualnościami projektu. <span class="consent-optional">(opcjonalne)</span></span>
+            </label>
+          </div>
+          <button id="checkout-btn" class="btn btn-order" disabled>
             Przejdź do kasy &rarr;
           </button>
           <p id="checkout-error" class="checkout-error" hidden></p>
@@ -150,7 +160,15 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     var cfg   = JSON.parse(document.getElementById('checkout-data').textContent);
     var btn   = document.getElementById('checkout-btn');
     var errEl = document.getElementById('checkout-error');
+    var cbReg  = document.getElementById('cb-regulamin');
+    var cbNews = document.getElementById('cb-newsletter');
     if (!btn) return;
+
+    if (cbReg) {
+      cbReg.addEventListener('change', function () {
+        btn.disabled = !cbReg.checked;
+      });
+    }
 
     btn.addEventListener('click', function () {
       // Guard: catch unconfigured placeholders before sending the request
@@ -181,7 +199,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
       fetch(cfg.serverUrl, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ items: items }),
+        body:    JSON.stringify({ items: items, newsletter: !!(cbNews && cbNews.checked), regulamin: true }),
       })
         .then(function (res) { return res.json(); })
         .then(function (json) {
@@ -316,6 +334,38 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     font-size: .95rem;
   }
   .pm-logo { height: 24px; width: auto; vertical-align: middle; display: inline-block; }
+
+  /* ── Consents ── */
+  .consent-group {
+    background: #f8f9fa;
+    border: 1px solid var(--clr-border);
+    border-radius: 6px;
+    padding: .9rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+  }
+  .consent-label {
+    display: flex;
+    gap: .55rem;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: .88rem;
+    color: var(--clr-text);
+    line-height: 1.4;
+  }
+  .consent-label input[type="checkbox"] {
+    margin-top: .15rem;
+    flex-shrink: 0;
+    width: 15px;
+    height: 15px;
+    accent-color: var(--clr-accent);
+    cursor: pointer;
+  }
+  .consent-label a { color: var(--clr-accent); text-decoration: underline; }
+  .consent-required { color: #c0392b; font-weight: 700; }
+  .consent-optional { color: var(--clr-muted); font-style: italic; }
 
   .btn-order {
     display: block;

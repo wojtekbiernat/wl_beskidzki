@@ -95,6 +95,30 @@ $addressLine = implode(', ', array_filter([
     $address['country']     ?? '',
 ])) ?: '—';
 
+// ── Log consent record to CSV ─────────────────────────────────────────────────
+$newsletterConsent = $session['metadata']['newsletter_consent'] ?? 'false';
+$regulaminAccepted = $session['metadata']['regulamin_accepted'] ?? 'false';
+$consentTimestamp  = $session['metadata']['consent_timestamp']  ?? '';
+
+$csvFile = __DIR__ . '/consents.csv';
+$isNew   = !file_exists($csvFile);
+$fp      = fopen($csvFile, 'a');
+if ($fp) {
+    if ($isNew) {
+        fputcsv($fp, ['webhook_timestamp', 'order_id', 'payment_intent', 'email', 'regulamin_accepted', 'newsletter_consent', 'consent_timestamp']);
+    }
+    fputcsv($fp, [
+        date('c'),               // when webhook was received
+        $orderId,                // Stripe checkout session ID (cs_...)
+        $paymentIntentId ?? '',  // Stripe payment intent ID (pi_...)
+        $customerEmail,
+        $regulaminAccepted,
+        $newsletterConsent,
+        $consentTimestamp,       // when user clicked checkout
+    ]);
+    fclose($fp);
+}
+
 // ── Send notification email ───────────────────────────────────────────────────
 $emailSubject = "Nowe zamówienie Beskidzki Włóczykij — {$customerName}";
 

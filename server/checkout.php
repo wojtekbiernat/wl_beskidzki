@@ -109,6 +109,11 @@ if (empty($lineItems)) {
     exit;
 }
 
+// ── Consent flags (passed as Stripe metadata for webhook logging) ─────────────
+$newsletterConsent = !empty($body['newsletter']) ? 'true' : 'false';
+$regulaminAccepted = !empty($body['regulamin'])  ? 'true' : 'false';
+$consentTimestamp  = date('c'); // ISO 8601 — when the user clicked checkout
+
 // ── Build Stripe Checkout Session params ─────────────────────────────────────
 $params = [
     'mode'        => 'payment',
@@ -119,6 +124,10 @@ $params = [
     'shipping_address_collection[allowed_countries][1]' => 'CZ',
     'shipping_address_collection[allowed_countries][2]' => 'SK',
     'shipping_address_collection[allowed_countries][3]' => 'UA',
+    // Consent evidence — readable in Stripe Dashboard and available in webhook
+    'metadata[newsletter_consent]' => $newsletterConsent,
+    'metadata[regulamin_accepted]' => $regulaminAccepted,
+    'metadata[consent_timestamp]'  => $consentTimestamp,
 ];
 
 foreach ($lineItems as $i => $item) {
