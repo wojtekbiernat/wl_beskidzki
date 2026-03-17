@@ -14,11 +14,11 @@ const BOOK_PRICE = '43 zł';
 const MAIN_PRICE_ID = 'price_1TACezPCvjb6WUdamFdMW5CO';
 
 const ADDONS = [
-  { id: 'kws',  priceId: 'price_1TACg1PCvjb6WUdaSIOG3USx',  cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '43 zł' },
-  { id: 'ggmf', priceId: 'price_1TACguPCvjb6WUdan20UcyeX', cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '43 zł' },
-  { id: 'ggwf', priceId: 'price_1TACitPCvjb6WUdaajVADkSr', cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '43 zł' },
-  { id: 'ggnt', priceId: 'price_1TACjOPCvjb6WUdaaDSH9auo', cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '43 zł' },
-  { id: 'kw',   priceId: 'price_1TACkoPCvjb6WUda6GxrUBrT',   cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '43 zł' },
+  { id: 'kws',  priceId: 'price_1TACg1PCvjb6WUdaSIOG3USx',  cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '20 zł' },
+  { id: 'ggmf', priceId: 'price_1TACguPCvjb6WUdan20UcyeX', cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '15 zł' },
+  { id: 'ggwf', priceId: 'price_1TACitPCvjb6WUdaajVADkSr', cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '15 zł' },
+  { id: 'ggnt', priceId: 'price_1TACjOPCvjb6WUdaaDSH9auo', cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '15 zł' },
+  { id: 'kw',   priceId: 'price_1TACkoPCvjb6WUda6GxrUBrT',   cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '20 zł' },
 ];
 
 // Only show add-ons whose Stripe Price ID has been filled in.
@@ -99,12 +99,13 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
           <div class="consent-group">
             <label class="consent-label">
               <input type="checkbox" id="cb-regulamin" />
-              <span>Zapoznałem/am się z <a href={`${base}regulamin/`} target="_blank" rel="noopener">Regulaminem</a> i akceptuję jego postanowienia. <span class="consent-required">*</span></span>
+              <span>Zapoznałem/am się z <a href={`${base}regulamin/regulamin-sklepu/`} target="_blank" rel="noopener">Regulaminem sklepu</a> i <a href={`${base}regulamin/polityka-prywatnosci/`} target="_blank" rel="noopener">Polityką prywatności</a> i akceptuję ich postanowienia. <span class="consent-required">*</span></span>
             </label>
             <label class="consent-label">
               <input type="checkbox" id="cb-newsletter" />
-              <span>Chcę otrzymywać newsletter z aktualnościami projektu. <span class="consent-optional">(opcjonalne)</span></span>
+              <span>Chcę otrzymywać newsletter z informacjami o projekcie „Beskidzki Włóczykij", nowych publikacjach i aktualnościach. Wiem, że zgodę mogę wycofać w każdej chwili. <span class="consent-optional">(opcjonalne)</span></span>
             </label>
+            <p class="newsletter-note">Newsletter wysyłamy wyłącznie od czasu do czasu, z informacjami o projekcie, książeczkach i nowościach. Bez spamu.</p>
           </div>
           <button id="checkout-btn" class="btn btn-order" disabled>
             Przejdź do kasy &rarr;
@@ -141,7 +142,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         <!-- ── PTTK ──────────────────────────────────────────────────────── -->
         <div class="pttk-note">
           <h3>Zakup stacjonarny</h3>
-          <p>Książeczkę można nabyć osobiście w <strong>PTTK Katowice</strong> w cenie <strong>43 zł</strong>.</p>
+          <p>Książeczkę można nabyć osobiście w <strong>PTTK Katowice</strong> w cenie <strong>43 zł</strong>. Dostępność w sprzedaży stacjonarnej może być ograniczona.</p>
         </div>
 
       </div>
@@ -369,6 +370,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   .consent-label a { color: var(--clr-accent); text-decoration: underline; }
   .consent-required { color: #c0392b; font-weight: 700; }
   .consent-optional { color: var(--clr-muted); font-style: italic; }
+  .newsletter-note { font-size: .78rem; color: var(--clr-muted); margin-top: .1rem; padding-left: 1.45rem; }
 
   .btn-order {
     display: block;

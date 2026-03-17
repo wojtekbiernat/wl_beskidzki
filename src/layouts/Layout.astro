@@ -38,9 +38,11 @@ const nav: NavItem[] = [
   {
     local: '/regulamin', href: url('/regulamin/regulamin'), label: 'Regulamin',
     dropdown: [
-      { local: '/regulamin/regulamin',     href: url('/regulamin/regulamin'),     label: 'Regulamin'       },
-      { local: '/regulamin/regulamin-eng', href: url('/regulamin/regulamin-eng'), label: 'Regulations (EN)' },
-      { local: '/regulamin/rodo',          href: url('/regulamin/rodo'),          label: 'RODO'             },
+      { local: '/regulamin/regulamin',          href: url('/regulamin/regulamin'),          label: 'Regulamin'           },
+      { local: '/regulamin/regulamin-eng',     href: url('/regulamin/regulamin-eng'),     label: 'Regulations (EN)'    },
+      { local: '/regulamin/regulamin-sklepu',  href: url('/regulamin/regulamin-sklepu'),  label: 'Regulamin sklepu'    },
+      { local: '/regulamin/polityka-prywatnosci', href: url('/regulamin/polityka-prywatnosci'), label: 'Polityka prywatności' },
+      { local: '/regulamin/rodo',              href: url('/regulamin/rodo'),              label: 'RODO'                },
     ],
   },
   { local: '/przystap',    href: url('/przystap'),    label: 'Przystąp', cta: true },
@@ -117,10 +119,11 @@ const nav: NavItem[] = [
       <div class="container">
         <div class="footer-patron">
           <span class="footer-patron-label">Patron Projektu</span>
-          <a href="https://www.pttk.pl" target="_blank" rel="noopener">
+          <a href="https://pttk.katowice.pl" target="_blank" rel="noopener">
             <img src={url('/img/logo-pttk.png')} alt="PTTK" class="footer-patron-logo" />
           </a>
         </div>
+        <p class="footer-seller">Sprzedaż internetową książeczek prowadzi Aleksandra Torbus w ramach działalności nierejestrowanej. Szczegóły znajdują się w <a href={url('/regulamin/regulamin')}>Regulaminie sklepu i Polityce prywatności</a>.</p>
         <p class="footer-copy">&copy; {new Date().getFullYear()} Beskidzki Włóczykij. Wszelkie prawa zastrzeżone.</p>
       </div>
     </footer>
@@ -355,6 +358,8 @@ const nav: NavItem[] = [
     transition: opacity .2s;
   }
   .footer-patron-logo:hover { opacity: 1; }
+  .footer-seller { opacity: .65; font-size: .75rem; margin-bottom: .4rem; }
+  .footer-seller a { color: rgba(255,255,255,.85); text-decoration: underline; }
   .footer-copy { opacity: .7; font-size: .8rem; }
 
   /* ── Shared helpers ── */

@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 
 const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
 const PRICE_ID  = 'price_1TACjOPCvjb6WUdaaDSH9auo';
-const BOOK_PRICE = '43 zł';
+const BOOK_PRICE = '15 zł';
 ---
 
 <Layout
@@ -51,12 +51,13 @@ const BOOK_PRICE = '43 zł';
           <div class="consent-group">
             <label class="consent-label">
               <input type="checkbox" id="cb-regulamin" />
-              <span>Zapoznałem/am się z <a href="/wl_beskidzki/regulamin/regulamin/" target="_blank" rel="noopener">Regulaminem</a> i akceptuję jego postanowienia. <span class="consent-required">*</span></span>
+              <span>Zapoznałem/am się z <a href="/wl_beskidzki/regulamin/regulamin-sklepu/" target="_blank" rel="noopener">Regulaminem sklepu</a> i <a href="/wl_beskidzki/regulamin/polityka-prywatnosci/" target="_blank" rel="noopener">Polityką prywatności</a> i akceptuję ich postanowienia. <span class="consent-required">*</span></span>
             </label>
             <label class="consent-label">
               <input type="checkbox" id="cb-newsletter" />
-              <span>Chcę otrzymywać newsletter z aktualnościami projektu. <span class="consent-optional">(opcjonalne)</span></span>
+              <span>Chcę otrzymywać newsletter z informacjami o projekcie „Beskidzki Włóczykij", nowych publikacjach i aktualnościach. Wiem, że zgodę mogę wycofać w każdej chwili. <span class="consent-optional">(opcjonalne)</span></span>
             </label>
+            <p class="newsletter-note">Newsletter wysyłamy wyłącznie od czasu do czasu, z informacjami o projekcie, książeczkach i nowościach. Bez spamu.</p>
           </div>
           <button id="checkout-btn" class="btn btn-order" disabled>
             Przejdź do kasy &rarr;
@@ -88,7 +89,7 @@ const BOOK_PRICE = '43 zł';
 
         <div class="pttk-note">
           <h3>Zakup stacjonarny</h3>
-          <p>Książeczkę można nabyć osobiście w <strong>PTTK Katowice</strong>.</p>
+          <p>Książeczkę można nabyć osobiście w <strong>PTTK Katowice</strong>. Dostępność w sprzedaży stacjonarnej może być ograniczona.</p>
         </div>
 
       </div>
@@ -170,6 +171,7 @@ const BOOK_PRICE = '43 zł';
   .consent-label a { color: var(--clr-accent); text-decoration: underline; }
   .consent-required { color: #c0392b; font-weight: 700; }
   .consent-optional { color: var(--clr-muted); font-style: italic; }
+  .newsletter-note { font-size: .78rem; color: var(--clr-muted); margin-top: .1rem; padding-left: 1.45rem; }
   .btn-order { display: block; width: 100%; text-align: center; font-size: 1.1rem; padding: 1rem; background: #2ea44f; cursor: pointer; border: none; }
   .btn-order:hover:not(:disabled) { background: #22813d; }
   .btn-order:disabled { opacity: .6; cursor: not-allowed; }
