@@ -36,6 +36,33 @@ const BOOK_PRICE = '20 zł';
           </div>
         </div>
 
+        <div class="proj-about">
+          <h3>Dlaczego Węgry?</h3>
+          <p>Bliskość Polski, bardzo dobre połączenia drogowe i kolejowe, a przede wszystkim różnorodność krajobrazowa sprawiają, że Węgry są coraz chętniej wybieranym celem turystyki górskiej i krajoznawczej. Choć kraj ten kojarzony jest głównie z nizinami, w rzeczywistości posiada liczne pasma górskie i wyżynne, rozciągające się od przedgórzy Alp na zachodzie po wulkaniczne góry Tokaju na wschodzie.</p>
+          <p>Turyści doceniają węgierskie góry przez cały rok – za rozległe panoramy, dobre oznakowanie szlaków, liczne wieże widokowe oraz wyjątkowe połączenie przyrody z historią i kulturą. Świadczy o tym rosnące zainteresowanie wycieczkami pieszymi, rowerowymi i krajoznawczymi organizowanymi w górskich regionach Węgier.</p>
+          <details class="read-more">
+            <summary>Czytaj więcej</summary>
+            <div class="more-text">
+              <p>Wszystkie te przesłanki skłoniły nas do ustanowienia odznaki „Korona Wyżyn i Gór Węgier" – projektu, którego celem jest poznanie najwyższych punktów wszystkich mezoregionów górskich i wyżynnych kraju. Zdobywanie odznaki pozwala w sposób kompleksowy odkryć górskie oblicze Węgier – od Alpokalji, przez Dunántúli-középhegység, po Északi-középhegység.</p>
+              <p>Oczywiście, odznaka nie jest przeznaczona wyłącznie dla uczestników wycieczek organizowanych przez nasze biuro. Do jej zdobywania zachęcamy również turystów indywidualnych oraz osoby wędrujące z innymi organizatorami. Zaproponowany zestaw punktów należy traktować jako jeden z możliwych wariantów — każdy zdobywający może odwiedzać poszczególne szczyty i regiony w dowolnej kolejności.</p>
+              <h4>Słów parę o wyżynach i górach Węgier</h4>
+              <p>Węgierskie pasma górskie i wyżynne stanowią część Karpat Zachodnich oraz przedgórzy alpejskich, a także obszarów wulkanicznych Kotliny Panońskiej. Do najważniejszych należą:</p>
+              <ul>
+                <li><strong>Északi-középhegység</strong> (Północne Góry Średnie) – obejmujące m.in. Mátrę, Bükk, Börzsöny, Cserhát i Zempléni-hegység,</li>
+                <li><strong>Dunántúli-középhegység</strong> (Zadunajskie Góry Średnie) – z pasmami Bakony, Pilis, Vértes, Gerecse, Budai-hegység i Velencei-hegység,</li>
+                <li><strong>Alpokalja</strong> – zachodni skraj Węgier, będący przedłużeniem Alp,</li>
+                <li><strong>Dél-Dunántúl</strong> – region południowych wyżyn i wzgórz Mecsek oraz Villányi-hegység.</li>
+              </ul>
+              <h4>Granice regionów górskich</h4>
+              <p>Góry i wyżyny Węgier są wyraźnie oddzielone od nizin przez system wielkich rzek: Dunaju, Cisy, Drawy, a także mniejszych rzek i dolin śródgórskich. Naturalne granice wyznaczają doliny rzeczne, kotliny śródgórskie i przełomy, takie jak przełom Dunaju w rejonie Visegrádu czy doliny Bodrogu i Ipolyu na północy kraju.</p>
+              <h4>Podział regionalny</h4>
+              <p>Z punktu widzenia projektu przyjęto podział na mezoregiony, z których każdy reprezentowany jest przez swój najwyższy punkt. Pozwala to na równomierne ujęcie zarówno pasm wysokich (jak Mátra czy Bükk), jak i niższych wyżyn oraz wzgórz Zadunaja. Każdy z regionów posiada własny charakter – od wapiennych płaskowyżów i krasowych dolin, przez granitowe wzgórza przyalpejskie, po wulkaniczne stożki Tokaju.</p>
+              <h4>Trójstyki graniczne Węgier</h4>
+              <p>Węgry graniczą z siedmioma państwami, a w kilku miejscach spotykają się granice trzech krajów jednocześnie. Trójstyki te stanowią interesujące punkty krajoznawcze — zestawiono je w książeczce jako uzupełnienie projektu. <strong>Uwaga:</strong> trójstyki nie są obowiązkowe do zdobycia odznaki.</p>
+            </div>
+          </details>
+        </div>
+
         <div class="payment-section">
           <h3>Wybierz sposób płatności</h3>
           <p class="payment-desc">
@@ -194,4 +221,16 @@ const BOOK_PRICE = '20 zł';
   .pttk-note { background: #fefbe6; border: 1px solid #d4a017; border-radius: 8px; padding: 1.2rem 1.5rem; }
   .pttk-note h3 { font-size: 1rem; margin-bottom: .4rem; color: var(--clr-accent); }
   .pttk-note p  { font-size: .95rem; color: var(--clr-muted); }
+  .proj-about { background: #fff; border: 1px solid var(--clr-border); border-radius: 8px; padding: 1.5rem 1.8rem; }
+  .proj-about h3 { font-size: 1.1rem; margin-bottom: .75rem; }
+  .proj-about > p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; margin-bottom: .65rem; }
+  details.read-more { margin-top: .75rem; }
+  details.read-more summary { color: var(--clr-accent); font-size: .9rem; font-weight: 600; cursor: pointer; list-style: none; user-select: none; }
+  details.read-more summary::-webkit-details-marker { display: none; }
+  details.read-more summary::after { content: ' ▾'; }
+  details.read-more[open] summary::after { content: ' ▴'; }
+  .more-text { margin-top: .9rem; display: flex; flex-direction: column; gap: .6rem; }
+  .more-text p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; }
+  .more-text h4 { font-size: .95rem; font-weight: 700; color: var(--clr-text); margin-top: .4rem; }
+  .more-text ul { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .3rem; }
 </style>

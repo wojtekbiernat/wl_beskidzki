@@ -36,6 +36,25 @@ const BOOK_PRICE = '15 zł';
           </div>
         </div>
 
+        <div class="proj-about">
+          <h3>Dlaczego Wielka Fatra?</h3>
+          <p>Wielka Fatra porównywana bywa do polskich Bieszczadów — ogromne grzbietowe hale pasterskie przypominają połoniny. Hal tych jest jednak więcej niż w polskich Bieszczadach, a gołe, skalne szczyty, poprzeplatane wapienno-dolomitowymi kopcami, pocięte głębokimi dolinami wyraźnie ją od nich odróżniają. Przede wszystkim jednak Wielka Fatra wyróżnia się dzikością: mimo że dolinami biegną dobre drogi, ruch turystyczny jest tu niewielki, a baza noclegowa słabo rozbudowana.</p>
+          <p>Wszystkie te przesłanki skłoniły nas do ustanowienia odznaki „GŁÓWNY GRZBIET WIELKIEJ FATRY" i zaplanowania cyklu wycieczek, które doświadczonym turystom górskim umożliwią przejście ponad 150 km w Wielkiej Fatrze podczas 8 wędrówek.</p>
+          <details class="read-more">
+            <summary>Czytaj więcej</summary>
+            <div class="more-text">
+              <p>Oczywiście, odznaka ta nie jest przeznaczona tylko dla turystów naszego biura. Do zdobywania jej zachęcamy turystów indywidualnych oraz wędrujących z innymi organizatorami.</p>
+              <p>Zaproponowany przez nas podział trasy proszę traktować jako jeden z możliwych wariantów. Każdy zdobywający może przejść główny – zachodni i południowy – grzbiet Wielkiej Fatry w inny sposób, dzieląc go na mniejszą lub większą ilość odcinków. Ważne, żeby zostało to udokumentowane w sposób przez nas przedstawiony.</p>
+              <h4>Przebieg proponowanej trasy</h4>
+              <p>Pierwsze sześć wycieczek to wędrówka Wielkofatrzańską Magistralą (słow. Veľkofatranská magistrála), szlakiem znakowanym kolorem czerwonym, przebiegającym z północy na południe. Tworzą go dwa grzbiety: zachodni (Ľubochňa – Ploská) oraz południowy, najwyższy (Ploská – Krížna). Dwie ostatnie wycieczki to wędrówka z zachodu na wschód fragmentem Szlaku Bohaterów SNP (słow. Cesta hrdinov SNP) — najdłuższego szlaku turystycznego Słowacji, znakowanego kolorem czerwonym.</p>
+              <h4>Granice (według słowackiej regionalizacji)</h4>
+              <p>Aktualny podział orograficzny Słowacji z 1978 r. przyłączył do Wielkiej Fatry spore fragmenty terenu zaliczane przedtem do innych grup górskich — m.in. tereny na północ od rzeki Wag (dawna zachodnia część Gór Choczańskich), masyw Kotolnicy na południu oraz cały masyw Zwolenia (Zvolen, 1403 m) między przełęczą Veľký Šturec a Przełęczą Donowalską, należące przedtem do Tatr Niżnych.</p>
+              <h4>Podział geomorfologiczny</h4>
+              <p>Pasmo górskie dzieli się na siedem podjednostek: Bralná Fatra, Hôľna Fatra, Lysec, Revúcke podolie, Šiprúň, Šípska Fatra i Zvolen.</p>
+            </div>
+          </details>
+        </div>
+
         <div class="payment-section">
           <h3>Wybierz sposób płatności</h3>
           <p class="payment-desc">
@@ -194,4 +213,16 @@ const BOOK_PRICE = '15 zł';
   .pttk-note { background: #fefbe6; border: 1px solid #d4a017; border-radius: 8px; padding: 1.2rem 1.5rem; }
   .pttk-note h3 { font-size: 1rem; margin-bottom: .4rem; color: var(--clr-accent); }
   .pttk-note p  { font-size: .95rem; color: var(--clr-muted); }
+  .proj-about { background: #fff; border: 1px solid var(--clr-border); border-radius: 8px; padding: 1.5rem 1.8rem; }
+  .proj-about h3 { font-size: 1.1rem; margin-bottom: .75rem; }
+  .proj-about > p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; margin-bottom: .65rem; }
+  details.read-more { margin-top: .75rem; }
+  details.read-more summary { color: var(--clr-accent); font-size: .9rem; font-weight: 600; cursor: pointer; list-style: none; user-select: none; }
+  details.read-more summary::-webkit-details-marker { display: none; }
+  details.read-more summary::after { content: ' ▾'; }
+  details.read-more[open] summary::after { content: ' ▴'; }
+  .more-text { margin-top: .9rem; display: flex; flex-direction: column; gap: .6rem; }
+  .more-text p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; }
+  .more-text h4 { font-size: .95rem; font-weight: 700; color: var(--clr-text); margin-top: .4rem; }
+  .more-text ul { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .3rem; }
 </style>

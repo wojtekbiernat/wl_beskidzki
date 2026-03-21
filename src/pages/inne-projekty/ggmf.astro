@@ -36,6 +36,27 @@ const BOOK_PRICE = '15 zł';
           </div>
         </div>
 
+        <div class="proj-about">
+          <h3>Dlaczego Mała Fatra?</h3>
+          <p>Bliskość od polskiej granicy, dobre połączenia drogowe i kolejowe, a przede wszystkim niezwykłe piękno tego pasma górskiego uczyniły je niezwykle popularnym. Turyści doceniają jego uroki o każdej porze roku. Świadczy o tym ogromne zainteresowanie organizowanymi tam wycieczkami.</p>
+          <p>Wszystkie te przesłanki skłoniły nas do ustanowienia odznaki „GŁÓWNY GRZBIET MAŁEJ FATRY" i zaplanowania cyklu wycieczek, które doświadczonym turystom górskim umożliwią przejście ponad 150 km w Małej Fatrze podczas 9 wędrówek.</p>
+          <details class="read-more">
+            <summary>Czytaj więcej</summary>
+            <div class="more-text">
+              <p>Oczywiście, odznaka ta nie jest przeznaczona tylko dla turystów naszego biura. Do zdobywania jej zachęcamy turystów indywidualnych oraz wędrujących z innymi organizatorami.</p>
+              <p>Zaproponowany przez nas podział trasy proszę traktować jako jeden z możliwych wariantów. Każdy zdobywający może przejść główny grzbiet Małej Fatry w inny sposób, dzieląc go na mniejszą lub większą ilość odcinków. Ważne, żeby zostało to udokumentowane w sposób przez nas przedstawiony.</p>
+              <h4>Słów parę o Małej Fatrze</h4>
+              <p>Mała Fatra wchodzi w skład Łańcucha Małofatrzańskiego, który według polskiej regionalizacji należy do Centralnych Karpat Zachodnich, natomiast według słowackiego podziału do Wewnętrznych Karpat Zachodnich (Vnútorné Západné Karpaty).</p>
+              <h4>Granice (według słowackiej regionalizacji)</h4>
+              <p>Z Kotliny Żylińskiej granica oddzielająca Małą Fatrę od Gór Kisuckich biegnie w górę doliną rzeki Varínka i Bieleho potoku na przełęcz Rovná hora, stąd w dół doliną potoku Petrovský potok do jego ujścia do Zázrivki, dalej Zázrivką, która oddziela Małą Fatrę od Magury Orawskiej. Od ujścia Zázrivki w miejscowości Párnica granica oddzielająca Małą Fatrę od Wielkiej Fatry biegnie w dół rzekami Orawa i Wag po miejscowość Martin, z której w górę potokiem Turiec i potokiem Vríca tworzącym granicę z górami Żar. Od ujścia potoku Dlhý potok, aż do Kotliny Żylińskiej Mała Fatra graniczy z Górami Strażowskimi, a granica biegnie wzdłuż tego potoku w górę na przełęcz Fačkovské sedlo, stąd w dół potokiem Rajčanka.</p>
+              <h4>Podział</h4>
+              <p>Rzeka Wag dzieli Małą Fatrę na dwie części w miejscu przełomu w Streczniańskim Przesmyku: Małą Fatrę Luczańską na południowym zachodzie (najwyższe szczyty: Veľká lúka 1476 m, Krížava 1457 m, Minčol 1364 m, Kľak 1351 m) oraz Małą Fatrę Krywańską na północnym wschodzie (najwyższe szczyty: Wielki Krywań 1709 m, Mały Krywań 1671 m, Chleb 1646 m, Hromové 1636 m, Wielki Rozsutec 1610 m, Stoh 1607 m).</p>
+              <h4>Geologia</h4>
+              <p>Mała Fatra jest czwartą co do wysokości częścią Karpat Zachodnich (po Tatrach, Niżnych Tatrach oraz Beskidzie Żywieckim). Całość pasma ma kształt nieregularnej elipsy skierowanej z północnego zachodu na południowy wschód, jego długość wynosi 52 km, a maksymalna szerokość – 17 km. Swoją budową geologiczną Mała Fatra bardzo przypomina Tatry Zachodnie — jest zbudowana ze skał granitowych nakrytych czapą skał wapienno-dolomitowych.</p>
+            </div>
+          </details>
+        </div>
+
         <div class="payment-section">
           <h3>Wybierz sposób płatności</h3>
           <p class="payment-desc">
@@ -194,4 +215,16 @@ const BOOK_PRICE = '15 zł';
   .pttk-note { background: #fefbe6; border: 1px solid #d4a017; border-radius: 8px; padding: 1.2rem 1.5rem; }
   .pttk-note h3 { font-size: 1rem; margin-bottom: .4rem; color: var(--clr-accent); }
   .pttk-note p  { font-size: .95rem; color: var(--clr-muted); }
+  .proj-about { background: #fff; border: 1px solid var(--clr-border); border-radius: 8px; padding: 1.5rem 1.8rem; }
+  .proj-about h3 { font-size: 1.1rem; margin-bottom: .75rem; }
+  .proj-about > p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; margin-bottom: .65rem; }
+  details.read-more { margin-top: .75rem; }
+  details.read-more summary { color: var(--clr-accent); font-size: .9rem; font-weight: 600; cursor: pointer; list-style: none; user-select: none; }
+  details.read-more summary::-webkit-details-marker { display: none; }
+  details.read-more summary::after { content: ' ▾'; }
+  details.read-more[open] summary::after { content: ' ▴'; }
+  .more-text { margin-top: .9rem; display: flex; flex-direction: column; gap: .6rem; }
+  .more-text p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; }
+  .more-text h4 { font-size: .95rem; font-weight: 700; color: var(--clr-text); margin-top: .4rem; }
+  .more-text ul { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .3rem; }
 </style>

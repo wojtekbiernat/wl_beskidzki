@@ -36,6 +36,23 @@ const BOOK_PRICE = '15 zł';
           </div>
         </div>
 
+        <div class="proj-about">
+          <h3>Dlaczego Niżne Tatry?</h3>
+          <p>Niżne Tatry to najdłuższe i drugie co do wysokości pasmo górskie Słowacji, wyraźnie odrębne zarówno od Tatr Wysokich, jak i sąsiednich pasm karpackich. Tworzą potężny, zwarty masyw o długości blisko 100 kilometrów, ciągnący się równoleżnikowo od przełęczy Donovalskiej na zachodzie po przełęcz Vernárską na wschodzie. Ich główną osią jest rozległy grzbiet, w którym kulminują najwyższe szczyty pasma – Ďumbier (2043 m) i Chopok (2024 m).</p>
+          <p>Charakterystyczną cechą Niżnych Tatr jest wyraźna asymetria stoków. Północne zbocza opadają stromo ku dolinom Wagu i Hronu, są silnie rozczłonkowane i w dużej mierze zalesione, natomiast stoki południowe są łagodniejsze, szerokie i miejscami niemal płaskie. W partiach grzbietowych dominują rozległe hale – hole – porośnięte traworoślami i kosodrzewiną, które nadają pasmu surowy, wysokogórski charakter.</p>
+          <details class="read-more">
+            <summary>Czytaj więcej</summary>
+            <div class="more-text">
+              <p>Niżne Tatry wyróżniają się również budową geologiczną. Obok skał krystalicznych występują tu rozległe obszary wapieni i dolomitów, co sprzyja rozwojowi zjawisk krasowych. Pasmo należy do najbogatszych regionów jaskiniowych w Karpatach Zachodnich — znajduje się tu kilkaset jaskiń, w tym udostępnione turystycznie Demianowskie Jaskinie Wolności i Lodowa oraz Jaskinia Bystrzańska.</p>
+              <p>Grzbiet Niżnych Tatr oferuje jedne z najszerszych panoram w Karpatach — obejmujące Tatry Wysokie i Zachodnie, Wielką Fatrę, Góry Choczańskie, Rudawy Słowackie, a przy dobrej widoczności także Beskidy i Karpaty Wschodnie.</p>
+              <p>Ideą odznaki „GŁÓWNY GRZBIET NIŻNYCH TATR" jest etapowe, ciągłe przejście głównej osi pasma od wschodu ku zachodowi w formie ośmiu wycieczek jednodniowych. Trasa prowadzi przez najważniejsze partie pasma, obejmując zarówno rozległe odcinki halne, jak i najwyższe kulminacje z Ďumbierem i Chopokiem, a także kluczowe przełęcze i węzły komunikacyjne grzbietu. Odznaka adresowana jest do turystów posiadających doświadczenie w długich, całodziennych wędrówkach powyżej górnej granicy lasu.</p>
+              <h4>Ciekawostki</h4>
+              <p>Chata generála Milana Rastislava Štefánika (1740 m n.p.m.), położona na południowych stokach Ďumbiera, jest jednym z najważniejszych schronisk Niżnych Tatr. Pierwsze schronisko w tym miejscu powstało w 1924 roku, zostało zniszczone w 1944 roku podczas Słowackiego Powstania Narodowego, a obecny budynek wzniesiono w 1968 roku.</p>
+              <p>Cesta hrdinov SNP, upamiętniająca uczestników powstania, jest najdłuższym znakowanym szlakiem turystycznym na Słowacji — liczy około 770 km, rozpoczyna się przy zamku Devín nad Dunajem i kończy na Przełęczy Dukielskiej na granicy słowacko-polskiej.</p>
+            </div>
+          </details>
+        </div>
+
         <div class="payment-section">
           <h3>Wybierz sposób płatności</h3>
           <p class="payment-desc">
@@ -194,4 +211,16 @@ const BOOK_PRICE = '15 zł';
   .pttk-note { background: #fefbe6; border: 1px solid #d4a017; border-radius: 8px; padding: 1.2rem 1.5rem; }
   .pttk-note h3 { font-size: 1rem; margin-bottom: .4rem; color: var(--clr-accent); }
   .pttk-note p  { font-size: .95rem; color: var(--clr-muted); }
+  .proj-about { background: #fff; border: 1px solid var(--clr-border); border-radius: 8px; padding: 1.5rem 1.8rem; }
+  .proj-about h3 { font-size: 1.1rem; margin-bottom: .75rem; }
+  .proj-about > p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; margin-bottom: .65rem; }
+  details.read-more { margin-top: .75rem; }
+  details.read-more summary { color: var(--clr-accent); font-size: .9rem; font-weight: 600; cursor: pointer; list-style: none; user-select: none; }
+  details.read-more summary::-webkit-details-marker { display: none; }
+  details.read-more summary::after { content: ' ▾'; }
+  details.read-more[open] summary::after { content: ' ▴'; }
+  .more-text { margin-top: .9rem; display: flex; flex-direction: column; gap: .6rem; }
+  .more-text p { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; }
+  .more-text h4 { font-size: .95rem; font-weight: 700; color: var(--clr-text); margin-top: .4rem; }
+  .more-text ul { color: var(--clr-muted); font-size: .95rem; line-height: 1.7; padding-left: 1.3rem; display: flex; flex-direction: column; gap: .3rem; }
 </style>
