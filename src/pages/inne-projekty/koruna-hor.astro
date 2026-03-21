@@ -1,0 +1,100 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+
+<Layout
+  title="Koruna Hor"
+  description="Koruna Hor — projekt górski naszego zespołu. Więcej informacji na korunahor.cz."
+>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Koruna Hor</h1>
+      <p>Projekt górski naszego zespołu</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="container">
+      <div class="project-box">
+
+        <div class="project-summary">
+          <img src={`${base}img/KORUNA_HOR_COVER.jpg`} alt="Okładka Koruna Hor" class="cover-img" />
+          <div class="project-info">
+            <h2>Koruna Hor</h2>
+            <p class="project-desc">
+              Koruna Hor to projekt górski prowadzony przez nasz zespół.
+              Szczegółowe informacje, regulamin oraz możliwość zakupu książeczki
+              znajdziesz na dedykowanej stronie projektu.
+            </p>
+            <a
+              href="https://korunahor.cz/"
+              target="_blank"
+              rel="noopener"
+              class="btn btn-external"
+            >
+              Przejdź do korunahor.cz &rarr;
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</Layout>
+
+<style>
+  .project-box {
+    background: #fff;
+    border: 1px solid var(--clr-border);
+    border-radius: 10px;
+    padding: 2rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .project-summary {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+
+  .project-summary .cover-img {
+    width: 180px;
+    height: auto;
+    border-radius: 6px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  }
+
+  .project-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .project-info h2 {
+    font-size: 1.4rem;
+  }
+
+  .project-desc {
+    color: var(--clr-muted);
+    line-height: 1.65;
+  }
+
+  .btn-external {
+    align-self: flex-start;
+  }
+
+  @media (max-width: 520px) {
+    .project-summary {
+      flex-direction: column;
+    }
+    .project-summary .cover-img {
+      width: 100%;
+    }
+  }
+</style>
