@@ -18,42 +18,78 @@ import Layout from '../../layouts/Layout.astro';
     <div class="container content-body">
 
       <section class="reg-section">
-        <h2>1. Administrator danych</h2>
-        <p>[PLACEHOLDER: Dane administratora — imię, nazwisko lub nazwa organizacji, adres, e-mail kontaktowy.]</p>
-      </section>
-
-      <section class="reg-section">
-        <h2>2. Cel i zakres przetwarzania danych</h2>
-        <p>[PLACEHOLDER: W jakim celu zbierane są dane — realizacja zamówień, weryfikacja odznak, kontakt. Jakie dane są przetwarzane.]</p>
-      </section>
-
-      <section class="reg-section">
-        <h2>3. Podstawa prawna</h2>
-        <p>[PLACEHOLDER: Art. 6 RODO — zgoda, umowa, prawnie uzasadniony interes.]</p>
-      </section>
-
-      <section class="reg-section">
-        <h2>4. Czas przechowywania danych</h2>
-        <p>[PLACEHOLDER: Jak długo dane są przechowywane — np. przez czas trwania umowy + 5 lat.]</p>
-      </section>
-
-      <section class="reg-section">
-        <h2>5. Prawa osób, których dane dotyczą</h2>
-        <p>[PLACEHOLDER: Prawo dostępu, sprostowania, usunięcia, przenoszenia, sprzeciwu, ograniczenia przetwarzania. Sposób składania wniosków.]</p>
-      </section>
-
-      <section class="reg-section">
-        <h2>6. Pliki cookies</h2>
-        <p>[PLACEHOLDER: Czy strona używa cookies, w jakim celu, jak można je wyłączyć.]</p>
-      </section>
-
-      <section class="reg-section">
-        <h2>7. Kontakt</h2>
+        <h2>Klauzula informacyjna dotycząca przetwarzania danych osobowych</h2>
+        <p>Administratorem danych osobowych jest:</p>
         <p>
-          W sprawach dotyczących ochrony danych osobowych prosimy o kontakt przez
-          <a href="/wl_beskidzki/kontakt">formularz kontaktowy</a> lub pod adresem
-          e-mail: [PLACEHOLDER: adres e-mail].
+          <strong>Aleksandra Torbus</strong><br />
+          adres do korespondencji: 11 Listopada 20/5, 41-300 Dąbrowa Górnicza<br />
+          e-mail: <a href="mailto:biuro@beskidzkiwloczykij.pl">biuro@beskidzkiwloczykij.pl</a><br />
+          tel. +48 508 730 296
         </p>
+      </section>
+
+      <section class="reg-section">
+        <h2>Dane osobowe przetwarzane są w celu:</h2>
+        <ul>
+          <li>realizacji zamówień składanych za pośrednictwem strony internetowej,</li>
+          <li>kontaktu z klientem w sprawach związanych z zamówieniem,</li>
+          <li>obsługi płatności, dostawy, reklamacji i zwrotów,</li>
+          <li>realizacji obowiązków wynikających z przepisów podatkowych i rachunkowych,</li>
+          <li>przesyłania newslettera – wyłącznie w przypadku dobrowolnego wyrażenia zgody.</li>
+        </ul>
+      </section>
+
+      <section class="reg-section">
+        <h2>Podstawą prawną przetwarzania danych jest:</h2>
+        <ul>
+          <li>art. 6 ust. 1 lit. b RODO – wykonanie umowy lub podjęcie działań przed jej zawarciem,</li>
+          <li>art. 6 ust. 1 lit. c RODO – wypełnienie obowiązków prawnych ciążących na administratorze,</li>
+          <li>art. 6 ust. 1 lit. a RODO – zgoda osoby, której dane dotyczą, w przypadku newslettera,</li>
+          <li>art. 6 ust. 1 lit. f RODO – prawnie uzasadniony interes administratora, w szczególności w zakresie kontaktu, dochodzenia roszczeń lub obrony przed roszczeniami.</li>
+        </ul>
+      </section>
+
+      <section class="reg-section">
+        <h2>Odbiorcami danych mogą być podmioty wspierające realizację zamówień, w szczególności:</h2>
+        <ul>
+          <li>operatorzy płatności,</li>
+          <li>firmy kurierskie i pocztowe,</li>
+          <li>biuro rachunkowe,</li>
+          <li>dostawcy usług hostingowych i technicznych.</li>
+        </ul>
+      </section>
+
+      <section class="reg-section">
+        <h2>Dane osobowe przechowywane są:</h2>
+        <ul>
+          <li>przez czas niezbędny do realizacji zamówienia,</li>
+          <li>przez okres wymagany przepisami prawa podatkowego i rachunkowego,</li>
+          <li>przez czas niezbędny do rozpatrzenia reklamacji, zwrotu lub ewentualnych roszczeń,</li>
+          <li>do momentu cofnięcia zgody – w przypadku newslettera.</li>
+        </ul>
+      </section>
+
+      <section class="reg-section">
+        <h2>Każdej osobie, której dane dotyczą, przysługuje prawo do:</h2>
+        <ul>
+          <li>dostępu do swoich danych,</li>
+          <li>sprostowania danych,</li>
+          <li>usunięcia danych,</li>
+          <li>ograniczenia przetwarzania,</li>
+          <li>wniesienia sprzeciwu,</li>
+          <li>cofnięcia zgody w dowolnym momencie, jeśli przetwarzanie odbywa się na podstawie zgody,</li>
+          <li>wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych.</li>
+        </ul>
+      </section>
+
+      <section class="reg-section">
+        <h2>Dobrowolność podania danych</h2>
+        <p>Podanie danych osobowych jest dobrowolne, ale niezbędne do realizacji zamówienia lub kontaktu. W przypadku newslettera podanie adresu e-mail i wyrażenie zgody jest całkowicie dobrowolne.</p>
+      </section>
+
+      <section class="reg-section">
+        <h2>Kontakt</h2>
+        <p>W sprawach związanych z przetwarzaniem danych osobowych można kontaktować się pod adresem: <a href="mailto:biuro@beskidzkiwloczykij.pl">biuro@beskidzkiwloczykij.pl</a></p>
       </section>
 
     </div>
@@ -66,6 +102,8 @@ import Layout from '../../layouts/Layout.astro';
   .reg-section { margin-bottom: 2rem; padding-top: 1.2rem; border-top: 1px solid var(--clr-border); }
   .reg-section:first-child { border-top: none; }
   .reg-section h2 { font-size: 1.25rem; margin-bottom: .6rem; }
-  .reg-section p  { color: var(--clr-muted); }
+  .reg-section p  { color: var(--clr-muted); line-height: 1.75; margin-bottom: .7rem; }
+  .reg-section ul { padding-left: 1.5rem; color: var(--clr-muted); line-height: 1.75; margin-bottom: .7rem; }
+  .reg-section li { margin-bottom: .4rem; }
   .reg-section a  { color: var(--clr-accent); }
 </style>
