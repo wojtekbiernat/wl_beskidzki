@@ -579,6 +579,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   .paczkomat-address { font-size: .78rem; color: var(--clr-muted); display: block; }
 
   /* ── InPost modal overlay ── */
+  .paczkomat-modal[hidden] { display: none !important; }
   .paczkomat-modal {
     position: fixed; inset: 0; z-index: 9999;
     display: flex; align-items: center; justify-content: center; padding: 1rem;
