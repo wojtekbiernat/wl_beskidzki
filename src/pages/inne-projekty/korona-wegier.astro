@@ -75,6 +75,34 @@ const BOOK_PRICE = '20 zł';
             <li>&#128179; Karta płatnicza</li>
             <li>&#128242; Google Pay / Apple Pay</li>
           </ul>
+          <div class="shipping-method-group">
+            <p class="shipping-method-title">Sposób dostawy</p>
+            <label class="shipping-option-label">
+              <input type="radio" name="shipping-method" id="ship-paczkomat" value="paczkomat" />
+              <span class="shipping-option-content">
+                <span class="shipping-option-name">&#128230; Dostawa do Paczkomatu</span>
+                <span class="shipping-option-note">InPost &ndash; wybierz paczkomat na mapie</span>
+              </span>
+            </label>
+            <div id="paczkomat-picker" class="paczkomat-picker" hidden>
+              <button type="button" id="open-map-btn" class="btn-pick-paczkomat">Wybierz Paczkomat na mapie</button>
+              <div id="selected-paczkomat" class="selected-paczkomat" hidden>
+                <span class="paczkomat-icon">&#128205;</span>
+                <div>
+                  <span id="paczkomat-name" class="paczkomat-name"></span>
+                  <span id="paczkomat-address" class="paczkomat-address"></span>
+                </div>
+              </div>
+            </div>
+            <label class="shipping-option-label">
+              <input type="radio" name="shipping-method" id="ship-adres" value="adres" />
+              <span class="shipping-option-content">
+                <span class="shipping-option-name">&#127968; Dostawa na adres</span>
+                <span class="shipping-option-note">Poprosimy Ci&#281; o adres w kolejnym kroku</span>
+              </span>
+            </label>
+          </div>
+
           <div class="consent-group">
             <label class="consent-label">
               <input type="checkbox" id="cb-regulamin" />
@@ -139,11 +167,66 @@ const BOOK_PRICE = '20 zł';
     var cbNews = document.getElementById('cb-newsletter');
     if (!btn) return;
 
-    if (cbReg) {
-      cbReg.addEventListener('change', function () {
-        btn.disabled = !cbReg.checked;
-      });
+    var selectedPaczkomat        = null;
+    var selectedPaczkomatAddress = null;
+    var shipPaczkomat   = document.getElementById('ship-paczkomat');
+    var shipAdres       = document.getElementById('ship-adres');
+    var paczkomatPicker = document.getElementById('paczkomat-picker');
+    var openMapBtn      = document.getElementById('open-map-btn');
+    var selPaczkDiv     = document.getElementById('selected-paczkomat');
+    var paczkomatNameEl = document.getElementById('paczkomat-name');
+    var paczkomatAddrEl = document.getElementById('paczkomat-address');
+
+    function isShippingReady() {
+      if (shipAdres && shipAdres.checked) return true;
+      if (shipPaczkomat && shipPaczkomat.checked && selectedPaczkomat) return true;
+      return false;
     }
+    function updateBtn() {
+      btn.disabled = !(cbReg && cbReg.checked && isShippingReady());
+    }
+
+    if (cbReg) cbReg.addEventListener('change', updateBtn);
+
+    if (shipPaczkomat) shipPaczkomat.addEventListener('change', function () {
+      paczkomatPicker.hidden = !shipPaczkomat.checked;
+      updateBtn();
+    });
+    if (shipAdres) shipAdres.addEventListener('change', function () {
+      if (shipAdres.checked) paczkomatPicker.hidden = true;
+      updateBtn();
+    });
+
+    function loadEasyPack(cb) {
+      if (window.easyPack) { cb(); return; }
+      var link = document.createElement('link');
+      link.rel  = 'stylesheet';
+      link.href = 'https://geowidget.easypack24.net/css/easypack.css';
+      document.head.appendChild(link);
+      var s = document.createElement('script');
+      s.src = 'https://geowidget.easypack24.net/js/sdk-for-maps.js';
+      s.onload = function () {
+        easyPack.init({ defaultLocale: 'pl', mapType: 'osm', searchType: 'osm',
+          points: { types: ['parcel_locker'] }, display: { showTypesFilters: false } });
+        cb();
+      };
+      document.head.appendChild(s);
+    }
+
+    if (openMapBtn) openMapBtn.addEventListener('click', function () {
+      loadEasyPack(function () {
+        easyPack.modalMap(function (point, modal) {
+          modal.closeModal();
+          selectedPaczkomat        = point.name;
+          selectedPaczkomatAddress = point.address.line1 + ', ' + point.address.line2;
+          paczkomatNameEl.textContent = point.name;
+          paczkomatAddrEl.textContent = selectedPaczkomatAddress;
+          selPaczkDiv.hidden     = false;
+          openMapBtn.textContent = 'Zmień Paczkomat';
+          updateBtn();
+        }, { width: 500, height: 600 });
+      });
+    });
 
     btn.addEventListener('click', function () {
       btn.disabled    = true;
@@ -153,7 +236,14 @@ const BOOK_PRICE = '20 zł';
       fetch(cfg.serverUrl, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ items: [{ price: cfg.priceId, quantity: 1 }], newsletter: !!(cbNews && cbNews.checked), regulamin: true }),
+        body:    JSON.stringify({
+          items:             [{ price: cfg.priceId, quantity: 1 }],
+          newsletter:        !!(cbNews && cbNews.checked),
+          regulamin:         true,
+          shipping_method:   shipPaczkomat && shipPaczkomat.checked ? 'paczkomat' : 'adres',
+          paczkomat_id:      selectedPaczkomat || '',
+          paczkomat_address: selectedPaczkomatAddress || '',
+        }),
       })
         .then(function (res) { return res.json(); })
         .then(function (json) {
@@ -199,6 +289,21 @@ const BOOK_PRICE = '20 zł';
   .consent-required { color: #c0392b; font-weight: 700; }
   .consent-optional { color: var(--clr-muted); font-style: italic; }
   .newsletter-note { font-size: .78rem; color: var(--clr-muted); margin-top: .1rem; padding-left: 1.45rem; }
+  .shipping-method-group { background: #f8f9fa; border: 1px solid var(--clr-border); border-radius: 6px; padding: .9rem 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: .35rem; }
+  .shipping-method-title { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--clr-muted); margin-bottom: .25rem; }
+  .shipping-option-label { display: flex; align-items: flex-start; gap: .65rem; cursor: pointer; padding: .4rem .5rem; border-radius: 5px; transition: background .12s; }
+  .shipping-option-label:hover { background: #edf2f7; }
+  .shipping-option-label input[type="radio"] { margin-top: .22rem; flex-shrink: 0; accent-color: var(--clr-accent); cursor: pointer; }
+  .shipping-option-content { display: flex; flex-direction: column; gap: .05rem; }
+  .shipping-option-name { font-size: .9rem; font-weight: 600; color: var(--clr-text); }
+  .shipping-option-note { font-size: .78rem; color: var(--clr-muted); }
+  .paczkomat-picker { margin: .15rem 0 .25rem 1.75rem; display: flex; flex-direction: column; gap: .5rem; }
+  .btn-pick-paczkomat { font-size: .85rem; padding: .4rem .9rem; background: var(--clr-accent); color: #fff; border: none; border-radius: 5px; cursor: pointer; align-self: flex-start; transition: background .15s; }
+  .btn-pick-paczkomat:hover { background: #2474a0; }
+  .selected-paczkomat { background: #e4f3fa; border: 1px solid #b8dff5; border-radius: 5px; padding: .5rem .75rem; display: flex; align-items: flex-start; gap: .5rem; }
+  .paczkomat-icon { font-size: 1rem; flex-shrink: 0; }
+  .paczkomat-name    { font-size: .88rem; font-weight: 700; color: var(--clr-text); display: block; }
+  .paczkomat-address { font-size: .78rem; color: var(--clr-muted); display: block; }
   .btn-order { display: block; width: 100%; text-align: center; font-size: 1.1rem; padding: 1rem; background: #2ea44f; cursor: pointer; border: none; }
   .btn-order:hover:not(:disabled) { background: #22813d; }
   .btn-order:disabled { opacity: .6; cursor: not-allowed; }

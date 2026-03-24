@@ -114,21 +114,32 @@ $newsletterConsent = !empty($body['newsletter']) ? 'true' : 'false';
 $regulaminAccepted = !empty($body['regulamin'])  ? 'true' : 'false';
 $consentTimestamp  = date('c'); // ISO 8601 — when the user clicked checkout
 
+// ── Shipping / delivery details ───────────────────────────────────────────────
+$shippingMethod   = ($body['shipping_method'] ?? '') === 'paczkomat' ? 'paczkomat' : 'adres';
+$paczkomatId      = substr(trim((string)($body['paczkomat_id']      ?? '')), 0, 100);
+$paczkomatAddress = substr(trim((string)($body['paczkomat_address'] ?? '')), 0, 200);
+
 // ── Build Stripe Checkout Session params ─────────────────────────────────────
 $params = [
     'mode'        => 'payment',
     'success_url' => $successUrl,
     'cancel_url'  => $cancelUrl,
-    // Collect shipping address; add or remove countries as needed
-    'shipping_address_collection[allowed_countries][0]' => 'PL',
-    'shipping_address_collection[allowed_countries][1]' => 'CZ',
-    'shipping_address_collection[allowed_countries][2]' => 'SK',
-    'shipping_address_collection[allowed_countries][3]' => 'UA',
     // Consent evidence — readable in Stripe Dashboard and available in webhook
     'metadata[newsletter_consent]' => $newsletterConsent,
     'metadata[regulamin_accepted]' => $regulaminAccepted,
     'metadata[consent_timestamp]'  => $consentTimestamp,
+    'metadata[shipping_method]'    => $shippingMethod,
+    'metadata[paczkomat_id]'       => $paczkomatId,
+    'metadata[paczkomat_address]'  => $paczkomatAddress,
 ];
+
+// Collect address from Stripe only when customer chose home delivery
+if ($shippingMethod === 'adres') {
+    $params['shipping_address_collection[allowed_countries][0]'] = 'PL';
+    $params['shipping_address_collection[allowed_countries][1]'] = 'CZ';
+    $params['shipping_address_collection[allowed_countries][2]'] = 'SK';
+    $params['shipping_address_collection[allowed_countries][3]'] = 'UA';
+}
 
 foreach ($lineItems as $i => $item) {
     $params["line_items[{$i}][price]"]                            = $item['price'];
