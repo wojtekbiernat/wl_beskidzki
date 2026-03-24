@@ -3,6 +3,9 @@ import Layout from '../../layouts/Layout.astro';
 
 const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
 const PRICE_ID  = 'price_1TACg1PCvjb6WUdaSIOG3USx';
+// ── InPost Geowidget token ─────────────────────────────────────────────────────
+// Get from: manager.paczkomaty.pl → API tab → generate token (free, public key)
+const INPOST_TOKEN = '';
 const BOOK_PRICE = '20 zł';
 ---
 
@@ -124,11 +127,24 @@ const BOOK_PRICE = '20 zł';
     </div>
   </div>
 
+  <!-- ── InPost Paczkomat modal ──────────────────────────────────────────── -->
+  <div id="paczkomat-modal" class="paczkomat-modal" hidden>
+    <div class="paczkomat-modal-backdrop"></div>
+    <div class="paczkomat-modal-inner">
+      <div class="paczkomat-modal-header">
+        <span>Wybierz Paczkomat</span>
+        <button type="button" id="close-map-btn" class="paczkomat-modal-close" aria-label="Zamknij">&#x2715;</button>
+      </div>
+      <div id="inpost-widget-container" class="inpost-widget-container"></div>
+    </div>
+  </div>
+
 </Layout>
 
 <script id="checkout-data" type="application/json" set:html={JSON.stringify({
-  serverUrl: SERVER_CHECKOUT_URL,
-  priceId:   PRICE_ID,
+  serverUrl:   SERVER_CHECKOUT_URL,
+  priceId:     PRICE_ID,
+  inpostToken: INPOST_TOKEN,
 })}></script>
 
 <script is:inline>
@@ -170,36 +186,70 @@ const BOOK_PRICE = '20 zł';
       updateBtn();
     });
 
-    function loadEasyPack(cb) {
-      if (window.easyPack) { cb(); return; }
+    var paczkomatModal  = document.getElementById('paczkomat-modal');
+    var closeMapBtn     = document.getElementById('close-map-btn');
+    var widgetContainer = document.getElementById('inpost-widget-container');
+    var widgetEl        = null;
+
+    function loadInPostScript(cb) {
+      if (document.getElementById('inpost-geowidget-script')) { cb(); return; }
       var link = document.createElement('link');
       link.rel  = 'stylesheet';
-      link.href = 'https://geowidget.easypack24.net/css/easypack.css';
+      link.href = 'https://geowidget.inpost.pl/inpost-geowidget.css';
       document.head.appendChild(link);
-      var s = document.createElement('script');
-      s.src = 'https://geowidget.easypack24.net/js/sdk-for-maps.js';
-      s.onload = function () {
-        easyPack.init({ defaultLocale: 'pl', mapType: 'osm', searchType: 'osm',
-          points: { types: ['parcel_locker'] }, display: { showTypesFilters: false } });
-        cb();
+      var s    = document.createElement('script');
+      s.id     = 'inpost-geowidget-script';
+      s.src    = 'https://geowidget.inpost.pl/inpost-geowidget.js';
+      s.onload = cb;
+      s.onerror = function () {
+        errEl.textContent = 'Nie udało się załadować mapy InPost. Sprawdź połączenie internetowe.';
+        errEl.hidden = false;
       };
       document.head.appendChild(s);
     }
 
-    if (openMapBtn) openMapBtn.addEventListener('click', function () {
-      loadEasyPack(function () {
-        easyPack.modalMap(function (point, modal) {
-          modal.closeModal();
-          selectedPaczkomat        = point.name;
-          selectedPaczkomatAddress = point.address.line1 + ', ' + point.address.line2;
-          paczkomatNameEl.textContent = point.name;
-          paczkomatAddrEl.textContent = selectedPaczkomatAddress;
-          selPaczkDiv.hidden     = false;
-          openMapBtn.textContent = 'Zmień Paczkomat';
-          updateBtn();
-        }, { width: 500, height: 600 });
+    function openPaczkomatModal() {
+      if (!cfg.inpostToken) {
+        errEl.textContent = 'Brakujący token InPost. Uzupełnij INPOST_TOKEN w pliku strony.';
+        errEl.hidden = false;
+        return;
+      }
+      loadInPostScript(function () {
+        if (!widgetEl) {
+          widgetEl = document.createElement('inpost-geowidget');
+          widgetEl.setAttribute('token', cfg.inpostToken);
+          widgetEl.setAttribute('language', 'pl');
+          widgetEl.setAttribute('config', 'parcelcollect');
+          widgetEl.style.cssText = 'display:block;width:100%;height:480px;';
+          widgetEl.addEventListener('inpost.geowidget.init', function (e) {
+            e.detail.api.addPointSelectedCallback(function (point) {
+              var d = point.address_details || {};
+              selectedPaczkomat        = point.name;
+              selectedPaczkomatAddress = [
+                ((d.street || '') + ' ' + (d.building_number || '')).trim(),
+                d.city || ''
+              ].filter(Boolean).join(', ');
+              paczkomatNameEl.textContent = point.name;
+              paczkomatAddrEl.textContent = selectedPaczkomatAddress;
+              selPaczkDiv.hidden     = false;
+              openMapBtn.textContent = 'Zmień Paczkomat';
+              paczkomatModal.hidden  = true;
+              updateBtn();
+            });
+          });
+          widgetContainer.appendChild(widgetEl);
+        }
+        paczkomatModal.hidden = false;
       });
-    });
+    }
+
+    if (openMapBtn) openMapBtn.addEventListener('click', openPaczkomatModal);
+    if (closeMapBtn) closeMapBtn.addEventListener('click', function () { paczkomatModal.hidden = true; });
+    if (paczkomatModal) {
+      paczkomatModal.querySelector('.paczkomat-modal-backdrop').addEventListener('click', function () {
+        paczkomatModal.hidden = true;
+      });
+    }
 
     btn.addEventListener('click', function () {
       btn.disabled    = true;
@@ -277,6 +327,13 @@ const BOOK_PRICE = '20 zł';
   .paczkomat-icon { font-size: 1rem; flex-shrink: 0; }
   .paczkomat-name    { font-size: .88rem; font-weight: 700; color: var(--clr-text); display: block; }
   .paczkomat-address { font-size: .78rem; color: var(--clr-muted); display: block; }
+  .paczkomat-modal { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+  .paczkomat-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
+  .paczkomat-modal-inner { position: relative; z-index: 1; background: #fff; border-radius: 10px; width: min(96vw, 620px); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 8px 40px rgba(0,0,0,.25); }
+  .paczkomat-modal-header { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1rem; border-bottom: 1px solid var(--clr-border); font-weight: 600; font-size: .95rem; flex-shrink: 0; }
+  .paczkomat-modal-close { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--clr-muted); padding: .2rem .5rem; border-radius: 4px; transition: background .12s; }
+  .paczkomat-modal-close:hover { background: #f0f0f0; }
+  .inpost-widget-container { flex: 1; overflow: hidden; min-height: 480px; }
   .btn-order { display: block; width: 100%; text-align: center; font-size: 1.1rem; padding: 1rem; background: #2ea44f; cursor: pointer; border: none; }
   .btn-order:hover:not(:disabled) { background: #22813d; }
   .btn-order:disabled { opacity: .6; cursor: not-allowed; }
