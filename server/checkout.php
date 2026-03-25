@@ -36,17 +36,17 @@ $allowedOrigin   = getenv('ALLOWED_ORIGIN');
 $successUrl      = getenv('CHECKOUT_SUCCESS_URL');
 $cancelUrl       = getenv('CHECKOUT_CANCEL_URL');
 
-// ── Allowed Stripe Price IDs (security allowlist) ────────────────────────────
-// Only price IDs listed here will be accepted — prevents clients from injecting
-// arbitrary products or prices into the checkout session.
-$allowedPriceIds = array_values(array_filter([
-    getenv('STRIPE_PRICE_WL'),
-    getenv('STRIPE_PRICE_KWS'),
-    getenv('STRIPE_PRICE_GGMF'),
-    getenv('STRIPE_PRICE_GGWF'),
-    getenv('STRIPE_PRICE_GGNT'),
-    getenv('STRIPE_PRICE_KW'),
-]));
+// ── Product code → Stripe Price ID map ───────────────────────────────────────
+// Frontend sends product codes ('WL', 'KWS', …) — Price IDs live only in .env.
+// To add/remove a product: edit .env. No frontend changes needed.
+$productPriceMap = array_filter([
+    'WL'   => getenv('STRIPE_PRICE_WL'),
+    'KWS'  => getenv('STRIPE_PRICE_KWS'),
+    'GGMF' => getenv('STRIPE_PRICE_GGMF'),
+    'GGWF' => getenv('STRIPE_PRICE_GGWF'),
+    'GGNT' => getenv('STRIPE_PRICE_GGNT'),
+    'KW'   => getenv('STRIPE_PRICE_KW'),
+]);
 
 // ── Validate required config ──────────────────────────────────────────────────
 // Do this before sending any CORS headers so misconfiguration is obvious.
@@ -92,22 +92,16 @@ if (!is_array($body) || empty($body['items']) || !is_array($body['items'])) {
 $lineItems = [];
 
 foreach ($body['items'] as $item) {
-    $priceId  = trim((string)($item['price']    ?? ''));
-    $quantity = max(1, min(99, (int)($item['quantity'] ?? 1)));
+    $productCode = strtoupper(trim((string)($item['product'] ?? '')));
+    $quantity    = max(1, min(99, (int)($item['quantity']  ?? 1)));
 
-    if (!$priceId) {
+    if (!$productCode || !array_key_exists($productCode, $productPriceMap)) {
         http_response_code(400);
-        echo json_encode(['error' => 'Empty price ID']);
+        echo json_encode(['error' => "Unknown product: {$productCode}"]);
         exit;
     }
 
-    if (!in_array($priceId, $allowedPriceIds, true)) {
-        http_response_code(400);
-        echo json_encode(['error' => "Price ID not allowed: {$priceId}"]);
-        exit;
-    }
-
-    $lineItems[] = ['price' => $priceId, 'quantity' => $quantity];
+    $lineItems[] = ['price' => $productPriceMap[$productCode], 'quantity' => $quantity];
 }
 
 if (empty($lineItems)) {

@@ -9,22 +9,21 @@ const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
 const BOOK_PRICE = '43 zł';
 const BOOK_PRICE_NUM = 43;
 
-// ── Stripe Price IDs ──────────────────────────────────────────────────────────
-// Get these from Stripe Dashboard → Products → (product) → Pricing.
-// Must match the IDs configured in server/.env (STRIPE_PRICE_* vars).
-const MAIN_PRICE_ID = 'price_1TACezPCvjb6WUdamFdMW5CO';
+// ── Product codes ─────────────────────────────────────────────────────────────
+// These are sent to checkout.php which resolves them to Stripe Price IDs via
+// server/.env — Price IDs are managed in one place only.
+const MAIN_PRODUCT = 'WL';
 
 const ADDONS = [
-  { id: 'kws',  priceId: 'price_1TACg1PCvjb6WUdaSIOG3USx',  cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '20 zł' },
-  { id: 'ggmf', priceId: 'price_1TACguPCvjb6WUdan20UcyeX', cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '15 zł' },
-  { id: 'ggwf', priceId: 'price_1TACitPCvjb6WUdaajVADkSr', cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '15 zł' },
-  { id: 'ggnt', priceId: 'price_1TACjOPCvjb6WUdaaDSH9auo', cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '15 zł' },
-  { id: 'kw',   priceId: 'price_1TACkoPCvjb6WUda6GxrUBrT',   cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '20 zł' },
+  { id: 'kws',  product: 'KWS',  active: true, cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '20 zł' },
+  { id: 'ggmf', product: 'GGMF', active: true, cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '15 zł' },
+  { id: 'ggwf', product: 'GGWF', active: true, cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '15 zł' },
+  { id: 'ggnt', product: 'GGNT', active: true, cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '15 zł' },
+  { id: 'kw',   product: 'KW',   active: true, cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '20 zł' },
 ];
 
-// Only show add-ons whose Stripe Price ID has been filled in.
-// To activate a book: replace its placeholder with a real price_xxx value.
-const ACTIVE_ADDONS = ADDONS.filter(a => !a.priceId.startsWith('['));
+// Set active: false on any addon to hide it from the order page
+const ACTIVE_ADDONS = ADDONS.filter(a => a.active);
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
@@ -79,7 +78,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             <div class="addons-grid">
               {ACTIVE_ADDONS.map(addon => (
                 <label class="addon-card" for={`addon-${addon.id}`}>
-                  <input type="checkbox" id={`addon-${addon.id}`} class="addon-cb" value={addon.priceId} />
+                  <input type="checkbox" id={`addon-${addon.id}`} class="addon-cb" value={addon.product} />
                   <div class="addon-check">✓</div>
                   <img src={`${base}img/${addon.cover}`} alt={addon.title} class="addon-cover" />
                   <div class="addon-info">
@@ -195,9 +194,9 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
 <!-- Pass server URL and main price ID to the inline script -->
 <script id="checkout-data" type="application/json" set:html={JSON.stringify({
-  serverUrl:   SERVER_CHECKOUT_URL,
-  mainPriceId: MAIN_PRICE_ID,
-  priceNum:    BOOK_PRICE_NUM,
+  serverUrl:    SERVER_CHECKOUT_URL,
+  mainProduct:  MAIN_PRODUCT,
+  priceNum:     BOOK_PRICE_NUM,
 })}></script>
 
 <script is:inline>
@@ -276,16 +275,10 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         errEl.hidden = false;
         return;
       }
-      if (cfg.mainPriceId.indexOf('[') !== -1) {
-        errEl.textContent = 'Konfiguracja: ustaw MAIN_PRICE_ID w przystap.astro na rzeczywisty Stripe Price ID (price_...).';
-        errEl.hidden = false;
-        return;
-      }
-
-      var items = [{ price: cfg.mainPriceId, quantity: qty }];
+      var items = [{ product: cfg.mainProduct, quantity: qty }];
       document.querySelectorAll('.addon-cb:checked').forEach(function (cb) {
         var valEl = cb.closest('.addon-card') && cb.closest('.addon-card').querySelector('.addon-qty-val');
-        items.push({ price: cb.value, quantity: valEl ? (parseInt(valEl.textContent) || 1) : 1 });
+        items.push({ product: cb.value, quantity: valEl ? (parseInt(valEl.textContent) || 1) : 1 });
       });
 
       btn.disabled    = true;

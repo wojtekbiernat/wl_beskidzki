@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 
 const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
-const PRICE_ID  = 'price_1TACg1PCvjb6WUdaSIOG3USx';
+const PRODUCT   = 'KWS';
 const BOOK_PRICE = '20 zł';
 const BOOK_PRICE_NUM = 20;
 ---
@@ -136,7 +136,7 @@ const BOOK_PRICE_NUM = 20;
 
 <script id="checkout-data" type="application/json" set:html={JSON.stringify({
   serverUrl:   SERVER_CHECKOUT_URL,
-  priceId:     PRICE_ID,
+  product:     PRODUCT,
   priceNum:    BOOK_PRICE_NUM,
 })}></script>
 
@@ -199,7 +199,7 @@ const BOOK_PRICE_NUM = 20;
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          items:             [{ price: cfg.priceId, quantity: qty }],
+          items:             [{ product: cfg.product, quantity: qty }],
           newsletter:        !!(cbNews && cbNews.checked),
           regulamin:         true,
           shipping_method:   shipPaczkomat && shipPaczkomat.checked ? 'paczkomat' : 'adres',
