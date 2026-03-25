@@ -23,6 +23,13 @@ declare(strict_types=1);
 //   STRIPE_PRICE_GGWF    — Stripe Price ID for Gł. Grzbiet Wielkiej Fatry
 //   STRIPE_PRICE_GGNT    — Stripe Price ID for Gł. Grzbiet Niżnych Tatr
 //   STRIPE_PRICE_KW      — Stripe Price ID for Korona Wzgórz i Gór Węgier
+//
+// Shipping rate IDs — create in Stripe Dashboard → Products → Shipping rates:
+//   STRIPE_SHIP_PACZKOMAT_SMALL — InPost Paczkomat, 1–3 books  (12,50 zł)
+//   STRIPE_SHIP_PACZKOMAT_LARGE — InPost Paczkomat, 4–10 books (17,50 zł)
+//   STRIPE_SHIP_KURIER_SMALL    — Kurier (DPD),     1–3 books  ( 6,00 zł)
+//   STRIPE_SHIP_KURIER_LARGE    — Kurier (DPD),     4–10 books (15,00 zł)
+//   STRIPE_SHIP_FREE            — Gratis,           11+ books  ( 0,00 zł)
 
 $stripeSecretKey = getenv('STRIPE_SECRET_KEY');
 $allowedOrigin   = getenv('ALLOWED_ORIGIN');
@@ -119,6 +126,38 @@ $shippingMethod   = ($body['shipping_method'] ?? '') === 'paczkomat' ? 'paczkoma
 $paczkomatId      = substr(trim((string)($body['paczkomat_id']      ?? '')), 0, 100);
 $paczkomatAddress = substr(trim((string)($body['paczkomat_address'] ?? '')), 0, 200);
 
+// ── Shipping rate selection ───────────────────────────────────────────────────
+// Count total books across all validated line items
+$totalBooks = 0;
+foreach ($lineItems as $item) {
+    $totalBooks += $item['quantity'];
+}
+
+// Determine price tier
+if ($totalBooks > 10) {
+    $tier = 'free';
+} elseif ($totalBooks >= 4) {
+    $tier = 'large';
+} else {
+    $tier = 'small';
+}
+
+// Map method + tier → Stripe shipping rate ID (set in .env)
+$shippingRateMap = [
+    'paczkomat' => [
+        'small'  => getenv('STRIPE_SHIP_PACZKOMAT_SMALL'),   // 12,50 zł
+        'large'  => getenv('STRIPE_SHIP_PACZKOMAT_LARGE'),   // 17,50 zł
+        'free'   => getenv('STRIPE_SHIP_FREE'),               //  0,00 zł
+    ],
+    'adres' => [
+        'small'  => getenv('STRIPE_SHIP_KURIER_SMALL'),      //  6,00 zł
+        'large'  => getenv('STRIPE_SHIP_KURIER_LARGE'),      // 15,00 zł
+        'free'   => getenv('STRIPE_SHIP_FREE'),               //  0,00 zł
+    ],
+];
+
+$shippingRateId = $shippingRateMap[$shippingMethod][$tier] ?? '';
+
 // ── Build Stripe Checkout Session params ─────────────────────────────────────
 $params = [
     'mode'        => 'payment',
@@ -141,12 +180,15 @@ if ($shippingMethod === 'adres') {
     $params['shipping_address_collection[allowed_countries][3]'] = 'UA';
 }
 
+// Attach shipping rate (pre-calculated from item count + delivery method)
+if ($shippingRateId) {
+    $params['shipping_options[0][shipping_rate]'] = $shippingRateId;
+}
+
 foreach ($lineItems as $i => $item) {
-    $params["line_items[{$i}][price]"]                            = $item['price'];
-    $params["line_items[{$i}][quantity]"]                         = $item['quantity'];
-    $params["line_items[{$i}][adjustable_quantity][enabled]"]     = 'true';
-    $params["line_items[{$i}][adjustable_quantity][minimum]"]     = 1;
-    $params["line_items[{$i}][adjustable_quantity][maximum]"]     = 50;
+    $params["line_items[{$i}][price]"]    = $item['price'];
+    $params["line_items[{$i}][quantity]"] = $item['quantity'];
+    // Quantity locked — user selects count on the website, not in Stripe checkout
 }
 
 // ── Call Stripe API ───────────────────────────────────────────────────────────
