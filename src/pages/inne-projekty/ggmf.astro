@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
 const PRICE_ID  = 'price_1TACguPCvjb6WUdan20UcyeX';
 const BOOK_PRICE = '15 zł';
+const BOOK_PRICE_NUM = 15;
 ---
 
 <Layout
@@ -28,8 +29,18 @@ const BOOK_PRICE = '15 zł';
             <h2>Książeczka Głównego Grzbietu Małego Fatry</h2>
             <p class="price">{BOOK_PRICE}</p>
             <p class="price-note">Cena nie zawiera kosztów wysyłki.</p>
+            <div class="qty-section">
+              <div class="qty-row">
+                <span class="qty-label">Liczba egzemplarzy:</span>
+                <div class="qty-stepper">
+                  <button type="button" class="qty-btn" id="qty-minus" aria-label="Mniej">&#x2212;</button>
+                  <span id="qty-display" class="qty-display">1</span>
+                  <button type="button" class="qty-btn" id="qty-plus" aria-label="Więcej">+</button>
+                </div>
+              </div>
+              <p id="qty-total" class="qty-total"></p>
+            </div>
             <ul class="order-hints">
-              <li>Liczbę książeczek możesz zmienić przy kasie</li>
               <li>Zniżki naliczane są automatycznie</li>
               <li>Kod rabatowy możesz dodać przy kasie</li>
             </ul>
@@ -198,7 +209,7 @@ const BOOK_PRICE = '15 zł';
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          items:             [{ price: cfg.priceId, quantity: 1 }],
+          items:             [{ price: cfg.priceId, quantity: qty }],
           newsletter:        !!(cbNews && cbNews.checked),
           regulamin:         true,
           shipping_method:   shipPaczkomat && shipPaczkomat.checked ? 'paczkomat' : 'adres',
@@ -233,6 +244,14 @@ const BOOK_PRICE = '15 zł';
   .order-info h2 { font-size: 1.3rem; margin-bottom: .3rem; }
   .price      { font-size: 1.6rem; font-weight: 700; color: var(--clr-accent); }
   .price-note { font-size: .8rem; color: var(--clr-muted); margin-top: .2rem; }
+  .qty-section { margin-top: .75rem; }
+  .qty-row { display: flex; align-items: center; gap: .75rem; }
+  .qty-label { font-size: .88rem; color: var(--clr-muted); }
+  .qty-stepper { display: flex; align-items: center; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
+  .qty-btn { background: #f5f7fa; border: none; width: 2rem; height: 2rem; font-size: 1.1rem; cursor: pointer; color: var(--clr-text); display: flex; align-items: center; justify-content: center; transition: background .12s; user-select: none; }
+  .qty-btn:hover { background: #e2e8f0; }
+  .qty-display { font-size: 1rem; font-weight: 700; min-width: 2.2rem; text-align: center; color: var(--clr-text); padding: 0 .25rem; }
+  .qty-total { font-size: .88rem; color: var(--clr-accent); font-weight: 600; margin-top: .35rem; min-height: 1.2em; }
   .order-hints { list-style: none; margin: .6rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .25rem; }
   .order-hints li { font-size: .78rem; color: var(--clr-muted); }
   .payment-section {
