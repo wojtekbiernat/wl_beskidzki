@@ -3,9 +3,6 @@ import Layout from '../../layouts/Layout.astro';
 
 const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
 const PRICE_ID  = 'price_1TACjOPCvjb6WUdaaDSH9auo';
-// ── InPost Geowidget token ─────────────────────────────────────────────────────
-// Get from: manager.paczkomaty.pl → API tab → generate token (free, public key)
-const INPOST_TOKEN = '';
 const BOOK_PRICE = '15 zł';
 ---
 
@@ -77,18 +74,16 @@ const BOOK_PRICE = '15 zł';
               <input type="radio" name="shipping-method" id="ship-paczkomat" value="paczkomat" />
               <span class="shipping-option-content">
                 <span class="shipping-option-name">&#128230; Dostawa do Paczkomatu</span>
-                <span class="shipping-option-note">InPost &ndash; wybierz paczkomat na mapie</span>
+                <span class="shipping-option-note">InPost &ndash; wpisz numer paczkomatu</span>
               </span>
             </label>
             <div id="paczkomat-picker" class="paczkomat-picker" hidden>
-              <button type="button" id="open-map-btn" class="btn-pick-paczkomat">Wybierz Paczkomat na mapie</button>
-              <div id="selected-paczkomat" class="selected-paczkomat" hidden>
-                <span class="paczkomat-icon">&#128205;</span>
-                <div>
-                  <span id="paczkomat-name" class="paczkomat-name"></span>
-                  <span id="paczkomat-address" class="paczkomat-address"></span>
-                </div>
+              <div class="paczkomat-input-row">
+                <input type="text" id="paczkomat-input" class="paczkomat-input"
+                       placeholder="np. KAT012" maxlength="20" autocomplete="off" />
+                <a href="https://inpost.pl/znajdz-paczkomat" target="_blank" rel="noopener" class="find-paczkomat-link">Znajdź paczkomat →</a>
               </div>
+              <p class="paczkomat-hint">Numer widoczny na drzwiach skrytki lub w aplikacji InPost</p>
             </div>
             <label class="shipping-option-label">
               <input type="radio" name="shipping-method" id="ship-adres" value="adres" />
@@ -147,24 +142,12 @@ const BOOK_PRICE = '15 zł';
     </div>
   </div>
 
-  <!-- ── InPost Paczkomat modal ──────────────────────────────────────────── -->
-  <div id="paczkomat-modal" class="paczkomat-modal" hidden>
-    <div class="paczkomat-modal-backdrop"></div>
-    <div class="paczkomat-modal-inner">
-      <div class="paczkomat-modal-header">
-        <span>Wybierz Paczkomat</span>
-        <button type="button" id="close-map-btn" class="paczkomat-modal-close" aria-label="Zamknij">&#x2715;</button>
-      </div>
-      <div id="inpost-widget-container" class="inpost-widget-container"></div>
-    </div>
-  </div>
 
 </Layout>
 
 <script id="checkout-data" type="application/json" set:html={JSON.stringify({
   serverUrl:   SERVER_CHECKOUT_URL,
   priceId:     PRICE_ID,
-  inpostToken: INPOST_TOKEN,
 })}></script>
 
 <script is:inline>
@@ -176,19 +159,14 @@ const BOOK_PRICE = '15 zł';
     var cbNews = document.getElementById('cb-newsletter');
     if (!btn) return;
 
-    var selectedPaczkomat        = null;
-    var selectedPaczkomatAddress = null;
     var shipPaczkomat   = document.getElementById('ship-paczkomat');
     var shipAdres       = document.getElementById('ship-adres');
     var paczkomatPicker = document.getElementById('paczkomat-picker');
-    var openMapBtn      = document.getElementById('open-map-btn');
-    var selPaczkDiv     = document.getElementById('selected-paczkomat');
-    var paczkomatNameEl = document.getElementById('paczkomat-name');
-    var paczkomatAddrEl = document.getElementById('paczkomat-address');
+    var paczkomatInput  = document.getElementById('paczkomat-input');
 
     function isShippingReady() {
       if (shipAdres && shipAdres.checked) return true;
-      if (shipPaczkomat && shipPaczkomat.checked && selectedPaczkomat) return true;
+      if (shipPaczkomat && shipPaczkomat.checked && paczkomatInput && paczkomatInput.value.trim()) return true;
       return false;
     }
     function updateBtn() {
@@ -196,6 +174,7 @@ const BOOK_PRICE = '15 zł';
     }
 
     if (cbReg) cbReg.addEventListener('change', updateBtn);
+    if (paczkomatInput) paczkomatInput.addEventListener('input', updateBtn);
 
     if (shipPaczkomat) shipPaczkomat.addEventListener('change', function () {
       paczkomatPicker.hidden = !shipPaczkomat.checked;
@@ -205,71 +184,6 @@ const BOOK_PRICE = '15 zł';
       if (shipAdres.checked) paczkomatPicker.hidden = true;
       updateBtn();
     });
-
-    var paczkomatModal  = document.getElementById('paczkomat-modal');
-    var closeMapBtn     = document.getElementById('close-map-btn');
-    var widgetContainer = document.getElementById('inpost-widget-container');
-    var widgetEl        = null;
-
-    function loadInPostScript(cb) {
-      if (document.getElementById('inpost-geowidget-script')) { cb(); return; }
-      var link = document.createElement('link');
-      link.rel  = 'stylesheet';
-      link.href = 'https://geowidget.inpost.pl/inpost-geowidget.css';
-      document.head.appendChild(link);
-      var s    = document.createElement('script');
-      s.id     = 'inpost-geowidget-script';
-      s.src    = 'https://geowidget.inpost.pl/inpost-geowidget.js';
-      s.onload = cb;
-      s.onerror = function () {
-        errEl.textContent = 'Nie udało się załadować mapy InPost. Sprawdź połączenie internetowe.';
-        errEl.hidden = false;
-      };
-      document.head.appendChild(s);
-    }
-
-    function openPaczkomatModal() {
-      if (!cfg.inpostToken) {
-        errEl.textContent = 'Brakujący token InPost. Uzupełnij INPOST_TOKEN w pliku strony.';
-        errEl.hidden = false;
-        return;
-      }
-      loadInPostScript(function () {
-        if (!widgetEl) {
-          widgetEl = document.createElement('inpost-geowidget');
-          widgetEl.setAttribute('token', cfg.inpostToken);
-          widgetEl.setAttribute('language', 'pl');
-          widgetEl.setAttribute('config', 'parcelcollect');
-          widgetEl.style.cssText = 'display:block;width:100%;height:480px;';
-          widgetEl.addEventListener('inpost.geowidget.init', function (e) {
-            e.detail.api.addPointSelectedCallback(function (point) {
-              var d = point.address_details || {};
-              selectedPaczkomat        = point.name;
-              selectedPaczkomatAddress = [
-                ((d.street || '') + ' ' + (d.building_number || '')).trim(),
-                d.city || ''
-              ].filter(Boolean).join(', ');
-              paczkomatNameEl.textContent = point.name;
-              paczkomatAddrEl.textContent = selectedPaczkomatAddress;
-              selPaczkDiv.hidden     = false;
-              openMapBtn.textContent = 'Zmień Paczkomat';
-              paczkomatModal.hidden  = true;
-              updateBtn();
-            });
-          });
-          widgetContainer.appendChild(widgetEl);
-        }
-        paczkomatModal.hidden = false;
-      });
-    }
-
-    if (openMapBtn) openMapBtn.addEventListener('click', openPaczkomatModal);
-    if (closeMapBtn) closeMapBtn.addEventListener('click', function () { paczkomatModal.hidden = true; });
-    if (paczkomatModal) {
-      paczkomatModal.querySelector('.paczkomat-modal-backdrop').addEventListener('click', function () {
-        paczkomatModal.hidden = true;
-      });
-    }
 
     btn.addEventListener('click', function () {
       btn.disabled    = true;
@@ -284,8 +198,7 @@ const BOOK_PRICE = '15 zł';
           newsletter:        !!(cbNews && cbNews.checked),
           regulamin:         true,
           shipping_method:   shipPaczkomat && shipPaczkomat.checked ? 'paczkomat' : 'adres',
-          paczkomat_id:      selectedPaczkomat || '',
-          paczkomat_address: selectedPaczkomatAddress || '',
+          paczkomat_id:      paczkomatInput ? paczkomatInput.value.trim() : '',
         }),
       })
         .then(function (res) { return res.json(); })
@@ -341,20 +254,11 @@ const BOOK_PRICE = '15 zł';
   .shipping-option-name { font-size: .9rem; font-weight: 600; color: var(--clr-text); }
   .shipping-option-note { font-size: .78rem; color: var(--clr-muted); }
   .paczkomat-picker { margin: .15rem 0 .25rem 1.75rem; display: flex; flex-direction: column; gap: .5rem; }
-  .btn-pick-paczkomat { font-size: .85rem; padding: .4rem .9rem; background: var(--clr-accent); color: #fff; border: none; border-radius: 5px; cursor: pointer; align-self: flex-start; transition: background .15s; }
-  .btn-pick-paczkomat:hover { background: #2474a0; }
-  .selected-paczkomat { background: #e4f3fa; border: 1px solid #b8dff5; border-radius: 5px; padding: .5rem .75rem; display: flex; align-items: flex-start; gap: .5rem; }
-  .paczkomat-icon { font-size: 1rem; flex-shrink: 0; }
-  .paczkomat-name    { font-size: .88rem; font-weight: 700; color: var(--clr-text); display: block; }
-  .paczkomat-address { font-size: .78rem; color: var(--clr-muted); display: block; }
-  .paczkomat-modal[hidden] { display: none !important; }
-  .paczkomat-modal { position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-  .paczkomat-modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.55); }
-  .paczkomat-modal-inner { position: relative; z-index: 1; background: #fff; border-radius: 10px; width: min(96vw, 620px); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 8px 40px rgba(0,0,0,.25); }
-  .paczkomat-modal-header { display: flex; justify-content: space-between; align-items: center; padding: .75rem 1rem; border-bottom: 1px solid var(--clr-border); font-weight: 600; font-size: .95rem; flex-shrink: 0; }
-  .paczkomat-modal-close { background: none; border: none; cursor: pointer; font-size: 1.1rem; color: var(--clr-muted); padding: .2rem .5rem; border-radius: 4px; transition: background .12s; }
-  .paczkomat-modal-close:hover { background: #f0f0f0; }
-  .inpost-widget-container { flex: 1; overflow: hidden; min-height: 480px; }
+  .paczkomat-input-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+  .paczkomat-input { font-size: .9rem; padding: .4rem .65rem; border: 1px solid var(--clr-border); border-radius: 5px; width: 120px; }
+  .find-paczkomat-link { font-size: .82rem; color: var(--clr-accent); text-decoration: none; white-space: nowrap; }
+  .find-paczkomat-link:hover { text-decoration: underline; }
+  .paczkomat-hint { font-size: .76rem; color: var(--clr-muted); margin: 0; }
   .btn-order { display: block; width: 100%; text-align: center; font-size: 1.1rem; padding: 1rem; background: #2ea44f; cursor: pointer; border: none; }
   .btn-order:hover:not(:disabled) { background: #22813d; }
   .btn-order:disabled { opacity: .6; cursor: not-allowed; }
