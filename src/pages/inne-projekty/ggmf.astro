@@ -163,6 +163,7 @@ const BOOK_PRICE_NUM = 15;
 <script id="checkout-data" type="application/json" set:html={JSON.stringify({
   serverUrl:   SERVER_CHECKOUT_URL,
   priceId:     PRICE_ID,
+  priceNum:    BOOK_PRICE_NUM,
 })}></script>
 
 <script is:inline>
@@ -178,6 +179,21 @@ const BOOK_PRICE_NUM = 15;
     var shipAdres       = document.getElementById('ship-adres');
     var paczkomatPicker = document.getElementById('paczkomat-picker');
     var paczkomatInput  = document.getElementById('paczkomat-input');
+
+    var qty = 1;
+    var qtyMinus   = document.getElementById('qty-minus');
+    var qtyPlus    = document.getElementById('qty-plus');
+    var qtyDisplay = document.getElementById('qty-display');
+    var qtyTotal   = document.getElementById('qty-total');
+    function updateQtyDisplay() {
+      if (qtyDisplay) qtyDisplay.textContent = qty;
+      if (qtyTotal) {
+        var p = cfg.priceNum || 0;
+        qtyTotal.textContent = qty > 1 ? qty + ' \u00d7 ' + p + ' z\u0142 = ' + (qty * p) + ' z\u0142' : '';
+      }
+    }
+    if (qtyMinus) qtyMinus.addEventListener('click', function () { if (qty > 1)  { qty--; updateQtyDisplay(); } });
+    if (qtyPlus)  qtyPlus.addEventListener('click',  function () { if (qty < 20) { qty++; updateQtyDisplay(); } });
 
     function isShippingReady() {
       if (shipAdres && shipAdres.checked) return true;

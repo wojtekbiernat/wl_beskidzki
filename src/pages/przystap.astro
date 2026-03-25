@@ -85,6 +85,11 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
                   <div class="addon-info">
                     <span class="addon-title">{addon.title}</span>
                     <span class="addon-price">{addon.price}</span>
+                    <div class="addon-qty-row">
+                      <button type="button" class="addon-qty-btn" data-dir="-1">&#x2212;</button>
+                      <span class="addon-qty-val">1</span>
+                      <button type="button" class="addon-qty-btn" data-dir="1">+</button>
+                    </div>
                   </div>
                 </label>
               ))}
@@ -194,6 +199,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 <script id="checkout-data" type="application/json" set:html={JSON.stringify({
   serverUrl:   SERVER_CHECKOUT_URL,
   mainPriceId: MAIN_PRICE_ID,
+  priceNum:    BOOK_PRICE_NUM,
 })}></script>
 
 <script is:inline>
@@ -209,6 +215,41 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     var shipAdres       = document.getElementById('ship-adres');
     var paczkomatPicker = document.getElementById('paczkomat-picker');
     var paczkomatInput  = document.getElementById('paczkomat-input');
+
+    var qty = 1;
+    var qtyMinus   = document.getElementById('qty-minus');
+    var qtyPlus    = document.getElementById('qty-plus');
+    var qtyDisplay = document.getElementById('qty-display');
+    var qtyTotal   = document.getElementById('qty-total');
+    function updateQtyDisplay() {
+      if (qtyDisplay) qtyDisplay.textContent = qty;
+      if (qtyTotal) {
+        var p = cfg.priceNum || 0;
+        qtyTotal.textContent = qty > 1 ? qty + ' \u00d7 ' + p + ' z\u0142 = ' + (qty * p) + ' z\u0142' : '';
+      }
+    }
+    if (qtyMinus) qtyMinus.addEventListener('click', function () { if (qty > 1)  { qty--; updateQtyDisplay(); } });
+    if (qtyPlus)  qtyPlus.addEventListener('click',  function () { if (qty < 20) { qty++; updateQtyDisplay(); } });
+
+    document.querySelectorAll('.addon-qty-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var row  = btn.closest('.addon-qty-row');
+        var valEl = row && row.querySelector('.addon-qty-val');
+        if (!valEl) return;
+        var v = (parseInt(valEl.textContent) || 1) + parseInt(btn.dataset.dir);
+        valEl.textContent = Math.min(20, Math.max(1, v));
+      });
+    });
+    document.querySelectorAll('.addon-cb').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        if (!cb.checked) {
+          var valEl = cb.closest('.addon-card') && cb.closest('.addon-card').querySelector('.addon-qty-val');
+          if (valEl) valEl.textContent = '1';
+        }
+      });
+    });
 
     function isShippingReady() {
       if (shipAdres && shipAdres.checked) return true;
@@ -245,7 +286,8 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 
       var items = [{ price: cfg.mainPriceId, quantity: qty }];
       document.querySelectorAll('.addon-cb:checked').forEach(function (cb) {
-        items.push({ price: cb.value, quantity: 1 });
+        var valEl = cb.closest('.addon-card') && cb.closest('.addon-card').querySelector('.addon-qty-val');
+        items.push({ price: cb.value, quantity: valEl ? (parseInt(valEl.textContent) || 1) : 1 });
       });
 
       btn.disabled    = true;
@@ -387,6 +429,11 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   .addon-info  { padding: .4rem .5rem .55rem; display: flex; flex-direction: column; gap: .1rem; }
   .addon-title { font-size: .72rem; font-weight: 600; line-height: 1.3; color: var(--clr-text); }
   .addon-price { font-size: .72rem; font-weight: 700; color: var(--clr-accent); }
+  .addon-qty-row { display: none; align-items: center; margin-top: .3rem; border: 1px solid var(--clr-border); border-radius: 5px; overflow: hidden; align-self: flex-start; }
+  .addon-card:has(input:checked) .addon-qty-row { display: flex; }
+  .addon-qty-btn { background: #f5f7fa; border: none; width: 1.6rem; height: 1.6rem; font-size: .9rem; cursor: pointer; color: var(--clr-text); display: flex; align-items: center; justify-content: center; transition: background .12s; user-select: none; }
+  .addon-qty-btn:hover { background: #e2e8f0; }
+  .addon-qty-val { font-size: .82rem; font-weight: 700; min-width: 1.6rem; text-align: center; }
 
   /* ── Payment ── */
   .payment-section {
