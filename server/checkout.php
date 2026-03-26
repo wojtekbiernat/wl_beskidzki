@@ -172,6 +172,14 @@ $params['shipping_address_collection[allowed_countries][1]'] = 'CZ';
 $params['shipping_address_collection[allowed_countries][2]'] = 'SK';
 $params['shipping_address_collection[allowed_countries][3]'] = 'UA';
 
+// For paczkomat orders, clarify why an address is being asked
+if ($shippingMethod === 'paczkomat') {
+    $params['custom_text[shipping_address][message]'] =
+        'Paczka zostanie dostarczona do wybranego paczkomatu. '
+        . 'Podaj swój adres zamieszkania — jest wymagany do celów prawnych '
+        . 'oraz obsługi ewentualnych zwrotów.';
+}
+
 // Attach shipping rate (pre-calculated from item count + delivery method)
 if ($shippingRateId) {
     $params['shipping_options[0][shipping_rate]'] = $shippingRateId;
