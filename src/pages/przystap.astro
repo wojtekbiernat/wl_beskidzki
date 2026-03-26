@@ -118,15 +118,17 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
               <input type="radio" name="shipping-method" id="ship-paczkomat" value="paczkomat" />
               <span class="shipping-option-content">
                 <span class="shipping-option-name">&#128230; Dostawa do Paczkomatu</span>
-                <span class="shipping-option-note">InPost &ndash; wpisz numer paczkomatu</span>
+                <span class="shipping-option-note">InPost Paczkomat</span>
               </span>
             </label>
             <div id="paczkomat-picker" class="paczkomat-picker" hidden>
+              <p class="paczkomat-label">Wpisz numer paczkomatu</p>
               <div class="paczkomat-input-row">
                 <input type="text" id="paczkomat-input" class="paczkomat-input"
                        placeholder="np. KAT012" maxlength="20" autocomplete="off" />
                 <a href="https://inpost.pl/znajdz-paczkomat" target="_blank" rel="noopener" class="find-paczkomat-link">Znajdź paczkomat →</a>
               </div>
+              <p class="paczkomat-hint">Jeżeli nie znasz nr. swojego paczkomatu, kliknij „Znajdź paczkomat", sprawdź numer na stronie InPostu, a potem wróć tutaj i wpisz go w polu poniżej.</p>
             </div>
             <label class="shipping-option-label">
               <input type="radio" name="shipping-method" id="ship-adres" value="adres" />
@@ -525,6 +527,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   .paczkomat-input { font-size: .9rem; padding: .4rem .65rem; border: 1px solid var(--clr-border); border-radius: 5px; width: 120px; }
   .find-paczkomat-link { font-size: .82rem; color: var(--clr-accent); text-decoration: none; white-space: nowrap; }
   .find-paczkomat-link:hover { text-decoration: underline; }
+  .paczkomat-label { font-size: .82rem; font-weight: 600; color: var(--clr-text); margin: 0; }
   .paczkomat-hint { font-size: .76rem; color: var(--clr-muted); margin: 0; }
 
   .btn-order {
