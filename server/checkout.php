@@ -166,13 +166,11 @@ $params = [
     'metadata[paczkomat_address]'  => $paczkomatAddress,
 ];
 
-// Collect address from Stripe only when customer chose home delivery
-if ($shippingMethod === 'adres') {
-    $params['shipping_address_collection[allowed_countries][0]'] = 'PL';
-    $params['shipping_address_collection[allowed_countries][1]'] = 'CZ';
-    $params['shipping_address_collection[allowed_countries][2]'] = 'SK';
-    $params['shipping_address_collection[allowed_countries][3]'] = 'UA';
-}
+// Always collect shipping address (required for legal/return purposes)
+$params['shipping_address_collection[allowed_countries][0]'] = 'PL';
+$params['shipping_address_collection[allowed_countries][1]'] = 'CZ';
+$params['shipping_address_collection[allowed_countries][2]'] = 'SK';
+$params['shipping_address_collection[allowed_countries][3]'] = 'UA';
 
 // Attach shipping rate (pre-calculated from item count + delivery method)
 if ($shippingRateId) {

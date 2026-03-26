@@ -99,6 +99,8 @@ $addressLine = implode(', ', array_filter([
 $newsletterConsent = $session['metadata']['newsletter_consent'] ?? 'false';
 $regulaminAccepted = $session['metadata']['regulamin_accepted'] ?? 'false';
 $consentTimestamp  = $session['metadata']['consent_timestamp']  ?? '';
+$shippingMethod    = $session['metadata']['shipping_method']    ?? '—';
+$paczkomatId       = $session['metadata']['paczkomat_id']       ?? '';
 
 $csvFile = __DIR__ . '/consents.csv';
 $isNew   = !file_exists($csvFile);
@@ -131,7 +133,12 @@ $emailBody = implode("\n", [
     "",
     "Klient          : {$customerName}",
     "E-mail          : {$customerEmail}",
-    "Adres dostawy   : {$addressLine}",
+    "",
+    "Metoda dostawy  : {$shippingMethod}",
+    $shippingMethod === 'paczkomat' && $paczkomatId !== ''
+        ? "Nr paczkomatu   : {$paczkomatId}"
+        : "",
+    "Adres           : {$addressLine}",
     "",
     "Kwota           : {$amountTotal} {$currency}",
     "",
