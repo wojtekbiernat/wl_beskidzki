@@ -166,6 +166,9 @@ $params = [
     'metadata[paczkomat_address]'  => $paczkomatAddress,
 ];
 
+// Always collect phone number
+$params['phone_number_collection[enabled]'] = 'true';
+
 // Always collect shipping address (required for legal/return purposes)
 $params['shipping_address_collection[allowed_countries][0]'] = 'PL';
 $params['shipping_address_collection[allowed_countries][1]'] = 'CZ';

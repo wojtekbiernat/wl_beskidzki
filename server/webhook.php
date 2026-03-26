@@ -81,6 +81,7 @@ $address  = $customer['address'] ?? [];
 
 $customerName    = $customer['name']        ?? '—';
 $customerEmail   = $customer['email']       ?? '—';
+$customerPhone   = $customer['phone']       ?? '—';
 $orderId         = $session['id']           ?? '—';
 $paymentIntentId = $session['payment_intent'] ?? null;
 $amountTotal     = number_format((int)($session['amount_total'] ?? 0) / 100, 2, ',', ' ');
@@ -133,6 +134,7 @@ $emailBody = implode("\n", [
     "",
     "Klient          : {$customerName}",
     "E-mail          : {$customerEmail}",
+    "Telefon         : {$customerPhone}",
     "",
     "Metoda dostawy  : {$shippingMethod}",
     $shippingMethod === 'paczkomat' && $paczkomatId !== ''
