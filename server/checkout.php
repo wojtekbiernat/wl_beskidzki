@@ -128,7 +128,7 @@ foreach ($lineItems as $item) {
 }
 
 // Determine price tier
-if ($totalBooks > 10) {
+if ($totalBooks > 5) {
     $tier = 'free';
 } elseif ($totalBooks >= 4) {
     $tier = 'large';
