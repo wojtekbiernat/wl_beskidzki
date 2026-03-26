@@ -27,8 +27,8 @@ declare(strict_types=1);
 // Shipping rate IDs — create in Stripe Dashboard → Products → Shipping rates:
 //   STRIPE_SHIP_PACZKOMAT_SMALL — InPost Paczkomat, 1–3 books  (12,50 zł)
 //   STRIPE_SHIP_PACZKOMAT_LARGE — InPost Paczkomat, 4–10 books (17,50 zł)
-//   STRIPE_SHIP_KURIER_SMALL    — Kurier (DPD),     1–3 books  ( 6,00 zł)
-//   STRIPE_SHIP_KURIER_LARGE    — Kurier (DPD),     4–10 books (15,00 zł)
+//   STRIPE_SHIP_KURIER_SMALL    — Kurier (DPD),     1–3 books  ( 16,00 zł)
+//   STRIPE_SHIP_KURIER_LARGE    — Kurier (DPD),     4–10 books (21,00 zł)
 //   STRIPE_SHIP_FREE            — Gratis,           11+ books  ( 0,00 zł)
 
 $stripeSecretKey = getenv('STRIPE_SECRET_KEY');
@@ -144,8 +144,8 @@ $shippingRateMap = [
         'free'   => getenv('STRIPE_SHIP_FREE'),               //  0,00 zł
     ],
     'adres' => [
-        'small'  => getenv('STRIPE_SHIP_KURIER_SMALL'),      //  6,00 zł
-        'large'  => getenv('STRIPE_SHIP_KURIER_LARGE'),      // 15,00 zł
+        'small'  => getenv('STRIPE_SHIP_KURIER_SMALL'),      //  16,00 zł
+        'large'  => getenv('STRIPE_SHIP_KURIER_LARGE'),      // 21,00 zł
         'free'   => getenv('STRIPE_SHIP_FREE'),               //  0,00 zł
     ],
 ];
