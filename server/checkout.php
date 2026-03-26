@@ -176,7 +176,7 @@ $params['shipping_address_collection[allowed_countries][3]'] = 'UA';
 if ($shippingMethod === 'paczkomat') {
     $params['custom_text[shipping_address][message]'] =
         'Paczka zostanie dostarczona do wybranego paczkomatu. '
-        . 'Podaj swój adres zamieszkania — jest wymagany do celów prawnych '
+        . 'Podaj swój adres zamieszkania — jest wymagany do celów prawnych, podatkowych '
         . 'oraz obsługi ewentualnych zwrotów.';
 }
 
