@@ -14,9 +14,9 @@ declare(strict_types=1);
 
 // Required .env variables:
 //   STRIPE_SECRET_KEY    — Stripe secret API key (sk_live_... or sk_test_...)
-//   ALLOWED_ORIGIN       — frontend origin, e.g. https://wbiernat.eu
-//   CHECKOUT_SUCCESS_URL — e.g. https://wbiernat.eu/wl_beskidzki/przystap/?zamowienie=sukces
-//   CHECKOUT_CANCEL_URL  — e.g. https://wbiernat.eu/wl_beskidzki/przystap/
+//   ALLOWED_ORIGIN       — frontend origin, e.g. https://beskidzkiwloczykij.pl
+//   CHECKOUT_SUCCESS_URL — e.g. https://beskidzkiwloczykij.pl/sukces/
+//   CHECKOUT_CANCEL_URL  — e.g. https://beskidzkiwloczykij.pl/przystap/
 //   STRIPE_PRICE_WL      — Stripe Price ID for Beskidzki Włóczykij
 //   STRIPE_PRICE_KWS     — Stripe Price ID for Korona Woj. Śląskiego
 //   STRIPE_PRICE_GGMF    — Stripe Price ID for Gł. Grzbiet Małej Fatry
