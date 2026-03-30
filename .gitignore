@@ -8,3 +8,4 @@ node_modules/
 .DS_Store
 .astro/
 website_raw_data/
+.htaccess
