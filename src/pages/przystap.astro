@@ -2,41 +2,47 @@
 import Layout from '../layouts/Layout.astro';
 
 // ── Server endpoint ───────────────────────────────────────────────────────────
+const SERVER_CHECKOUT_URL = import.meta.env.PUBLIC_SERVER_BASE + '/checkout.php';
 
-const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
+// ── Main book ─────────────────────────────────────────────────────────────────
+const MAIN_BOOK = {
+  id:      'wl',
+  product: 'WL',
+  cover:   'BookCover.jpg',
+  title:   'Książeczka odznaki Beskidzki Włóczykij',
+  price:   '43 zł',
+};
 
-// ── Prices ────────────────────────────────────────────────────────────────────
-const BOOK_PRICE = '43 zł';
-const BOOK_PRICE_NUM = 43;
-
-// ── Product codes ─────────────────────────────────────────────────────────────
-// These are sent to checkout.php which resolves them to Stripe Price IDs via
-// server/.env — Price IDs are managed in one place only.
-const MAIN_PRODUCT = 'WL';
-
-const ADDONS = [
-  { id: 'kws',  product: 'KWS',  active: true, cover: 'KWŚ_Cover.jpg',           title: 'Korona Woj. Śląskiego',       price: '20 zł' },
-  { id: 'ggmf', product: 'GGMF', active: true, cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '15 zł' },
-  { id: 'ggwf', product: 'GGWF', active: true, cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '15 zł' },
-  { id: 'ggnt', product: 'GGNT', active: true, cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '15 zł' },
-  { id: 'kw',   product: 'KW',   active: false, cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '20 zł' },
+// ── Badges ────────────────────────────────────────────────────────────────────
+const BADGES = [
+  { id: 'wl-braz',   product: 'WL_BRAZ',   cover: 'BRAZ.png',   title: 'Odznaka brązowa', price: '35 zł' },
+  { id: 'wl-srebro', product: 'WL_SREBRO', cover: 'SREBRO.png', title: 'Odznaka srebrna', price: '35 zł' },
+  { id: 'wl-zlota',  product: 'WL_ZLOTA',  cover: 'ZLOTO.png',  title: 'Odznaka złota',   price: '35 zł' },
 ];
 
-// Set active: false on any addon to hide it from the order page
-const ACTIVE_ADDONS = ADDONS.filter(a => a.active);
+// ── Extra books ───────────────────────────────────────────────────────────────
+// Set active: false on any item to hide it from the order page
+const EXTRA_BOOKS = [
+  { id: 'kws',  product: 'KWS',  active: true,  cover: 'KWS_Cover.jpg',            title: 'Korona Woj. Śląskiego',       price: '20 zł' },
+  { id: 'ggmf', product: 'GGMF', active: true,  cover: 'GGMF_Cover.jpg',          title: 'Gł. Grzbiet Małej Fatry',    price: '15 zł' },
+  { id: 'ggwf', product: 'GGWF', active: true,  cover: 'GGWF_Cover.jpg',          title: 'Gł. Grzbiet Wielkiej Fatry', price: '15 zł' },
+  { id: 'ggnt', product: 'GGNT', active: true,  cover: 'GGNT_Cover.jpg',          title: 'Gł. Grzbiet Niżnych Tatr',   price: '15 zł' },
+  { id: 'kw',   product: 'KW',   active: false, cover: 'KORONA_WEGIER_Cover.jpg', title: 'Korona Wzgórz i Gór Węgier', price: '20 zł' },
+];
+const ACTIVE_EXTRA_BOOKS = EXTRA_BOOKS.filter(b => b.active);
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 ---
 
 <Layout
   title="Przystąp"
-  description="Przystąp do projektu Beskidzki Włóczykij — zamów Odznakę i zgłoś swoje szczyty."
+  description="Przystąp do projektu Beskidzki Włóczykij — zamów książeczkę, odznakę i zgłoś swoje szczyty."
 >
 
   <div class="page-header">
     <div class="container">
       <h1>Przystąp do projektu</h1>
-      <p>Zamów książeczkę i zacznij zdobywać szczyty</p>
+      <p>Wybierz produkty i rozpocznij przygodę</p>
     </div>
   </div>
 
@@ -44,23 +50,26 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     <div class="container">
       <div class="order-box">
 
-        <!-- ── Main book ────────────────────────────────────────────────── -->
+        <!-- ── Section 1: Main book ─────────────────────────────────────── -->
         <div class="order-summary">
-          <img src={`${base}img/BookCover.jpg`} alt="Okładka książki" class="cover-img" />
+          <img src={`${base}img/${MAIN_BOOK.cover}`} alt={MAIN_BOOK.title} class="cover-img" />
           <div class="order-info">
-            <h2>Książeczka odznaki Beskidzki Włóczykij</h2>
-            <p class="price">{BOOK_PRICE}</p>
+            <h2>{MAIN_BOOK.title}</h2>
+            <p class="price">{MAIN_BOOK.price}</p>
             <p class="price-note">Cena nie zawiera kosztów wysyłki.</p>
-            <div class="qty-section">
+            <label class="book-opt-label">
+              <input type="checkbox" id="cb-mainbook" class="addon-cb" value={MAIN_BOOK.product} />
+              <span>Dodaj do zamówienia</span>
+            </label>
+            <div class="qty-section" id="mainbook-qty" hidden>
               <div class="qty-row">
                 <span class="qty-label">Liczba egzemplarzy:</span>
                 <div class="qty-stepper">
-                  <button type="button" class="qty-btn" id="qty-minus" aria-label="Mniej">&#x2212;</button>
-                  <span id="qty-display" class="qty-display">1</span>
-                  <button type="button" class="qty-btn" id="qty-plus" aria-label="Więcej">+</button>
+                  <button type="button" class="qty-btn addon-qty-btn" id="qty-minus" data-dir="-1" aria-label="Mniej">&#x2212;</button>
+                  <span id="qty-display" class="qty-display addon-qty-val">1</span>
+                  <button type="button" class="qty-btn addon-qty-btn" id="qty-plus" data-dir="1" aria-label="Więcej">+</button>
                 </div>
               </div>
-              <p id="qty-total" class="qty-total"></p>
             </div>
             <ul class="order-hints">
               <li>Zniżki naliczane są automatycznie</li>
@@ -69,21 +78,50 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
           </div>
         </div>
 
-        <!-- ── Add-ons ───────────────────────────────────────────────────── -->
-        <!-- Section is hidden until at least one add-on has a real Stripe Price ID -->
-        {ACTIVE_ADDONS.length > 0 && (
-          <div class="addons-section">
-            <h3>Dokup inne książeczki</h3>
-            <p class="addons-desc">Zaznacz publikacje, które chcesz dołączyć do zamówienia.</p>
+        <!-- ── Section 2: Badges ─────────────────────────────────────────── -->
+        <div class="order-section">
+          <h3 class="section-title">🏅 Odznaki</h3>
+          <p class="section-desc">Kupienie odznaki wymaga kodu przyznawanego przez weryfikatora.</p>
+          <div class="addons-grid badge-grid">
+            {BADGES.map(badge => (
+              <label class="addon-card badge-card" for={`addon-${badge.id}`}>
+                <input type="checkbox" id={`addon-${badge.id}`} class="addon-cb" value={badge.product} />
+                <div class="addon-check">✓</div>
+                <img src={`${base}img/${badge.cover}`} alt={badge.title} class="addon-cover" />
+                <div class="addon-info">
+                  <span class="addon-title">{badge.title}</span>
+                  <span class="addon-price">{badge.price}</span>
+                  <div class="badge-code-wrap">
+                    <input
+                      type="text"
+                      class="badge-code-input"
+                      data-badge={badge.product}
+                      placeholder="Kod weryfikacji"
+                      maxlength="8"
+                      autocomplete="off"
+                      spellcheck="false"
+                    />
+                  </div>
+                </div>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <!-- ── Section 3: Extra books ────────────────────────────────────── -->
+        {ACTIVE_EXTRA_BOOKS.length > 0 && (
+          <div class="order-section">
+            <h3 class="section-title">📚 Inne książeczki</h3>
+            <p class="section-desc">Dołącz do zamówienia publikacje innych projektów górskich i zaoszczędź na wysyłce.</p>
             <div class="addons-grid">
-              {ACTIVE_ADDONS.map(addon => (
-                <label class="addon-card" for={`addon-${addon.id}`}>
-                  <input type="checkbox" id={`addon-${addon.id}`} class="addon-cb" value={addon.product} />
+              {ACTIVE_EXTRA_BOOKS.map(book => (
+                <label class="addon-card" for={`addon-${book.id}`}>
+                  <input type="checkbox" id={`addon-${book.id}`} class="addon-cb" value={book.product} />
                   <div class="addon-check">✓</div>
-                  <img src={`${base}img/${addon.cover}`} alt={addon.title} class="addon-cover" />
+                  <img src={`${base}img/${book.cover}`} alt={book.title} class="addon-cover" />
                   <div class="addon-info">
-                    <span class="addon-title">{addon.title}</span>
-                    <span class="addon-price">{addon.price}</span>
+                    <span class="addon-title">{book.title}</span>
+                    <span class="addon-price">{book.price}</span>
                     <div class="addon-qty-row">
                       <button type="button" class="addon-qty-btn" data-dir="-1">&#x2212;</button>
                       <span class="addon-qty-val">1</span>
@@ -161,7 +199,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         <div class="shipping-info">
           <h3>Koszty wysyłki (z pakowaniem)</h3>
 
-          <p class="shipping-tier-label">1–3 książeczki</p>
+          <p class="shipping-tier-label">1–3 książeczki lub odznaki</p>
           <table>
             <tbody>
               <tr><td>InPost (paczkomat)</td><td>12,50 zł</td></tr>
@@ -169,7 +207,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             </tbody>
           </table>
 
-          <p class="shipping-tier-label">4–5 książeczek</p>
+          <p class="shipping-tier-label">4–5 książeczek lub odznak</p>
           <table>
             <tbody>
               <tr><td>InPost (paczkomat)</td><td>17,50 zł</td></tr>
@@ -177,7 +215,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
             </tbody>
           </table>
 
-          <p class="free-shipping">✅ Powyżej 5 książeczek — <strong>wysyłka gratis</strong> (DPD lub InPost)</p>
+          <p class="free-shipping">✅ Powyżej 5 książeczek lub odznak — <strong>wysyłka gratis</strong> (DPD lub InPost)</p>
         </div>
 
         <!-- ── PTTK ──────────────────────────────────────────────────────── -->
@@ -190,14 +228,10 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     </div>
   </div>
 
-
 </Layout>
 
-<!-- Pass server URL and main price ID to the inline script -->
 <script id="checkout-data" type="application/json" set:html={JSON.stringify({
-  serverUrl:    SERVER_CHECKOUT_URL,
-  mainProduct:  MAIN_PRODUCT,
-  priceNum:     BOOK_PRICE_NUM,
+  serverUrl: SERVER_CHECKOUT_URL,
 })}></script>
 
 <script is:inline>
@@ -214,51 +248,71 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     var paczkomatPicker = document.getElementById('paczkomat-picker');
     var paczkomatInput  = document.getElementById('paczkomat-input');
 
-    var qty = 1;
-    var qtyMinus   = document.getElementById('qty-minus');
-    var qtyPlus    = document.getElementById('qty-plus');
-    var qtyDisplay = document.getElementById('qty-display');
-    var qtyTotal   = document.getElementById('qty-total');
-    function updateQtyDisplay() {
-      if (qtyDisplay) qtyDisplay.textContent = qty;
-      if (qtyTotal) {
-        var p = cfg.priceNum || 0;
-        qtyTotal.textContent = qty > 1 ? qty + ' \u00d7 ' + p + ' z\u0142 = ' + (qty * p) + ' z\u0142' : '';
-      }
-    }
-    if (qtyMinus) qtyMinus.addEventListener('click', function () { if (qty > 1)  { qty--; updateQtyDisplay(); } });
-    if (qtyPlus)  qtyPlus.addEventListener('click',  function () { if (qty < 20) { qty++; updateQtyDisplay(); } });
+    // ── Badge code inputs — prevent click from toggling checkbox ─────────
+    document.querySelectorAll('.badge-code-input').forEach(function (inp) {
+      inp.addEventListener('click', function (e) { e.stopPropagation(); });
+      inp.addEventListener('input', updateBtn);
+    });
 
-    document.querySelectorAll('.addon-qty-btn').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
+    // ── Qty steppers (books only — badges have no stepper) ────────────────
+    document.querySelectorAll('.addon-qty-btn').forEach(function (qtyBtn) {
+      qtyBtn.addEventListener('click', function (e) {
         e.preventDefault();
         e.stopPropagation();
-        var row  = btn.closest('.addon-qty-row');
+        var row   = qtyBtn.closest('.addon-qty-row');
         var valEl = row && row.querySelector('.addon-qty-val');
         if (!valEl) return;
-        var v = (parseInt(valEl.textContent) || 1) + parseInt(btn.dataset.dir);
+        var v = (parseInt(valEl.textContent) || 1) + parseInt(qtyBtn.dataset.dir);
         valEl.textContent = Math.min(20, Math.max(1, v));
       });
     });
+
+    // Main book checkbox — show/hide qty stepper
+    var cbMainBook   = document.getElementById('cb-mainbook');
+    var mainBookQty  = document.getElementById('mainbook-qty');
+    var qtyDisplay   = document.getElementById('qty-display');
+    if (cbMainBook) {
+      cbMainBook.addEventListener('change', function () {
+        mainBookQty.hidden = !cbMainBook.checked;
+        if (!cbMainBook.checked && qtyDisplay) qtyDisplay.textContent = '1';
+        updateBtn();
+      });
+    }
+
+    // Reset qty to 1 and re-check button state on uncheck (addon cards)
     document.querySelectorAll('.addon-cb').forEach(function (cb) {
       cb.addEventListener('change', function () {
         if (!cb.checked) {
           var valEl = cb.closest('.addon-card') && cb.closest('.addon-card').querySelector('.addon-qty-val');
           if (valEl) valEl.textContent = '1';
         }
+        updateBtn();
       });
     });
 
+    // ── Readiness checks ──────────────────────────────────────────────────
+    function hasItems() {
+      return document.querySelectorAll('.addon-cb:checked').length > 0;
+    }
+    function badgeCodesValid() {
+      var ok = true;
+      document.querySelectorAll('.badge-card').forEach(function (card) {
+        var cb    = card.querySelector('.addon-cb');
+        var input = card.querySelector('.badge-code-input');
+        if (cb && cb.checked && input && !input.value.trim()) ok = false;
+      });
+      return ok;
+    }
     function isShippingReady() {
       if (shipAdres && shipAdres.checked) return true;
       if (shipPaczkomat && shipPaczkomat.checked && paczkomatInput && paczkomatInput.value.trim()) return true;
       return false;
     }
     function updateBtn() {
-      btn.disabled = !(cbReg && cbReg.checked && isShippingReady());
+      btn.disabled = !(hasItems() && cbReg && cbReg.checked && isShippingReady() && badgeCodesValid());
     }
 
-    if (cbReg) cbReg.addEventListener('change', updateBtn);
+    if (cbReg)          cbReg.addEventListener('change', updateBtn);
     if (paczkomatInput) paczkomatInput.addEventListener('input', updateBtn);
 
     if (shipPaczkomat) shipPaczkomat.addEventListener('change', function () {
@@ -270,16 +324,16 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
       updateBtn();
     });
 
+    // ── Checkout ──────────────────────────────────────────────────────────
     btn.addEventListener('click', function () {
-      if (cfg.serverUrl.indexOf('[') !== -1) {
-        errEl.textContent = 'Konfiguracja: ustaw SERVER_CHECKOUT_URL w przystap.astro na adres twojego serwera.';
-        errEl.hidden = false;
-        return;
-      }
-      var items = [{ product: cfg.mainProduct, quantity: qty }];
+      var items = [];
       document.querySelectorAll('.addon-cb:checked').forEach(function (cb) {
-        var valEl = cb.closest('.addon-card') && cb.closest('.addon-card').querySelector('.addon-qty-val');
-        items.push({ product: cb.value, quantity: valEl ? (parseInt(valEl.textContent) || 1) : 1 });
+        var card  = cb.closest('.addon-card');
+        var valEl = card && card.querySelector('.addon-qty-val');
+        var codeEl = card && card.querySelector('.badge-code-input');
+        var item  = { product: cb.value, quantity: valEl ? (parseInt(valEl.textContent) || 1) : 1 };
+        if (codeEl) item.badge_code = codeEl.value.trim().toLowerCase();
+        items.push(item);
       });
 
       btn.disabled    = true;
@@ -290,11 +344,11 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({
-          items:             items,
-          newsletter:        !!(cbNews && cbNews.checked),
-          regulamin:         true,
-          shipping_method:   shipPaczkomat && shipPaczkomat.checked ? 'paczkomat' : 'adres',
-          paczkomat_id:      paczkomatInput ? paczkomatInput.value.trim() : '',
+          items:           items,
+          newsletter:      !!(cbNews && cbNews.checked),
+          regulamin:       true,
+          shipping_method: shipPaczkomat && shipPaczkomat.checked ? 'paczkomat' : 'adres',
+          paczkomat_id:    paczkomatInput ? paczkomatInput.value.trim() : '',
         }),
       })
         .then(function (res) { return res.json(); })
@@ -334,46 +388,48 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     border-radius: 8px;
     padding: 1.5rem;
   }
-  .cover-img    { width: 100px; height: auto; border-radius: 4px; box-shadow: 0 2px 10px rgba(53,141,194,.2); flex-shrink: 0; }
+  .cover-img  { width: 100px; height: auto; border-radius: 4px; box-shadow: 0 2px 10px rgba(53,141,194,.2); flex-shrink: 0; }
   .order-info h2 { font-size: 1.3rem; margin-bottom: .3rem; }
-  .price         { font-size: 1.6rem; font-weight: 700; color: var(--clr-accent); }
-  .price-note    { font-size: .8rem; color: var(--clr-muted); margin-top: .2rem; }
-  .qty-section { margin-top: .75rem; }
+  .price      { font-size: 1.6rem; font-weight: 700; color: var(--clr-accent); }
+  .price-note { font-size: .8rem; color: var(--clr-muted); margin-top: .2rem; }
+  .book-opt-label {
+    display: inline-flex; align-items: center; gap: .6rem;
+    margin-top: .9rem; cursor: pointer;
+    font-size: 1rem; font-weight: 700; color: #fff;
+    background: var(--clr-accent); border-radius: 6px;
+    padding: .5rem .9rem;
+    transition: background .15s;
+  }
+  .book-opt-label:has(input:checked) { background: #22813d; }
+  .book-opt-label input { accent-color: #fff; width: 16px; height: 16px; cursor: pointer; flex-shrink: 0; }
+  .qty-section { margin-top: .6rem; }
   .qty-row { display: flex; align-items: center; gap: .75rem; }
   .qty-label { font-size: .88rem; color: var(--clr-muted); }
   .qty-stepper { display: flex; align-items: center; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
   .qty-btn { background: #f5f7fa; border: none; width: 2rem; height: 2rem; font-size: 1.1rem; cursor: pointer; color: var(--clr-text); display: flex; align-items: center; justify-content: center; transition: background .12s; user-select: none; }
   .qty-btn:hover { background: #e2e8f0; }
   .qty-display { font-size: 1rem; font-weight: 700; min-width: 2.2rem; text-align: center; color: var(--clr-text); padding: 0 .25rem; }
-  .qty-total { font-size: .88rem; color: var(--clr-accent); font-weight: 600; margin-top: .35rem; min-height: 1.2em; }
-  .order-hints {
-    list-style: none;
-    margin: .6rem 0 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: .25rem;
-  }
+  .order-hints { list-style: none; margin: .6rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .25rem; }
   .order-hints li { font-size: .78rem; color: var(--clr-muted); }
 
-  /* ── Add-ons ── */
-  .addons-section {
+  /* ── Order sections ── */
+  .order-section {
     background: #fff;
     border: 1px solid var(--clr-border);
     border-radius: 8px;
     padding: 1.5rem;
   }
-  .addons-section h3 { font-size: 1.1rem; margin-bottom: .35rem; }
-  .addons-desc  { font-size: .88rem; color: var(--clr-muted); margin-bottom: 1rem; }
+  .section-title { font-size: 1.1rem; margin-bottom: .35rem; }
+  .section-desc  { font-size: .88rem; color: var(--clr-muted); margin-bottom: 1rem; }
   .other-projects-link { display: block; text-align: center; font-size: .88rem; color: var(--clr-accent); text-decoration: none; margin-top: .9rem; }
   .other-projects-link:hover { text-decoration: underline; }
 
-  .addons-grid  {
+  /* ── Addon grid & cards ── */
+  .addons-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
     gap: .7rem;
   }
-
   .addon-card {
     position: relative;
     border: 2px solid var(--clr-border);
@@ -390,11 +446,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     border-color: var(--clr-accent);
     box-shadow: 0 0 0 3px rgba(53,141,194,.15);
   }
-
-  /* Hide the real checkbox — card is the interactive element */
   .addon-cb { position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none; }
-
-  /* Custom checkmark bubble */
   .addon-check {
     position: absolute;
     top: .35rem; right: .35rem;
@@ -416,8 +468,7 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
     border-color: var(--clr-accent);
     color: #fff;
   }
-
-  .addon-cover { width: 100%; height: auto; display: block; border-radius: 0; box-shadow: none; width: auto; }
+  .addon-cover { width: 100%; height: auto; display: block; }
   .addon-info  { padding: .4rem .5rem .55rem; display: flex; flex-direction: column; gap: .1rem; }
   .addon-title { font-size: .72rem; font-weight: 600; line-height: 1.3; color: var(--clr-text); }
   .addon-price { font-size: .72rem; font-weight: 700; color: var(--clr-accent); }
@@ -426,6 +477,23 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   .addon-qty-btn { background: #f5f7fa; border: none; width: 1.6rem; height: 1.6rem; font-size: .9rem; cursor: pointer; color: var(--clr-text); display: flex; align-items: center; justify-content: center; transition: background .12s; user-select: none; }
   .addon-qty-btn:hover { background: #e2e8f0; }
   .addon-qty-val { font-size: .82rem; font-weight: 700; min-width: 1.6rem; text-align: center; }
+
+  /* ── Badge code input ── */
+  .badge-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+  .badge-grid .addon-title { font-size: .8rem; }
+  .badge-grid .addon-price { font-size: .8rem; }
+
+  .badge-code-wrap { display: none; margin-top: .4rem; }
+  .badge-card:has(input.addon-cb:checked) .badge-code-wrap { display: block; }
+  .badge-code-input {
+    font-size: .72rem; font-family: monospace; letter-spacing: .05em;
+    width: 100%; padding: .3rem .4rem;
+    border: 1px solid var(--clr-accent); border-radius: 4px;
+    background: #fff; color: var(--clr-text);
+    text-transform: lowercase;
+    box-sizing: border-box;
+  }
+  .badge-code-input::placeholder { color: #aaa; font-style: italic; letter-spacing: 0; }
 
   /* ── Payment ── */
   .payment-section {
@@ -517,12 +585,8 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   .shipping-option-content { display: flex; flex-direction: column; gap: .05rem; }
   .shipping-option-name { font-size: .9rem; font-weight: 600; color: var(--clr-text); }
   .shipping-option-note { font-size: .78rem; color: var(--clr-muted); }
-  .paczkomat-picker {
-    margin: .15rem 0 .25rem 1.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: .5rem;
-  }
+  .paczkomat-picker { margin: .15rem 0 .25rem 1.75rem; display: flex; flex-direction: column; gap: .5rem; }
+  .paczkomat-modal[hidden] { display: none !important; }
   .paczkomat-input-row { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
   .paczkomat-input { font-size: .9rem; padding: .4rem .65rem; border: 1px solid var(--clr-border); border-radius: 5px; width: 120px; }
   .find-paczkomat-link { font-size: .82rem; color: var(--clr-accent); text-decoration: none; white-space: nowrap; }
@@ -542,16 +606,10 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
   }
   .btn-order:hover:not(:disabled) { background: #22813d; }
   .btn-order:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-
-  .checkout-error {
-    color: #c0392b;
-    font-size: .85rem;
-    text-align: center;
-    margin-top: .5rem;
-  }
+  .checkout-error { color: #c0392b; font-size: .85rem; text-align: center; margin-top: .5rem; }
   .secure-note { text-align: center; font-size: .8rem; color: var(--clr-muted); margin-top: .7rem; }
 
-  /* ── Shipping ── */
+  /* ── Shipping info ── */
   .shipping-info { background: #e4f3fa; border-radius: 8px; padding: 1.5rem; }
   .shipping-info h3 { font-size: 1.1rem; margin-bottom: .9rem; }
   .shipping-tier-label {

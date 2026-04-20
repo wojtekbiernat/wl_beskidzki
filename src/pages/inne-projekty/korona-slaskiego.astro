@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
+const SERVER_CHECKOUT_URL = import.meta.env.PUBLIC_SERVER_BASE + '/checkout.php';
 const PRODUCT   = 'KWS';
 const BOOK_PRICE = '20 zł';
 const BOOK_PRICE_NUM = 20;
@@ -24,7 +24,7 @@ const BOOK_PRICE_NUM = 20;
       <div class="order-box">
 
         <div class="order-summary">
-          <img src="/img/KWŚ_Cover.jpg" alt="Okładka Korona Województwa Śląskiego" class="cover-img" />
+          <img src="/img/KWS_Cover.jpg" alt="Okładka Korona Województwa Śląskiego" class="cover-img" />
           <div class="order-info">
             <h2>Książeczka Korona Woj. Śląskiego</h2>
             <p class="price">{BOOK_PRICE}</p>

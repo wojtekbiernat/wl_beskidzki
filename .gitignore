@@ -5,7 +5,13 @@ node_modules/
 **/.env
 **/.env.*
 !**/.env.example
+!/.env
 .DS_Store
 .astro/
 website_raw_data/
 .htaccess
+server/codes/WL_BRAZ.csv
+server/codes/WL_SREBRO.csv
+server/codes/WL_ZLOTA.csv
+server/webhook.log
+server/write_test.txt

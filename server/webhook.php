@@ -122,6 +122,38 @@ if ($fp) {
     fclose($fp);
 }
 
+// ── Mark badge verification codes as used ────────────────────────────────────
+$badgeProductCodes = ['WL_ZLOTA', 'WL_SREBRO', 'WL_BRAZ'];
+$codesDir          = __DIR__ . '/codes/';
+
+foreach ($badgeProductCodes as $product) {
+    $metaKey   = "badge_code_{$product}";
+    $badgeCode = strtolower(trim($session['metadata'][$metaKey] ?? ''));
+    if (!$badgeCode) continue;
+
+    $csvFile = $codesDir . $product . '.csv';
+    if (!file_exists($csvFile)) continue;
+
+    // Read → update → write with exclusive lock to prevent race conditions
+    $fh = fopen($csvFile, 'r+');
+    if (!$fh) continue;
+    flock($fh, LOCK_EX);
+
+    $rows   = [];
+    $header = fgetcsv($fh);
+    $rows[] = $header;
+    while (($row = fgetcsv($fh)) !== false) {
+        if (isset($row[0]) && $row[0] === $badgeCode) $row[1] = 1;
+        $rows[] = $row;
+    }
+
+    rewind($fh);
+    ftruncate($fh, 0);
+    foreach ($rows as $row) fputcsv($fh, $row);
+    flock($fh, LOCK_UN);
+    fclose($fh);
+}
+
 // ── Send notification email ───────────────────────────────────────────────────
 $emailSubject = "Nowe zamówienie Beskidzki Włóczykij — {$customerName}";
 
@@ -143,6 +175,9 @@ $emailBody = implode("\n", [
     "Adres           : {$addressLine}",
     "",
     "Kwota           : {$amountTotal} {$currency}",
+    !empty($session['metadata']['badge_code_WL_BRAZ'])   ? "Kod odznaki (brązowa)  : " . $session['metadata']['badge_code_WL_BRAZ']   : "",
+    !empty($session['metadata']['badge_code_WL_SREBRO']) ? "Kod odznaki (srebrna)  : " . $session['metadata']['badge_code_WL_SREBRO'] : "",
+    !empty($session['metadata']['badge_code_WL_ZLOTA'])  ? "Kod odznaki (złota)    : " . $session['metadata']['badge_code_WL_ZLOTA']  : "",
     "",
     str_repeat("─", 40),
     "Stripe Dashboard:",

@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const SERVER_CHECKOUT_URL = 'https://korunahor.cz/wl_beskidzki/checkout.php';
+const SERVER_CHECKOUT_URL = import.meta.env.PUBLIC_SERVER_BASE + '/checkout.php';
 const PRODUCT   = 'GGNT';
 const BOOK_PRICE = '15 zł';
 const BOOK_PRICE_NUM = 15;

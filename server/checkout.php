@@ -46,6 +46,9 @@ $productPriceMap = array_filter([
     'GGWF' => getenv('STRIPE_PRICE_GGWF'),
     'GGNT' => getenv('STRIPE_PRICE_GGNT'),
     'KW'   => getenv('STRIPE_PRICE_KW'),
+    'WL_ZLOTA'  => getenv('STRIPE_PRICE_WL_ZLOTA'),
+    'WL_SREBRO' => getenv('STRIPE_PRICE_WL_SREBRO'),
+    'WL_BRAZ'   => getenv('STRIPE_PRICE_WL_BRAZ')
 ]);
 
 // ── Validate required config ──────────────────────────────────────────────────
@@ -88,8 +91,27 @@ if (!is_array($body) || empty($body['items']) || !is_array($body['items'])) {
     exit;
 }
 
+// ── Badge products — require & validate verification codes ───────────────────
+$badgeProducts = ['WL_ZLOTA', 'WL_SREBRO', 'WL_BRAZ'];
+$codesDir      = __DIR__ . '/codes/';
+
+function validateBadgeCode(string $csvFile, string $code): bool {
+    if (!file_exists($csvFile)) return false;
+    $fh = fopen($csvFile, 'r');
+    fgetcsv($fh); // skip header
+    while (($row = fgetcsv($fh)) !== false) {
+        if (isset($row[0], $row[1]) && $row[0] === $code && (int)$row[1] === 0) {
+            fclose($fh);
+            return true;
+        }
+    }
+    fclose($fh);
+    return false;
+}
+
 // ── Validate & build line items ───────────────────────────────────────────────
-$lineItems = [];
+$lineItems  = [];
+$badgeCodes = []; // product code => verification code, for metadata
 
 foreach ($body['items'] as $item) {
     $productCode = strtoupper(trim((string)($item['product'] ?? '')));
@@ -99,6 +121,23 @@ foreach ($body['items'] as $item) {
         http_response_code(400);
         echo json_encode(['error' => "Unknown product: {$productCode}"]);
         exit;
+    }
+
+    // Badge products require a valid unused verification code
+    if (in_array($productCode, $badgeProducts)) {
+        $badgeCode = strtolower(trim((string)($item['badge_code'] ?? '')));
+        if (!preg_match('/^[a-z0-9]{8}$/', $badgeCode)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Nieprawidłowy format kodu weryfikacji dla odznaki.']);
+            exit;
+        }
+        $csvFile = $codesDir . $productCode . '.csv';
+        if (!validateBadgeCode($csvFile, $badgeCode)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Kod weryfikacji jest nieprawidłowy lub został już wykorzystany.']);
+            exit;
+        }
+        $badgeCodes[$productCode] = $badgeCode;
     }
 
     $lineItems[] = ['price' => $productPriceMap[$productCode], 'quantity' => $quantity];
@@ -165,6 +204,11 @@ $params = [
     'metadata[paczkomat_id]'       => $paczkomatId,
     'metadata[paczkomat_address]'  => $paczkomatAddress,
 ];
+
+// Pass badge verification codes through to the webhook
+foreach ($badgeCodes as $product => $code) {
+    $params["metadata[badge_code_{$product}]"] = $code;
+}
 
 // Always collect phone number
 $params['phone_number_collection[enabled]'] = 'true';
