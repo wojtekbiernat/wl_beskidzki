@@ -308,6 +308,8 @@ const nav: NavItem[] = [
       top: 60px; left: 0; right: 0;
       background: var(--clr-accent);
       padding: 1rem 1.5rem;
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
     }
 
     #menu-toggle:checked ~ nav { display: block; }
